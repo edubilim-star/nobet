@@ -15,11 +15,20 @@
         "PERŞEMBE",
         "CUMA"
       ],
-      "Excel'de Yer Başlığını Göster": true,
+      "Excel'de Yer Başlığını Göster": false,
       "Excel Bölümü": "BAHÇE"
     },
     {
-      "Nöbet Yeri / Bölüm": "SINIF 1.KAT",
+      "Nöbet Yeri / Bölüm": "GİRİŞ",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "SINIF VE KORİDORLAR"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "1.KAT",
       "Gerekli Öğretmen Sayısı": 1,
       "Aktif Günler": [
         "PAZARTESİ",
@@ -32,20 +41,7 @@
       "Excel Bölümü": "SINIF VE KORİDORLAR"
     },
     {
-      "Nöbet Yeri / Bölüm": "SINIF 2.KAT",
-      "Gerekli Öğretmen Sayısı": 1,
-      "Aktif Günler": [
-        "PAZARTESİ",
-        "SALI",
-        "ÇARŞAMBA",
-        "PERŞEMBE",
-        "CUMA"
-      ],
-      "Excel'de Yer Başlığını Göster": true,
-      "Excel Bölümü": "SINIF VE KORİDORLAR"
-    },
-    {
-      "Nöbet Yeri / Bölüm": "SINIF 3.KAT",
+      "Nöbet Yeri / Bölüm": "2.KAT",
       "Gerekli Öğretmen Sayısı": 1,
       "Aktif Günler": [
         "PAZARTESİ",
@@ -67,7 +63,7 @@
         "PERŞEMBE",
         "CUMA"
       ],
-      "Excel'de Yer Başlığını Göster": true,
+      "Excel'de Yer Başlığını Göster": false,
       "Excel Bölümü": "ANASINIFI KAPI"
     },
     {
@@ -97,7 +93,7 @@
       "Excel Bölümü": "EK BİNA"
     },
     {
-      "Nöbet Yeri / Bölüm": "GİRİŞ",
+      "Nöbet Yeri / Bölüm": "3.KAT",
       "Gerekli Öğretmen Sayısı": 1,
       "Aktif Günler": [
         "PAZARTESİ",
@@ -132,20 +128,26 @@
     {
       "Ad Soyad": "KÜBRA BIYIKOĞLU",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "MELİSA GÜVENÇ",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "MERVE GÜLER",
-      "Sabit Yer": "Yok",
+      "Sabit Yer": "GİRİŞ",
       "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -153,196 +155,276 @@
     {
       "Ad Soyad": "MELİKE ÖDEN",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "EMEL KAYABAŞI",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "AYSEL GÜL",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "RABİA ŞAHİN BAKRAKTAR",
-      "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Sabit Yer": "ANASINIFI KAPI",
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "EBRU BAĞCI",
-      "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Sabit Yer": "ANASINIFI KAPI",
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "İBRAHİM KILIÇ",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "YUNUS KARACA",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "SEHER TAŞ",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "ALEV AYÇA AÇIKEL",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "ŞULE YÜKSELAY",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "MERVE AYDEMİR KESİKBAŞ",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "MERVE ÜLKER KÖKEN",
-      "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Sabit Yer": "ANASINIFI KAPI",
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "AYŞEGÜL SEVİM BOZĞOLU",
-      "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Sabit Yer": "ANASINIFI KAPI",
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "ESMANUR SEZER",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "ÖZGÜR ESER",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "DİLARA SAVAŞKAN",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "MÜNEVER ALICI",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "HATİCE BİRER OKAY",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "FATMA ÖZMEN",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "AYŞE ZORKOL",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "ÖZGE KEPENEK",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "AYŞEGÜL SÜER",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "BERNA ÜLKER",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "FERİDE ÖZDEMİR",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "KÜBRA EVREN",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "HATİCE BETÜL TURAN",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "NİHAL GÖKSU",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI",
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     }
@@ -523,7 +605,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -532,7 +614,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -541,8 +623,8 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MERVE GÜLER",
+      "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -550,8 +632,8 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MELİKE ÖDEN",
+      "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MERVE GÜLER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -577,7 +659,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -586,18 +668,9 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYŞE ZORKOL",
       "Çift Nöbetçi mi": true,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "5-9 EKİM NÖBET ",
-      "Tarih": null,
-      "Gün": "SALI",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "AYŞEGÜL SÜER",
-      "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
     {
@@ -613,7 +686,16 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "AYŞEGÜL SÜER",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "5-9 EKİM NÖBET ",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -622,7 +704,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "SEHER TAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -649,7 +731,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "BERNA ÜLKER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -658,7 +740,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -685,7 +767,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MELİSA GÜVENÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -694,7 +776,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -721,7 +803,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -730,7 +812,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -757,7 +839,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -766,7 +848,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -775,7 +857,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "SEHER TAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -802,7 +884,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -811,7 +893,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -838,7 +920,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "DİLARA SAVAŞKAN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -847,7 +929,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -856,7 +938,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -883,7 +965,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYŞE ZORKOL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -892,7 +974,7 @@
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -919,7 +1001,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -928,7 +1010,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "MELİSA GÜVENÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -937,7 +1019,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "MERVE GÜLER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -946,7 +1028,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -973,7 +1055,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -982,7 +1064,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1000,7 +1082,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1009,7 +1091,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "AYŞEGÜL SÜER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1018,7 +1100,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "SEHER TAŞ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1045,7 +1127,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1054,7 +1136,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1081,7 +1163,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1090,8 +1172,8 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "FATMA ÖZMEN",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -1099,8 +1181,8 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MELİKE ÖDEN",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -1126,7 +1208,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "DİLARA SAVAŞKAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1135,7 +1217,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "YUNUS KARACA",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1162,16 +1244,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "İBRAHİM KILIÇ",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "12-16 EKİM NÖBET ",
-      "Tarih": null,
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1180,7 +1253,16 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "İBRAHİM KILIÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "12-16 EKİM NÖBET ",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1207,7 +1289,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1216,7 +1298,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1243,7 +1325,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1252,7 +1334,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1261,7 +1343,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1288,7 +1370,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "MÜNEVER ALICI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1297,7 +1379,7 @@
       "Tarih/Hafta": "12-16 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1315,16 +1397,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "ŞULE YÜKSELAY",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "14-18 EYLÜL NÖBET",
-      "Tarih": null,
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1333,7 +1406,16 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ŞULE YÜKSELAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "14-18 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1351,7 +1433,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYŞE ZORKOL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1360,7 +1442,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "SEHER TAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1378,7 +1460,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1387,7 +1469,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1396,7 +1478,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "AYŞEGÜL SÜER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1423,7 +1505,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1432,7 +1514,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1459,7 +1541,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1468,7 +1550,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1477,7 +1559,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1495,7 +1577,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1504,17 +1586,8 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "YUNUS KARACA",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "14-18 EYLÜL NÖBET",
-      "Tarih": null,
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -1531,7 +1604,16 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "İBRAHİM KILIÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "14-18 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1540,7 +1622,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MELİSA GÜVENÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1549,7 +1631,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1576,7 +1658,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1585,7 +1667,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYŞE ZORKOL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1612,7 +1694,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1621,7 +1703,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "SEHER TAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1639,7 +1721,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1648,7 +1730,7 @@
       "Tarih/Hafta": "14-18 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1675,7 +1757,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1684,16 +1766,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MERVE GÜLER",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "19-23 EKİM NÖBET ",
-      "Tarih": null,
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1702,7 +1775,16 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MERVE GÜLER",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "19-23 EKİM NÖBET ",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1729,7 +1811,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1738,7 +1820,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "YUNUS KARACA",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1765,7 +1847,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1774,7 +1856,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1801,7 +1883,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1810,7 +1892,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1837,7 +1919,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1846,7 +1928,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MÜNEVER ALICI",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1855,7 +1937,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1882,7 +1964,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "MELİSA GÜVENÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1891,7 +1973,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYŞE ZORKOL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1918,7 +2000,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1927,7 +2009,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -1936,7 +2018,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "AYŞEGÜL SÜER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1963,7 +2045,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1972,7 +2054,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "BERNA ÜLKER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -1999,7 +2081,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2008,7 +2090,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2017,7 +2099,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2044,7 +2126,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2053,7 +2135,7 @@
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2080,8 +2162,8 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "ŞULE YÜKSELAY",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
     },
@@ -2089,8 +2171,8 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "ESMANUR SEZER",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
     },
@@ -2116,7 +2198,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2125,7 +2207,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2152,7 +2234,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2161,7 +2243,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "AYŞEGÜL SÜER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2188,7 +2270,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2197,7 +2279,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2224,7 +2306,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2233,7 +2315,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2242,7 +2324,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2269,7 +2351,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2278,7 +2360,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYŞE ZORKOL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2305,7 +2387,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2314,7 +2396,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2323,7 +2405,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2350,7 +2432,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2359,7 +2441,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "YUNUS KARACA",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2386,7 +2468,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "DİLARA SAVAŞKAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2395,8 +2477,8 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "İBRAHİM KILIÇ",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "MELİSA GÜVENÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -2404,8 +2486,8 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MELİSA GÜVENÇ",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -2431,7 +2513,7 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2440,17 +2522,8 @@
       "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "BERNA ÜLKER",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
-      "Tarih": null,
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
@@ -2467,7 +2540,16 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "İBRAHİM KILIÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "GİRİŞ",
       "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2476,18 +2558,18 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MERVE GÜLER",
-      "Çift Nöbetçi mi": false,
+      "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MELİKE ÖDEN",
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
     },
     {
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "MELİKE ÖDEN",
-      "Çift Nöbetçi mi": true,
+      "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MERVE GÜLER",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
     {
@@ -2512,7 +2594,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2521,7 +2603,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "BERNA ÜLKER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2548,18 +2630,18 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "AYSEL GÜL",
-      "Çift Nöbetçi mi": true,
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "SEHER TAŞ",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
     },
     {
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "SEHER TAŞ",
-      "Çift Nöbetçi mi": false,
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "AYSEL GÜL",
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
     },
     {
@@ -2584,7 +2666,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2593,7 +2675,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "MELİSA GÜVENÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2620,7 +2702,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2629,7 +2711,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2638,7 +2720,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2665,7 +2747,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "YUNUS KARACA",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2674,7 +2756,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2692,7 +2774,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2701,7 +2783,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2710,7 +2792,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2737,7 +2819,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2746,7 +2828,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "FERİDE ÖZDEMİR",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2773,7 +2855,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2782,7 +2864,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "DİLARA SAVAŞKAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2791,7 +2873,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "3.KAT",
       "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Eski Liste"
@@ -2818,7 +2900,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2827,7 +2909,7 @@
       "Tarih/Hafta": "28 EYLÜL-2 EKİM NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
@@ -2837,8 +2919,8 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MERVE GÜLER",
-      "Çift Nöbetçi mi": true,
+      "Öğretmen": "FERİDE ÖZDEMİR",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -2846,70 +2928,7 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "FERİDE ÖZDEMİR",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "HATİCE BETÜL TURAN",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "SINIF 2.KAT",
-      "Öğretmen": "SEHER TAŞ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MELİSA GÜVENÇ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "NİHAL GÖKSU",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "BERNA ÜLKER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "AYŞE ZORKOL",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
+      "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -2918,42 +2937,78 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MERVE GÜLER",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "1.KAT",
+      "Öğretmen": "BERNA ÜLKER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "AYŞEGÜL SÜER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "EBRU BAĞCI",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "EK BİNA 1.KAT",
       "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MERVE ÜLKER KÖKEN",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "EK BİNA 2.KAT",
+      "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "KÜBRA BIYIKOĞLU",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "SINIF 2.KAT",
+      "Bölüm/Yer": "BAHÇE",
       "Öğretmen": "MÜNEVER ALICI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -2962,34 +3017,16 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MELİKE ÖDEN",
-      "Çift Nöbetçi mi": true,
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "HATİCE BİRER OKAY",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "DİLARA SAVAŞKAN",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "EK BİNA 1.KAT",
+      "Bölüm/Yer": "1.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -2998,8 +3035,35 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "ESMANUR SEZER",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "ŞULE YÜKSELAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "MERVE ÜLKER KÖKEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "EK BİNA 1.KAT",
+      "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3007,53 +3071,44 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "YUNUS KARACA",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "EBRU BAĞCI",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "AYŞEGÜL SÜER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "SINIF 2.KAT",
+      "Bölüm/Yer": "EK BİNA 2.KAT",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "AYŞE ZORKOL",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "ŞULE YÜKSELAY",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "NİHAL GÖKSU",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-28T00:00:00.000",
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "SEHER TAŞ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-28T00:00:00.000",
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "1.KAT",
+      "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3061,8 +3116,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-28T00:00:00.000",
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3071,7 +3135,7 @@
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "EMEL KAYABAŞI",
+      "Öğretmen": "EBRU BAĞCI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3080,7 +3144,7 @@
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "ÖZGÜR ESER",
+      "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3089,7 +3153,7 @@
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "KÜBRA BIYIKOĞLU",
+      "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3097,9 +3161,9 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "FATMA ÖZMEN",
-      "Çift Nöbetçi mi": true,
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "YUNUS KARACA",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3107,6 +3171,24 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-29T00:00:00.000",
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MELİSA GÜVENÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-29T00:00:00.000",
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "1.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
@@ -3115,44 +3197,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MERVE GÜLER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "ÖZGE KEPENEK",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "SINIF 2.KAT",
-      "Öğretmen": "BERNA ÜLKER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MÜNEVER ALICI",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "DİLARA SAVAŞKAN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-29T00:00:00.000",
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "MERVE ÜLKER KÖKEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3161,7 +3216,7 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "FERİDE ÖZDEMİR",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3170,8 +3225,8 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
-      "Çift Nöbetçi mi": true,
+      "Öğretmen": "ESMANUR SEZER",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3179,7 +3234,7 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "MELİKE ÖDEN",
+      "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3187,8 +3242,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "ALEV AYÇA AÇIKEL",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "BERNA ÜLKER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-30T00:00:00.000",
+      "Gün": "CUMA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MÜNEVER ALICI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3205,8 +3269,8 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "FATMA ÖZMEN",
+      "Bölüm/Yer": "1.KAT",
+      "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3214,16 +3278,7 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "ÖZGÜR ESER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-30T00:00:00.000",
-      "Gün": "CUMA",
-      "Bölüm/Yer": "SINIF 2.KAT",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3232,8 +3287,8 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MELİSA GÜVENÇ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3242,16 +3297,7 @@
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
       "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "EMEL KAYABAŞI",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-30T00:00:00.000",
-      "Gün": "CUMA",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "İBRAHİM KILIÇ",
+      "Öğretmen": "EBRU BAĞCI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3260,15 +3306,6 @@
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "SEHER TAŞ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-30T00:00:00.000",
-      "Gün": "CUMA",
-      "Bölüm/Yer": "EK BİNA 2.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3277,8 +3314,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "YUNUS KARACA",
+      "Bölüm/Yer": "EK BİNA 2.KAT",
+      "Öğretmen": "MELİKE ÖDEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-30T00:00:00.000",
+      "Gün": "CUMA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     }
@@ -3289,8 +3335,8 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MERVE GÜLER",
-      "Çift Nöbetçi mi": true,
+      "Öğretmen": "FERİDE ÖZDEMİR",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3298,16 +3344,7 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "FERİDE ÖZDEMİR",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "HATİCE BETÜL TURAN",
+      "Öğretmen": "FATMA ÖZMEN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3315,26 +3352,8 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "SINIF 2.KAT",
-      "Öğretmen": "SEHER TAŞ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MELİSA GÜVENÇ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-26T00:00:00.000",
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "NİHAL GÖKSU",
+      "Bölüm/Yer": "GİRİŞ",
+      "Öğretmen": "MERVE GÜLER",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3342,7 +3361,7 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Bölüm/Yer": "1.KAT",
       "Öğretmen": "BERNA ÜLKER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3351,9 +3370,36 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "AYŞEGÜL SÜER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "EBRU BAĞCI",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-26T00:00:00.000",
+      "Gün": "PAZARTESİ",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "AYŞE ZORKOL",
-      "Çift Nöbetçi mi": false,
+      "Öğretmen": "ÖZGE KEPENEK",
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3361,25 +3407,16 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
-      "Çift Nöbetçi mi": false,
+      "Öğretmen": "ÖZGÜR ESER",
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "ÖZGE KEPENEK",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "KÜBRA BIYIKOĞLU",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3388,24 +3425,6 @@
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MERVE ÜLKER KÖKEN",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "SINIF 2.KAT",
       "Öğretmen": "MÜNEVER ALICI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3414,34 +3433,16 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MELİKE ÖDEN",
-      "Çift Nöbetçi mi": true,
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "HATİCE BİRER OKAY",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "DİLARA SAVAŞKAN",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-27T00:00:00.000",
-      "Gün": "SALI",
-      "Bölüm/Yer": "EK BİNA 1.KAT",
+      "Bölüm/Yer": "1.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3450,8 +3451,35 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "ESMANUR SEZER",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "ŞULE YÜKSELAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "MERVE ÜLKER KÖKEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "EK BİNA 1.KAT",
+      "Öğretmen": "HATİCE BETÜL TURAN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3459,53 +3487,44 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-27T00:00:00.000",
       "Gün": "SALI",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "YUNUS KARACA",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "EBRU BAĞCI",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
-      "Çift Nöbetçi mi": false,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "AYŞEGÜL SÜER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-28T00:00:00.000",
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "SINIF 2.KAT",
+      "Bölüm/Yer": "EK BİNA 2.KAT",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
       "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-27T00:00:00.000",
+      "Gün": "SALI",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "AYŞE ZORKOL",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "ŞULE YÜKSELAY",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "NİHAL GÖKSU",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-28T00:00:00.000",
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "SEHER TAŞ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-28T00:00:00.000",
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "1.KAT",
+      "Öğretmen": "MELİKE ÖDEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3513,8 +3532,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-28T00:00:00.000",
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3523,7 +3551,7 @@
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "EMEL KAYABAŞI",
+      "Öğretmen": "EBRU BAĞCI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3532,7 +3560,7 @@
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "ÖZGÜR ESER",
+      "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3541,7 +3569,7 @@
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "KÜBRA BIYIKOĞLU",
+      "Öğretmen": "EMEL KAYABAŞI",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -3549,9 +3577,9 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-28T00:00:00.000",
       "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "FATMA ÖZMEN",
-      "Çift Nöbetçi mi": true,
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "YUNUS KARACA",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3559,6 +3587,24 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-29T00:00:00.000",
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MELİSA GÜVENÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-29T00:00:00.000",
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "1.KAT",
       "Öğretmen": "KÜBRA EVREN",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
@@ -3567,44 +3613,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MERVE GÜLER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "ÖZGE KEPENEK",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "SINIF 2.KAT",
-      "Öğretmen": "BERNA ÜLKER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MÜNEVER ALICI",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "DİLARA SAVAŞKAN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-29T00:00:00.000",
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "MERVE ÜLKER KÖKEN",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3613,7 +3632,7 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "FERİDE ÖZDEMİR",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3622,8 +3641,8 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
-      "Çift Nöbetçi mi": true,
+      "Öğretmen": "ESMANUR SEZER",
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3631,7 +3650,7 @@
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "EK BİNA 2.KAT",
-      "Öğretmen": "MELİKE ÖDEN",
+      "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3639,8 +3658,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-29T00:00:00.000",
       "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "ALEV AYÇA AÇIKEL",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "BERNA ÜLKER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-30T00:00:00.000",
+      "Gün": "CUMA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MÜNEVER ALICI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3657,8 +3685,8 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "FATMA ÖZMEN",
+      "Bölüm/Yer": "1.KAT",
+      "Öğretmen": "ALEV AYÇA AÇIKEL",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3666,16 +3694,7 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "SINIF 1.KAT",
-      "Öğretmen": "ÖZGÜR ESER",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-30T00:00:00.000",
-      "Gün": "CUMA",
-      "Bölüm/Yer": "SINIF 2.KAT",
+      "Bölüm/Yer": "2.KAT",
       "Öğretmen": "ŞULE YÜKSELAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3684,8 +3703,8 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "SINIF 3.KAT",
-      "Öğretmen": "MELİSA GÜVENÇ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3694,16 +3713,7 @@
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
       "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "EMEL KAYABAŞI",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-30T00:00:00.000",
-      "Gün": "CUMA",
-      "Bölüm/Yer": "ANASINIFI KAPI",
-      "Öğretmen": "İBRAHİM KILIÇ",
+      "Öğretmen": "EBRU BAĞCI",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3712,15 +3722,6 @@
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
       "Bölüm/Yer": "EK BİNA 1.KAT",
-      "Öğretmen": "SEHER TAŞ",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Oluşturulan"
-    },
-    {
-      "Tarih/Hafta": "26-30 EKİM",
-      "Tarih": "2026-10-30T00:00:00.000",
-      "Gün": "CUMA",
-      "Bölüm/Yer": "EK BİNA 2.KAT",
       "Öğretmen": "HATİCE BİRER OKAY",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
@@ -3729,8 +3730,17 @@
       "Tarih/Hafta": "26-30 EKİM",
       "Tarih": "2026-10-30T00:00:00.000",
       "Gün": "CUMA",
-      "Bölüm/Yer": "GİRİŞ",
-      "Öğretmen": "YUNUS KARACA",
+      "Bölüm/Yer": "EK BİNA 2.KAT",
+      "Öğretmen": "MELİKE ÖDEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Oluşturulan"
+    },
+    {
+      "Tarih/Hafta": "26-30 EKİM",
+      "Tarih": "2026-10-30T00:00:00.000",
+      "Gün": "CUMA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ÖZGÜR ESER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     }
@@ -3742,8 +3752,8 @@
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
         "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "MERVE GÜLER",
-        "Çift Nöbetçi mi": true,
+        "Öğretmen": "FERİDE ÖZDEMİR",
+        "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
@@ -3751,16 +3761,7 @@
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
         "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "FERİDE ÖZDEMİR",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-26T00:00:00.000",
-        "Gün": "PAZARTESİ",
-        "Bölüm/Yer": "SINIF 1.KAT",
-        "Öğretmen": "HATİCE BETÜL TURAN",
+        "Öğretmen": "FATMA ÖZMEN",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
@@ -3768,26 +3769,8 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
-        "Bölüm/Yer": "SINIF 2.KAT",
-        "Öğretmen": "SEHER TAŞ",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-26T00:00:00.000",
-        "Gün": "PAZARTESİ",
-        "Bölüm/Yer": "SINIF 3.KAT",
-        "Öğretmen": "MELİSA GÜVENÇ",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-26T00:00:00.000",
-        "Gün": "PAZARTESİ",
-        "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "NİHAL GÖKSU",
+        "Bölüm/Yer": "GİRİŞ",
+        "Öğretmen": "MERVE GÜLER",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
@@ -3795,7 +3778,7 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
-        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Bölüm/Yer": "1.KAT",
         "Öğretmen": "BERNA ÜLKER",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
@@ -3804,9 +3787,36 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
+        "Bölüm/Yer": "2.KAT",
+        "Öğretmen": "AYŞEGÜL SÜER",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-26T00:00:00.000",
+        "Gün": "PAZARTESİ",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-26T00:00:00.000",
+        "Gün": "PAZARTESİ",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "EBRU BAĞCI",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-26T00:00:00.000",
+        "Gün": "PAZARTESİ",
         "Bölüm/Yer": "EK BİNA 1.KAT",
-        "Öğretmen": "AYŞE ZORKOL",
-        "Çift Nöbetçi mi": false,
+        "Öğretmen": "ÖZGE KEPENEK",
+        "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
       {
@@ -3814,25 +3824,16 @@
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
         "Bölüm/Yer": "EK BİNA 2.KAT",
-        "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
-        "Çift Nöbetçi mi": false,
+        "Öğretmen": "ÖZGÜR ESER",
+        "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
       {
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
-        "Bölüm/Yer": "GİRİŞ",
-        "Öğretmen": "ÖZGE KEPENEK",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-27T00:00:00.000",
-        "Gün": "SALI",
-        "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+        "Bölüm/Yer": "3.KAT",
+        "Öğretmen": "KÜBRA BIYIKOĞLU",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
@@ -3841,24 +3842,6 @@
         "Tarih": "2026-10-27T00:00:00.000",
         "Gün": "SALI",
         "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "MERVE ÜLKER KÖKEN",
-        "Çift Nöbetçi mi": false,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-27T00:00:00.000",
-        "Gün": "SALI",
-        "Bölüm/Yer": "SINIF 1.KAT",
-        "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-27T00:00:00.000",
-        "Gün": "SALI",
-        "Bölüm/Yer": "SINIF 2.KAT",
         "Öğretmen": "MÜNEVER ALICI",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
@@ -3867,34 +3850,16 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-27T00:00:00.000",
         "Gün": "SALI",
-        "Bölüm/Yer": "SINIF 3.KAT",
-        "Öğretmen": "MELİKE ÖDEN",
-        "Çift Nöbetçi mi": true,
+        "Bölüm/Yer": "BAHÇE",
+        "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
+        "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-27T00:00:00.000",
         "Gün": "SALI",
-        "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "HATİCE BİRER OKAY",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-27T00:00:00.000",
-        "Gün": "SALI",
-        "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "DİLARA SAVAŞKAN",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-27T00:00:00.000",
-        "Gün": "SALI",
-        "Bölüm/Yer": "EK BİNA 1.KAT",
+        "Bölüm/Yer": "1.KAT",
         "Öğretmen": "ALEV AYÇA AÇIKEL",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
@@ -3903,8 +3868,35 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-27T00:00:00.000",
         "Gün": "SALI",
-        "Bölüm/Yer": "EK BİNA 2.KAT",
-        "Öğretmen": "ESMANUR SEZER",
+        "Bölüm/Yer": "2.KAT",
+        "Öğretmen": "ŞULE YÜKSELAY",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-27T00:00:00.000",
+        "Gün": "SALI",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "MERVE ÜLKER KÖKEN",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-27T00:00:00.000",
+        "Gün": "SALI",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-27T00:00:00.000",
+        "Gün": "SALI",
+        "Bölüm/Yer": "EK BİNA 1.KAT",
+        "Öğretmen": "HATİCE BETÜL TURAN",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
@@ -3912,53 +3904,44 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-27T00:00:00.000",
         "Gün": "SALI",
-        "Bölüm/Yer": "GİRİŞ",
-        "Öğretmen": "YUNUS KARACA",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-28T00:00:00.000",
-        "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "EBRU BAĞCI",
-        "Çift Nöbetçi mi": false,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-28T00:00:00.000",
-        "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
-        "Çift Nöbetçi mi": false,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-28T00:00:00.000",
-        "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "SINIF 1.KAT",
-        "Öğretmen": "AYŞEGÜL SÜER",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-28T00:00:00.000",
-        "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "SINIF 2.KAT",
+        "Bölüm/Yer": "EK BİNA 2.KAT",
         "Öğretmen": "AYSEL GÜL",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
         "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-27T00:00:00.000",
+        "Gün": "SALI",
+        "Bölüm/Yer": "3.KAT",
+        "Öğretmen": "AYŞE ZORKOL",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-28T00:00:00.000",
         "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "SINIF 3.KAT",
-        "Öğretmen": "ŞULE YÜKSELAY",
+        "Bölüm/Yer": "BAHÇE",
+        "Öğretmen": "NİHAL GÖKSU",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-28T00:00:00.000",
+        "Gün": "ÇARŞAMBA",
+        "Bölüm/Yer": "BAHÇE",
+        "Öğretmen": "SEHER TAŞ",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-28T00:00:00.000",
+        "Gün": "ÇARŞAMBA",
+        "Bölüm/Yer": "1.KAT",
+        "Öğretmen": "MELİKE ÖDEN",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -3966,8 +3949,17 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-28T00:00:00.000",
         "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Bölüm/Yer": "2.KAT",
         "Öğretmen": "İBRAHİM KILIÇ",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-28T00:00:00.000",
+        "Gün": "ÇARŞAMBA",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -3976,7 +3968,7 @@
         "Tarih": "2026-10-28T00:00:00.000",
         "Gün": "ÇARŞAMBA",
         "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "EMEL KAYABAŞI",
+        "Öğretmen": "EBRU BAĞCI",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -3985,7 +3977,7 @@
         "Tarih": "2026-10-28T00:00:00.000",
         "Gün": "ÇARŞAMBA",
         "Bölüm/Yer": "EK BİNA 1.KAT",
-        "Öğretmen": "ÖZGÜR ESER",
+        "Öğretmen": "HATİCE BİRER OKAY",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -3994,7 +3986,7 @@
         "Tarih": "2026-10-28T00:00:00.000",
         "Gün": "ÇARŞAMBA",
         "Bölüm/Yer": "EK BİNA 2.KAT",
-        "Öğretmen": "KÜBRA BIYIKOĞLU",
+        "Öğretmen": "EMEL KAYABAŞI",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
@@ -4002,9 +3994,9 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-28T00:00:00.000",
         "Gün": "ÇARŞAMBA",
-        "Bölüm/Yer": "GİRİŞ",
-        "Öğretmen": "FATMA ÖZMEN",
-        "Çift Nöbetçi mi": true,
+        "Bölüm/Yer": "3.KAT",
+        "Öğretmen": "YUNUS KARACA",
+        "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
@@ -4012,6 +4004,24 @@
         "Tarih": "2026-10-29T00:00:00.000",
         "Gün": "PERŞEMBE",
         "Bölüm/Yer": "BAHÇE",
+        "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-29T00:00:00.000",
+        "Gün": "PERŞEMBE",
+        "Bölüm/Yer": "BAHÇE",
+        "Öğretmen": "MELİSA GÜVENÇ",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-29T00:00:00.000",
+        "Gün": "PERŞEMBE",
+        "Bölüm/Yer": "1.KAT",
         "Öğretmen": "KÜBRA EVREN",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
@@ -4020,44 +4030,17 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-29T00:00:00.000",
         "Gün": "PERŞEMBE",
-        "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "MERVE GÜLER",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-29T00:00:00.000",
-        "Gün": "PERŞEMBE",
-        "Bölüm/Yer": "SINIF 1.KAT",
-        "Öğretmen": "ÖZGE KEPENEK",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-29T00:00:00.000",
-        "Gün": "PERŞEMBE",
-        "Bölüm/Yer": "SINIF 2.KAT",
-        "Öğretmen": "BERNA ÜLKER",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-29T00:00:00.000",
-        "Gün": "PERŞEMBE",
-        "Bölüm/Yer": "SINIF 3.KAT",
-        "Öğretmen": "MÜNEVER ALICI",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-29T00:00:00.000",
-        "Gün": "PERŞEMBE",
-        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Bölüm/Yer": "2.KAT",
         "Öğretmen": "DİLARA SAVAŞKAN",
+        "Çift Nöbetçi mi": false,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-29T00:00:00.000",
+        "Gün": "PERŞEMBE",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "MERVE ÜLKER KÖKEN",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4066,7 +4049,7 @@
         "Tarih": "2026-10-29T00:00:00.000",
         "Gün": "PERŞEMBE",
         "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "FERİDE ÖZDEMİR",
+        "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4075,8 +4058,8 @@
         "Tarih": "2026-10-29T00:00:00.000",
         "Gün": "PERŞEMBE",
         "Bölüm/Yer": "EK BİNA 1.KAT",
-        "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
-        "Çift Nöbetçi mi": true,
+        "Öğretmen": "ESMANUR SEZER",
+        "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
@@ -4084,7 +4067,7 @@
         "Tarih": "2026-10-29T00:00:00.000",
         "Gün": "PERŞEMBE",
         "Bölüm/Yer": "EK BİNA 2.KAT",
-        "Öğretmen": "MELİKE ÖDEN",
+        "Öğretmen": "ÖZGE KEPENEK",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4092,8 +4075,17 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-29T00:00:00.000",
         "Gün": "PERŞEMBE",
-        "Bölüm/Yer": "GİRİŞ",
-        "Öğretmen": "ALEV AYÇA AÇIKEL",
+        "Bölüm/Yer": "3.KAT",
+        "Öğretmen": "BERNA ÜLKER",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-30T00:00:00.000",
+        "Gün": "CUMA",
+        "Bölüm/Yer": "BAHÇE",
+        "Öğretmen": "MÜNEVER ALICI",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4110,8 +4102,8 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-30T00:00:00.000",
         "Gün": "CUMA",
-        "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "FATMA ÖZMEN",
+        "Bölüm/Yer": "1.KAT",
+        "Öğretmen": "ALEV AYÇA AÇIKEL",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4119,16 +4111,7 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-30T00:00:00.000",
         "Gün": "CUMA",
-        "Bölüm/Yer": "SINIF 1.KAT",
-        "Öğretmen": "ÖZGÜR ESER",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-30T00:00:00.000",
-        "Gün": "CUMA",
-        "Bölüm/Yer": "SINIF 2.KAT",
+        "Bölüm/Yer": "2.KAT",
         "Öğretmen": "ŞULE YÜKSELAY",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
@@ -4137,8 +4120,8 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-30T00:00:00.000",
         "Gün": "CUMA",
-        "Bölüm/Yer": "SINIF 3.KAT",
-        "Öğretmen": "MELİSA GÜVENÇ",
+        "Bölüm/Yer": "ANASINIFI KAPI",
+        "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4147,16 +4130,7 @@
         "Tarih": "2026-10-30T00:00:00.000",
         "Gün": "CUMA",
         "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "EMEL KAYABAŞI",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-30T00:00:00.000",
-        "Gün": "CUMA",
-        "Bölüm/Yer": "ANASINIFI KAPI",
-        "Öğretmen": "İBRAHİM KILIÇ",
+        "Öğretmen": "EBRU BAĞCI",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -4165,15 +4139,6 @@
         "Tarih": "2026-10-30T00:00:00.000",
         "Gün": "CUMA",
         "Bölüm/Yer": "EK BİNA 1.KAT",
-        "Öğretmen": "SEHER TAŞ",
-        "Çift Nöbetçi mi": true,
-        "Kaynak": "Oluşturulan"
-      },
-      {
-        "Tarih/Hafta": "26-30 EKİM",
-        "Tarih": "2026-10-30T00:00:00.000",
-        "Gün": "CUMA",
-        "Bölüm/Yer": "EK BİNA 2.KAT",
         "Öğretmen": "HATİCE BİRER OKAY",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
@@ -4182,8 +4147,17 @@
         "Tarih/Hafta": "26-30 EKİM",
         "Tarih": "2026-10-30T00:00:00.000",
         "Gün": "CUMA",
-        "Bölüm/Yer": "GİRİŞ",
-        "Öğretmen": "YUNUS KARACA",
+        "Bölüm/Yer": "EK BİNA 2.KAT",
+        "Öğretmen": "MELİKE ÖDEN",
+        "Çift Nöbetçi mi": true,
+        "Kaynak": "Oluşturulan"
+      },
+      {
+        "Tarih/Hafta": "26-30 EKİM",
+        "Tarih": "2026-10-30T00:00:00.000",
+        "Gün": "CUMA",
+        "Bölüm/Yer": "3.KAT",
+        "Öğretmen": "ÖZGÜR ESER",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       }
