@@ -415,6 +415,33 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
   color: inherit !important;
   font-size: 0.95rem !important;
 }
+/* Current Streamlit tabs use ARIA roles instead of BaseWeb attributes. */
+[role="tablist"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 2.8rem !important;
+  overflow-x: auto !important;
+}
+[role="tablist"] [role="tab"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 2.8rem !important;
+  padding: 0.55rem 0.85rem !important;
+  flex: 0 0 auto !important;
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155 !important;
+  font-size: 0.95rem !important;
+  white-space: nowrap !important;
+}
+[role="tablist"] [role="tab"] * {
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+}
 .app-footer { margin-top: 1.5rem; padding: 0.75rem 0 0.3rem; border-top: 1px solid rgba(128, 128, 128, 0.25); color: #64748b; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-align: left; }
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
