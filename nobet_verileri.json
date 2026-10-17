@@ -133,7 +133,8 @@
       "Ad Soyad": "KÜBRA BIYIKOĞLU",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -142,7 +143,8 @@
       "Ad Soyad": "MELİSA GÜVENÇ",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -150,7 +152,9 @@
     {
       "Ad Soyad": "MERVE GÜLER",
       "Sabit Yer": "GİRİŞ",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
@@ -158,7 +162,8 @@
       "Ad Soyad": "MELİKE ÖDEN",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -167,7 +172,8 @@
       "Ad Soyad": "EMEL KAYABAŞI",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -176,7 +182,8 @@
       "Ad Soyad": "AYSEL GÜL",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -184,14 +191,18 @@
     {
       "Ad Soyad": "RABİA ŞAHİN BAKRAKTAR",
       "Sabit Yer": "ANASINIFI KAPI",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "EBRU BAĞCI",
       "Sabit Yer": "ANASINIFI KAPI",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
@@ -199,7 +210,8 @@
       "Ad Soyad": "İBRAHİM KILIÇ",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -208,7 +220,8 @@
       "Ad Soyad": "YUNUS KARACA",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -217,7 +230,8 @@
       "Ad Soyad": "SEHER TAŞ",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -226,7 +240,8 @@
       "Ad Soyad": "ALEV AYÇA AÇIKEL",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -235,7 +250,8 @@
       "Ad Soyad": "ŞULE YÜKSELAY",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -244,7 +260,8 @@
       "Ad Soyad": "MERVE AYDEMİR KESİKBAŞ",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -252,14 +269,18 @@
     {
       "Ad Soyad": "MERVE ÜLKER KÖKEN",
       "Sabit Yer": "ANASINIFI KAPI",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
       "Ad Soyad": "AYŞEGÜL SEVİM BOZĞOLU",
       "Sabit Yer": "ANASINIFI KAPI",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "GİRİŞ"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
@@ -267,7 +288,8 @@
       "Ad Soyad": "ESMANUR SEZER",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -276,7 +298,8 @@
       "Ad Soyad": "ÖZGÜR ESER",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -285,7 +308,8 @@
       "Ad Soyad": "DİLARA SAVAŞKAN",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -294,7 +318,8 @@
       "Ad Soyad": "MÜNEVER ALICI",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -303,7 +328,8 @@
       "Ad Soyad": "HATİCE BİRER OKAY",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -312,7 +338,8 @@
       "Ad Soyad": "FATMA ÖZMEN",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -321,7 +348,8 @@
       "Ad Soyad": "AYŞE ZORKOL",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -330,7 +358,8 @@
       "Ad Soyad": "ÖZGE KEPENEK",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -339,7 +368,8 @@
       "Ad Soyad": "BEYZA NUR ÇAĞLAR SEZGİN",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -348,7 +378,8 @@
       "Ad Soyad": "AYŞEGÜL SÜER",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -357,7 +388,8 @@
       "Ad Soyad": "BERNA ÜLKER",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -366,7 +398,8 @@
       "Ad Soyad": "FERİDE ÖZDEMİR",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -375,7 +408,8 @@
       "Ad Soyad": "KÜBRA EVREN",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -384,7 +418,8 @@
       "Ad Soyad": "HATİCE BETÜL TURAN",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
@@ -393,7 +428,8 @@
       "Ad Soyad": "NİHAL GÖKSU",
       "Sabit Yer": "Yok",
       "Hariç Tutulan Bölümler": [
-        "ANASINIFI KAPI"
+        "ANASINIFI KAPI",
+        "GİRİŞ"
       ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
