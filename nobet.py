@@ -395,11 +395,15 @@ else:
 st.markdown("""
 <style>
 div[data-testid="stAppViewBlockContainer"], .block-container {
-  padding-top: 0.45rem !important;
+  padding-top: 0.9rem !important;
 }
 .app-banner {
+  display: flex;
+  align-items: center;
+  min-height: 3.4rem;
+  overflow: visible;
   margin: 0 0 0.55rem 0;
-  padding: 0.5rem 0.9rem;
+  padding: 0.6rem 0.9rem;
   border-radius: 0.8rem;
   background: linear-gradient(115deg, #123b5d 0%, #176b75 58%, #278b83 100%);
   box-shadow: 0 4px 14px rgba(18, 59, 93, 0.16);
@@ -408,16 +412,16 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
   margin: 0;
   color: #fff;
   font-size: clamp(1.15rem, 2.5vw, 1.65rem);
-  line-height: 1.25;
+  line-height: 1.4;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 @media (max-width: 700px) {
-  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
+  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.75rem !important; }
   [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: 0.5rem; }
   [data-testid="column"] { flex: 1 1 100% !important; min-width: 100% !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
-  .app-banner { margin-bottom: 0.4rem; padding: 0.45rem 0.75rem; border-radius: 0.65rem; }
+  .app-banner { min-height: 3.2rem; margin-bottom: 0.4rem; padding: 0.6rem 0.75rem; border-radius: 0.65rem; }
 }
 </style>
 <div class="app-banner"><h1>🏫 Gelişmiş Okul Nöbet Dağıtım ve Yönetim Sistemi</h1></div>
