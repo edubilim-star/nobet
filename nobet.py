@@ -27,8 +27,10 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 st.set_page_config(
     page_title="Okul Nöbet Otomasyon Sistemi",
-    layout="wide"
+    layout="wide",
+    menu_items={}
 )
+st.set_option("client.toolbarMode", "minimal")
 
 # --- VERİTABANI / SESSION STATE BAŞLANGICI ---
 if "school_info" not in st.session_state:
@@ -392,9 +394,12 @@ else:
 
 st.markdown("""
 <style>
+div[data-testid="stAppViewBlockContainer"], .block-container {
+  padding-top: 0.45rem !important;
+}
 .app-banner {
-  margin: 0 0 0.8rem 0;
-  padding: 0.65rem 1rem;
+  margin: 0 0 0.55rem 0;
+  padding: 0.5rem 0.9rem;
   border-radius: 0.8rem;
   background: linear-gradient(115deg, #123b5d 0%, #176b75 58%, #278b83 100%);
   box-shadow: 0 4px 14px rgba(18, 59, 93, 0.16);
@@ -408,11 +413,11 @@ st.markdown("""
   letter-spacing: -0.02em;
 }
 @media (max-width: 700px) {
-  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
   [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: 0.5rem; }
   [data-testid="column"] { flex: 1 1 100% !important; min-width: 100% !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
-  .app-banner { padding: 0.55rem 0.8rem; border-radius: 0.65rem; }
+  .app-banner { margin-bottom: 0.4rem; padding: 0.45rem 0.75rem; border-radius: 0.65rem; }
 }
 </style>
 <div class="app-banner"><h1>🏫 Gelişmiş Okul Nöbet Dağıtım ve Yönetim Sistemi</h1></div>
