@@ -152,9 +152,7 @@
     {
       "Ad Soyad": "MERVE GÜLER",
       "Sabit Yer": "GİRİŞ",
-      "Hariç Tutulan Bölümler": [
-        "GİRİŞ"
-      ],
+      "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
