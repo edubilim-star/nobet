@@ -406,15 +406,32 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 """, unsafe_allow_html=True)
 
 # --- UYGULAMA GEZİNME MENÜSÜ ---
-main_menu = st.radio("Bölüm seçin", [
+MENU_OPTIONS = [
     "📅 Nöbet Listesi Oluştur",
     "👥 Öğretmen Yönetimi",
     "📍 Nöbet Yerleri ve Kontenjan",
     "⚙️ Okul, Tatil ve Ayarlar",
     "📂 Eski Listeler & Arşiv",
-    "📊 İstatistikler"
-], horizontal=True, label_visibility="collapsed", key="main_navigation")
+    "📊 İstatistikler",
+]
+if st.session_state.get("main_navigation") not in MENU_OPTIONS:
+    st.session_state.main_navigation = MENU_OPTIONS[0]
 
+for row_start in range(0, len(MENU_OPTIONS), 3):
+    nav_columns = st.columns(3)
+    for column_index, nav_label in enumerate(MENU_OPTIONS[row_start:row_start + 3]):
+        button_index = row_start + column_index
+        with nav_columns[column_index]:
+            if st.button(
+                nav_label,
+                key=f"main_navigation_button_{button_index}",
+                type=("primary" if st.session_state.main_navigation == nav_label else "secondary"),
+                width="stretch",
+            ):
+                st.session_state.main_navigation = nav_label
+                st.rerun()
+
+main_menu = st.session_state.main_navigation
 # ================= EXCEL ÜRETME FONKSİYONU =================
 def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df, headings):
     wb = openpyxl.Workbook()
