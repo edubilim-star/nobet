@@ -400,8 +400,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 .app-footer { margin-top: 1.5rem; padding: 0.75rem 0 0.3rem; border-top: 1px solid rgba(128, 128, 128, 0.25); color: #64748b; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-align: left; }
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
-  [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: 0.5rem; }
-  [data-testid="column"] { flex: 1 1 100% !important; min-width: 100% !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
 }
 </style>
