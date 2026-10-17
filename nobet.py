@@ -562,7 +562,9 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
     elements = []
     
     styles = getSampleStyleSheet()
+    bundled_fonts = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
     font_candidates = [
+        (os.path.join(bundled_fonts, "NotoSans-Regular.ttf"), os.path.join(bundled_fonts, "NotoSans-Bold.ttf")),
         (r"C:\Windows\Fonts\arial.ttf", r"C:\Windows\Fonts\arialbd.ttf"),
         (r"C:\Windows\Fonts\calibri.ttf", r"C:\Windows\Fonts\calibrib.ttf"),
         (r"C:\Windows\Fonts\segoeui.ttf", r"C:\Windows\Fonts\segoeuib.ttf"),
@@ -586,7 +588,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
             unicode_font_found = True
             break
     if not unicode_font_found:
-        raise RuntimeError("Türkçe karakter destekli yazı tipi bulunamadı. Arial, Segoe UI veya Tahoma yazı tipini yükleyip yeniden deneyin.")
+        raise RuntimeError("Türkçe karakter destekli yazı tipi bulunamadı. Uygulamayla birlikte fonts/NotoSans-Regular.ttf ve fonts/NotoSans-Bold.ttf dosyalarını yükleyin.")
     title_style = ParagraphStyle('TitleStyle', parent=styles['Heading1'], fontName=bold_font, fontSize=14, alignment=1)
     cell_style = ParagraphStyle('CellStyle', parent=styles['Normal'], fontName=regular_font, fontSize=9)
     right_style = ParagraphStyle('RightStyle', parent=cell_style, alignment=2)
