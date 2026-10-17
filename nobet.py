@@ -390,17 +390,32 @@ else:
         axis=1
     )
 
-st.title("🏫 Gelişmiş Okul Nöbet Dağıtım ve Yönetim Sistemi")
-st.markdown("---")
 st.markdown("""
 <style>
+.app-banner {
+  margin: 0 0 0.8rem 0;
+  padding: 0.65rem 1rem;
+  border-radius: 0.8rem;
+  background: linear-gradient(115deg, #123b5d 0%, #176b75 58%, #278b83 100%);
+  box-shadow: 0 4px 14px rgba(18, 59, 93, 0.16);
+}
+.app-banner h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.15rem, 2.5vw, 1.65rem);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; }
   [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: 0.5rem; }
   [data-testid="column"] { flex: 1 1 100% !important; min-width: 100% !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
+  .app-banner { padding: 0.55rem 0.8rem; border-radius: 0.65rem; }
 }
 </style>
+<div class="app-banner"><h1>🏫 Gelişmiş Okul Nöbet Dağıtım ve Yönetim Sistemi</h1></div>
 """, unsafe_allow_html=True)
 
 # --- MENÜ SEKMELERİ ---
@@ -1142,7 +1157,7 @@ with tab1:
                 st.error("Tüm nöbet yerlerini mevcut öğretmen ve haftalık nöbet sınırlarıyla doldurmak mümkün değil. İzin, sabit yer, hariç tutma veya kontenjanları gözden geçirin.")
             st.stop()
 
-        deputy_assignments, deputy_adjacent_fallback = distribute_deputies(
+        deputy_assignments, _deputy_adjacent_fallback = distribute_deputies(
             baslangic_tarihi,
             {
                 day: 0 if day in tatil_gunleri else st.session_state.mudur_yardimcisi_sayilari.get(day, 1)
@@ -1188,8 +1203,6 @@ with tab1:
         st.success(f"✨ '{hafta_adi}' dönemi çizelgesi başarıyla oluşturuldu!")
         if repeated_place_fallback:
             st.warning("Öğretmen sayısı ve diğer kurallar nedeniyle bazı öğretmenlere geçen haftaki nöbet yeri yeniden verildi.")
-        if deputy_adjacent_fallback:
-            st.warning("Müdür yardımcısı sayısı günlük görev sayısını ve arka arkaya gün kuralını karşılamadığından bazı isimler ardışık günlerde tekrarlandı.")
 
     if st.session_state.current_schedule is not None:
         st.subheader("Oluşturulan Çizelge Önizlemesi")
