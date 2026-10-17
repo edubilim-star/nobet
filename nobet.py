@@ -105,6 +105,16 @@ if "current_schedule" not in st.session_state:
 
 st.title("🏫 Gelişmiş Okul Nöbet Dağıtım ve Yönetim Sistemi")
 st.markdown("---")
+st.markdown("""
+<style>
+@media (max-width: 700px) {
+  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; }
+  [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: 0.5rem; }
+  [data-testid="column"] { flex: 1 1 100% !important; min-width: 100% !important; }
+  [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
+}
+</style>
+""", unsafe_allow_html=True)
 
 # --- MENÜ SEKMELERİ ---
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -462,6 +472,14 @@ with tab1:
                 for name in slot_candidates[slot_idx]:
                     if counts[name] >= max_weekly[name]:
                         continue
+                    # A teacher may never receive two locations on the same day.
+                    already_on_same_day = any(
+                        assigned_name == name and slots[other_idx][0] == slot_gun
+                        for other_idx, assigned_name in enumerate(assignments)
+                        if assigned_name is not None
+                    )
+                    if already_on_same_day:
+                        continue
                     # Never schedule the same teacher on adjacent active weekdays.
                     has_adjacent_day = any(
                         assigned_name == name
@@ -476,9 +494,9 @@ with tab1:
                     candidates.append(name)
                 random.shuffle(candidates)
                 candidates.sort(key=lambda name: (
-                    all_place_counts.get((name, slot_place), 0),
                     counts[name] > 0 and not teacher_by_name[name]["Haftada 2 Nöbet İstiyor"],
-                    counts[name]
+                    counts[name],
+                    all_place_counts.get((name, slot_place), 0)
                 ))
                 for name in candidates:
                     counts[name] += 1
@@ -540,8 +558,9 @@ with tab1:
         
         def format_teacher_name_with_history(ogretmen_adi):
             toplam_nobet = len(hist_df[hist_df["Öğretmen"] == ogretmen_adi])
-            cift_nobet = len(hist_df[(hist_df["Öğretmen"] == ogretmen_adi) & (hist_df["Çift Nöbetçi mi"] == True)])
-            return f"{ogretmen_adi} (Toplam Nöbet: {toplam_nobet} ; Çift Nöbet: {cift_nobet})"
+            teacher_history = hist_df[hist_df["Öğretmen"] == ogretmen_adi]
+            cift_nobet = int((teacher_history.groupby("Tarih/Hafta").size() > 1).sum()) if "Tarih/Hafta" in teacher_history.columns else 0
+            return f"{ogretmen_adi} (Toplam Nöbet: {toplam_nobet} ; Çift Nöbet Haftası: {cift_nobet})"
 
         preview_df["Öğretmen"] = preview_df["Öğretmen"].apply(format_teacher_name_with_history)
         st.dataframe(preview_df, use_container_width=True)
@@ -689,9 +708,9 @@ with tab2:
     double_duty_counts = {}
     if not hist_for_counts.empty and "Öğretmen" in hist_for_counts.columns:
         total_duty_counts = hist_for_counts.groupby("Öğretmen").size().to_dict()
-        if "Çift Nöbetçi mi" in hist_for_counts.columns:
-            double_rows = hist_for_counts[hist_for_counts["Çift Nöbetçi mi"].fillna(False).astype(bool)]
-            double_duty_counts = double_rows.groupby("Öğretmen").size().to_dict()
+        if "Tarih/Hafta" in hist_for_counts.columns:
+            double_weeks = hist_for_counts.groupby(["Tarih/Hafta", "Öğretmen"]).size()
+            double_duty_counts = double_weeks[double_weeks > 1].reset_index().groupby("Öğretmen").size().to_dict()
 
     indexed_teachers = list(enumerate(mevcut_liste))
     if sort_mode == "Toplam nöbet sayısına göre (çoktan aza)":
@@ -701,76 +720,57 @@ with tab2:
     else:
         indexed_teachers.sort(key=lambda pair: pair[1]["Ad Soyad"].casefold())
 
-    header_cols = st.columns([2, 0.75, 0.75, 1.5, 2.5, 2, 1, 0.5])
-    for col, title in zip(header_cols, ["Öğretmen", "Toplam nöbet", "Çift nöbet", "Sabit yer", "Hariç tutulan bölümler", "İzinli günler", "2 nöbet isteği", "Sil"]):
-        col.caption(f"**{title}**")
-
     for idx, t_data in indexed_teachers:
         t_data.setdefault("Sabit Yer", "Yok")
         t_data.setdefault("Hariç Tutulan Bölümler", [])
         t_data.setdefault("İzinli Günler", [])
         t_data.setdefault("Haftada 2 Nöbet İstiyor", False)
-        cols = st.columns([2, 0.75, 0.75, 1.5, 2.5, 2, 1, 0.5])
+        teacher_name = t_data["Ad Soyad"]
+        total_duties = total_duty_counts.get(teacher_name, 0)
+        double_weeks_count = double_duty_counts.get(teacher_name, 0)
+        with st.expander(f"{teacher_name}  ·  Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
+            st.caption("Bir haftadaki çift nöbet, sayaçta bir hafta olarak sayılır.")
 
-        with cols[0]:
-            st.markdown(f"**{t_data['Ad Soyad']}**")
-
-        with cols[1]:
-            st.metric("Toplam", total_duty_counts.get(t_data["Ad Soyad"], 0), label_visibility="collapsed")
-
-        with cols[2]:
-            st.metric("Çift", double_duty_counts.get(t_data["Ad Soyad"], 0), label_visibility="collapsed")
-
-        with cols[3]:
             curr_sabit = t_data["Sabit Yer"]
             sabit_idx = yer_listesi.index(curr_sabit) if curr_sabit in yer_listesi else 0
             yeni_sabit = st.selectbox(
-                "Sabit Yer", yer_listesi, index=sabit_idx,
-                key=f"sabit_{t_data['Ad Soyad']}",
-                label_visibility="collapsed"
+                "Sabit nöbet yeri", yer_listesi, index=sabit_idx,
+                key=f"sabit_{teacher_name}"
             )
             if yeni_sabit != t_data["Sabit Yer"]:
                 t_data["Sabit Yer"] = yeni_sabit
                 degisiklik_var = True
 
-        with cols[4]:
             curr_haric = [h for h in t_data["Hariç Tutulan Bölümler"] if h in tum_bolgeler]
             yeni_haric = st.multiselect(
-                "Hariç Yerler", tum_bolgeler, default=curr_haric,
-                key=f"haric_{t_data['Ad Soyad']}",
-                label_visibility="collapsed",
+                "Hariç tutulacak yerler", tum_bolgeler, default=curr_haric,
+                key=f"haric_{teacher_name}",
                 placeholder="Hariç bölümler..."
             )
             if yeni_haric != t_data["Hariç Tutulan Bölümler"]:
                 t_data["Hariç Tutulan Bölümler"] = yeni_haric
                 degisiklik_var = True
 
-        with cols[5]:
             curr_izin = [i for i in t_data["İzinli Günler"] if i in gun_listesi]
             yeni_izin = st.multiselect(
-                "İzinli Günler", gun_listesi, default=curr_izin,
-                key=f"izin_{t_data['Ad Soyad']}",
-                label_visibility="collapsed",
+                "İzinli günler", gun_listesi, default=curr_izin,
+                key=f"izin_{teacher_name}",
                 placeholder="İzinli günler..."
             )
             if yeni_izin != t_data["İzinli Günler"]:
                 t_data["İzinli Günler"] = yeni_izin
                 degisiklik_var = True
 
-        with cols[6]:
             yeni_cift = st.checkbox(
-                "2 Nöbet", value=t_data["Haftada 2 Nöbet İstiyor"],
-                key=f"cift_{t_data['Ad Soyad']}"
+                "Gerekirse haftada 2 nöbet alabilir", value=t_data["Haftada 2 Nöbet İstiyor"],
+                key=f"cift_{teacher_name}"
             )
             if yeni_cift != t_data["Haftada 2 Nöbet İstiyor"]:
                 t_data["Haftada 2 Nöbet İstiyor"] = yeni_cift
                 degisiklik_var = True
 
-        with cols[7]:
-            if st.button("🗑️", key=f"del_t_{idx}_{t_data['Ad Soyad']}", help="Öğretmeni Sil"):
+            if st.button("🗑️ Öğretmeni sil", key=f"del_t_{teacher_name}", use_container_width=True):
                 silinecek_indexler.append(idx)
-
-        st.markdown("---")
 
     # Silme işlemi
     if silinecek_indexler:
@@ -956,14 +956,19 @@ with tab6:
         hist = st.session_state.history
         
         toplam_stats = hist.groupby("Öğretmen").size().reset_index(name="Toplam Nöbet Sayısı")
-        cift_df = hist[hist["Çift Nöbetçi mi"] == True]
-        
+        weekly_counts = hist.groupby(["Tarih/Hafta", "Öğretmen"]).size().rename("Haftalık Nöbet").reset_index()
+        cift_df = weekly_counts[weekly_counts["Haftalık Nöbet"] > 1]
+
         if not cift_df.empty:
-            cift_stats = cift_df.groupby("Öğretmen").size().reset_index(name="Çift Nöbet Sayısı")
-            final_stats = pd.merge(toplam_stats, cift_stats, on="Öğretmen", how="left").fillna({"Çift Nöbet Sayısı": 0})
+            cift_stats = cift_df.groupby("Öğretmen").size().reset_index(name="Çift Nöbet Haftası Sayısı")
+            final_stats = pd.merge(toplam_stats, cift_stats, on="Öğretmen", how="left")
         else:
             final_stats = toplam_stats
-            final_stats["Çift Nöbet Sayısı"] = 0
+            final_stats["Çift Nöbet Haftası Sayısı"] = 0
+
+        if "Çift Nöbet Sayısı" in final_stats.columns:
+            final_stats = final_stats.drop(columns=["Çift Nöbet Sayısı"])
+        final_stats["Çift Nöbet Haftası Sayısı"] = final_stats["Çift Nöbet Haftası Sayısı"].fillna(0).astype(int)
 
         st.dataframe(final_stats, use_container_width=True)
     else:
