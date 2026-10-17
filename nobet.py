@@ -394,8 +394,6 @@ else:
 
 st.markdown("""
 <style>
-/* Hide only Streamlit's top-right toolbar; keep the app's own tab navigation. */
-div[data-testid="stToolbar"], #MainMenu { display: none !important; }
 div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 0.45rem !important;
 }
