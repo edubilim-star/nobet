@@ -1,0 +1,352 @@
+{
+  "school_info": {
+    "okul_adi": "MEHMET AKİF ERSOY İLKOKULU",
+    "mudur_adi": "HAMDİ ALTINTAŞ",
+    "not_metni": "Nöbetçi öğretmenler dersler başlamadan 15 dakika önce nöbet defterini imzalayıp görev yerlerinde olacaklar, en son dersten 15 dakika sonra (öğrencilerin okuldan güvenli şekilde ayrılmaları için gerekli tedbirleri alarak öğrencileri evlerine gönderdikten sonra) nöbet defterini imzalayacaklardır."
+  },
+  "locations": [
+    {
+      "Nöbet Yeri / Bölüm": "BAHÇE",
+      "Gerekli Öğretmen Sayısı": 2,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "BAHÇE"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "SINIF 1.KAT",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "SINIF VE KORİDORLAR"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "SINIF 2.KAT",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "SINIF VE KORİDORLAR"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "SINIF 3.KAT",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "SINIF VE KORİDORLAR"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "ANASINIFI KAPI",
+      "Gerekli Öğretmen Sayısı": 2,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "ANASINIFI KAPI"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "EK BİNA 1.KAT",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "EK BİNA"
+    },
+    {
+      "Nöbet Yeri / Bölüm": "EK BİNA 2.KAT",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "EK BİNA"
+    }
+  ],
+  "excel_sections": [
+    {
+      "Excel Başlığı": "BAHÇE"
+    },
+    {
+      "Excel Başlığı": "SINIF VE KORİDORLAR"
+    },
+    {
+      "Excel Başlığı": "ANASINIFI KAPI"
+    },
+    {
+      "Excel Başlığı": "EK BİNA"
+    }
+  ],
+  "excel_headings": {
+    "Gün Başlığı": "NÖBET GÜNÜ",
+    "Müdür Yardımcısı Başlığı": "MÜDÜR YRD"
+  },
+  "teachers_dict_list": [
+    {
+      "Ad Soyad": "KÜBRA BIYIKOĞLU",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "MELİSA GÜVENÇ",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "MERVE GÜLER",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "MELİKE ÖDEN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "EMEL KAYABAŞI",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "AYSEL GÜL",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "RABİA ŞAHİN BAKRAKTAR",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "EBRU BAĞCI",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "İBRAHİM KILIÇ",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "YUNUS KARACA",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "SEHER TAŞ",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "ALEV AYÇA AÇIKEL",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "ŞULE YÜKSELAY",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "MERVE AYDEMİR KESİKBAŞ",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "MERVE ÜLKER KÖKEN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "AYŞEGÜL SEVİM BOZĞOLU",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "ESMANUR SEZER",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "ÖZGÜR ESER",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "DİLARA SAVAŞKAN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "MÜNEVER ALICI",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "HATİCE BİRER OKAY",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "FATMA ÖZMEN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "AYŞE ZORKOL",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "ÖZGE KEPENEK",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "BEYZA NUR ÇAĞLAR SEZGİN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "AYŞEGÜL SÜER",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "BERNA ÜLKER",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "FERİDE ÖZDEMİR",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "KÜBRA EVREN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "HATİCE BETÜL TURAN",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    },
+    {
+      "Ad Soyad": "NİHAL GÖKSU",
+      "Sabit Yer": "Yok",
+      "Hariç Tutulan Bölümler": [],
+      "İzinli Günler": [],
+      "Haftada 2 Nöbet İstiyor": false
+    }
+  ],
+  "holidays": [],
+  "mudur_yardimcilari": [
+    "AYŞENUR AKBOĞA"
+  ],
+  "mudur_yardimcisi_sayilari": {
+    "PAZARTESİ": 1,
+    "SALI": 1,
+    "ÇARŞAMBA": 1,
+    "PERŞEMBE": 1,
+    "CUMA": 1
+  },
+  "mudur_yardimcisi_gecmisi": {},
+  "history": [],
+  "current_schedule": [],
+  "saved_schedules": {}
+}
