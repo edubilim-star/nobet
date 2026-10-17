@@ -701,12 +701,13 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
     table_width = width - margin * 2
     widths = [250] + [int((table_width - 250 - 250) / len(section_headers))] * len(section_headers) + [250]
     widths[1] += table_width - sum(widths)
-    font_paths = [r"C:\Windows\Fonts\arial.ttf", r"C:\Windows\Fonts\calibri.ttf", r"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
-    bold_paths = [r"C:\Windows\Fonts\arialbd.ttf", r"C:\Windows\Fonts\calibrib.ttf", r"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"]
+    bundled_fonts = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
+    font_paths = [os.path.join(bundled_fonts, "NotoSans-Regular.ttf"), r"C:\Windows\Fonts\arial.ttf", r"C:\Windows\Fonts\calibri.ttf", r"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
+    bold_paths = [os.path.join(bundled_fonts, "NotoSans-Bold.ttf"), r"C:\Windows\Fonts\arialbd.ttf", r"C:\Windows\Fonts\calibrib.ttf", r"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"]
     regular_path = next((path for path in font_paths if os.path.exists(path)), None)
     bold_path = next((path for path in bold_paths if os.path.exists(path)), regular_path)
     if not regular_path:
-        raise RuntimeError("PNG oluşturmak için Unicode destekli yazı tipi bulunamadı.")
+        raise RuntimeError("PNG oluşturmak için Unicode destekli yazı tipi bulunamadı. Uygulamayla birlikte fonts/NotoSans-Regular.ttf ve fonts/NotoSans-Bold.ttf dosyalarını yükleyin.")
     title_font = ImageFont.truetype(bold_path, 42)
     header_font = ImageFont.truetype(bold_path, 28)
     body_font = ImageFont.truetype(regular_path, 25)
