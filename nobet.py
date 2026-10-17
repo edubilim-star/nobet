@@ -416,23 +416,6 @@ MENU_OPTIONS = [
 ]
 if st.session_state.get("main_navigation") not in MENU_OPTIONS:
     st.session_state.main_navigation = MENU_OPTIONS[0]
-<<<<<<< HEAD
-=======
-
-nav_columns = st.columns(len(MENU_OPTIONS))
-for nav_index, nav_label in enumerate(MENU_OPTIONS):
-    with nav_columns[nav_index]:
-        if st.button(
-            nav_label,
-            key=f"main_navigation_button_{nav_index}",
-            type="primary" if st.session_state.main_navigation == nav_label else "secondary",
-            use_container_width=True,
-        ):
-            st.session_state.main_navigation = nav_label
-            st.rerun()
-
-main_menu = st.session_state.main_navigation
->>>>>>> e81ee3d44e56a1ce04de869f88aa37b88b3f5fee
 
 for row_start in range(0, len(MENU_OPTIONS), 3):
     nav_columns = st.columns(3)
@@ -2084,4 +2067,3 @@ if st.session_state.get("_github_storage_error"):
         f"Ayarları kontrol edin. Ayrıntı: {st.session_state['_github_storage_error']}"
     )
 st.markdown('<div class="app-footer">KILIÇ BİLİŞİM</div>', unsafe_allow_html=True)
-
