@@ -395,36 +395,16 @@ else:
 st.markdown("""
 <style>
 div[data-testid="stAppViewBlockContainer"], .block-container {
-  padding-top: 0.9rem !important;
+  padding-top: 0.45rem !important;
 }
-.app-banner {
-  display: flex;
-  align-items: center;
-  min-height: 3.4rem;
-  overflow: visible;
-  margin: 0 0 0.55rem 0;
-  padding: 0.6rem 0.9rem;
-  border-radius: 0.8rem;
-  background: linear-gradient(115deg, #123b5d 0%, #176b75 58%, #278b83 100%);
-  box-shadow: 0 4px 14px rgba(18, 59, 93, 0.16);
-}
-.app-banner h1 {
-  margin: 0;
-  color: #fff;
-  font-size: clamp(1.15rem, 2.5vw, 1.65rem);
-  line-height: 1.4;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
+.app-footer { margin-top: 1.5rem; padding: 0.75rem 0 0.3rem; border-top: 1px solid rgba(128, 128, 128, 0.25); color: #64748b; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-align: left; }
 @media (max-width: 700px) {
-  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.75rem !important; }
+  .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
   [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: 0.5rem; }
   [data-testid="column"] { flex: 1 1 100% !important; min-width: 100% !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
-  .app-banner { min-height: 3.2rem; margin-bottom: 0.4rem; padding: 0.6rem 0.75rem; border-radius: 0.65rem; }
 }
 </style>
-<div class="app-banner"><h1>🏫 Gelişmiş Okul Nöbet Dağıtım ve Yönetim Sistemi</h1></div>
 """, unsafe_allow_html=True)
 
 # --- MENÜ SEKMELERİ ---
@@ -2071,3 +2051,4 @@ if st.session_state.get("_github_storage_error"):
         "GitHub kayıt işlemi tamamlanamadı. Bu oturumdaki veriler yalnızca geçici yerel dosyaya yazılabilir. "
         f"Ayarları kontrol edin. Ayrıntı: {st.session_state['_github_storage_error']}"
     )
+st.markdown('<div class="app-footer">KILIÇ BİLİŞİM</div>', unsafe_allow_html=True)
