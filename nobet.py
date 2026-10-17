@@ -30,7 +30,7 @@ st.set_page_config(
     layout="wide",
     menu_items={}
 )
-st.set_option("client.toolbarMode", "minimal")
+st.set_option("client.toolbarMode", "auto")
 
 # --- VERİTABANI / SESSION STATE BAŞLANGICI ---
 if "school_info" not in st.session_state:
@@ -394,6 +394,8 @@ else:
 
 st.markdown("""
 <style>
+/* Hide only Streamlit's top-right toolbar; keep the app's own tab navigation. */
+div[data-testid="stToolbar"], #MainMenu { display: none !important; }
 div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 0.45rem !important;
 }
