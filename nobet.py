@@ -406,14 +406,30 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 """, unsafe_allow_html=True)
 
 # --- UYGULAMA GEZİNME MENÜSÜ ---
-main_menu = st.radio("Bölüm seçin", [
+MENU_OPTIONS = [
     "📅 Nöbet Listesi Oluştur",
     "👥 Öğretmen Yönetimi",
     "📍 Nöbet Yerleri ve Kontenjan",
     "⚙️ Okul, Tatil ve Ayarlar",
     "📂 Eski Listeler & Arşiv",
-    "📊 İstatistikler"
-], horizontal=True, label_visibility="collapsed", key="main_navigation")
+    "📊 İstatistikler",
+]
+if st.session_state.get("main_navigation") not in MENU_OPTIONS:
+    st.session_state.main_navigation = MENU_OPTIONS[0]
+
+nav_columns = st.columns(len(MENU_OPTIONS))
+for nav_index, nav_label in enumerate(MENU_OPTIONS):
+    with nav_columns[nav_index]:
+        if st.button(
+            nav_label,
+            key=f"main_navigation_button_{nav_index}",
+            type="primary" if st.session_state.main_navigation == nav_label else "secondary",
+            use_container_width=True,
+        ):
+            st.session_state.main_navigation = nav_label
+            st.rerun()
+
+main_menu = st.session_state.main_navigation
 
 # ================= EXCEL ÜRETME FONKSİYONU =================
 def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df, headings):
@@ -2050,3 +2066,4 @@ if st.session_state.get("_github_storage_error"):
         f"Ayarları kontrol edin. Ayrıntı: {st.session_state['_github_storage_error']}"
     )
 st.markdown('<div class="app-footer">KILIÇ BİLİŞİM</div>', unsafe_allow_html=True)
+
