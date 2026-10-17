@@ -148,7 +148,6 @@ def github_storage_settings():
         branch = str(secrets.get("GITHUB_BRANCH", "main")).strip() or "main"
         data_path = str(secrets.get("GITHUB_DATA_PATH", "nobet_verileri.json")).strip()
     except Exception:
-        # Local development can continue without a secrets.toml file.
         return None
     if not token and not repository:
         return None
@@ -181,7 +180,6 @@ def github_contents_request(settings, method="GET", payload=None):
             return json.loads(response_body.decode("utf-8")) if response_body else {}
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
-        # Do not surface request headers or the token in user-facing errors.
         raise RuntimeError(f"GitHub API isteği başarısız (HTTP {exc.code}): {detail[:300]}") from None
     except (urllib.error.URLError, TimeoutError) as exc:
         raise RuntimeError(f"GitHub'a bağlanılamadı: {getattr(exc, 'reason', exc)}") from None
@@ -199,7 +197,6 @@ def read_github_app_data(settings):
     return json.loads(base64.b64decode(content).decode("utf-8"))
 
 def write_github_app_data(settings, data):
-    # Skip redundant commits caused by normal Streamlit reruns.
     try:
         current = github_contents_request(settings)
     except RuntimeError as exc:
@@ -278,7 +275,6 @@ if not st.session_state.get("_persistence_loaded", False):
         st.session_state["_github_storage_settings"] = settings
         if settings:
             saved_data = read_github_app_data(settings)
-            # Seed a newly configured GitHub store from an existing local file.
             if not saved_data:
                 try:
                     with open(DATA_FILE, "r", encoding="utf-8") as file:
@@ -392,21 +388,37 @@ else:
         axis=1
     )
 
+# CSS GÜNCELLEMESİ: Üst kısım ve indirme butonları hizalaması
 st.markdown("""
 <style>
-/* Üst menünün ve butonların ekranda tam görünmesi için üst boşluğu artırıyoruz */
+/* Üst menü butonlarının tam görünmesi için üst padding artırıldı */
 div[data-testid="stAppViewBlockContainer"], .block-container {
-  padding-top: 4rem !important;
+  padding-top: 4.5rem !important;
 }
-/* Menü butonlarının dar ekranlarda düzgün yerleşmesi için */
+
+/* Üst menü esneklik ayarı */
 div[data-testid="stHorizontalBlock"] {
   flex-wrap: wrap;
 }
-div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
-  min-width: 150px;
-  flex: 1 1 30% !important;
+
+/* İndirme butonlarının sağa yaslanması için */
+.download-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
-.app-footer { margin-top: 1.5rem; padding: 0.75rem 0 0.3rem; border-top: 1px solid rgba(128, 128, 128, 0.25); color: #64748b; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-align: left; }
+
+.app-footer { 
+  margin-top: 1.5rem; 
+  padding: 0.75rem 0 0.3rem; 
+  border-top: 1px solid rgba(128, 128, 128, 0.25); 
+  color: #64748b; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  letter-spacing: 0.04em; 
+  text-align: left; 
+}
+
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 4.5rem !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
@@ -441,6 +453,7 @@ for row_start in range(0, len(MENU_OPTIONS), 3):
                 st.rerun()
 
 main_menu = st.session_state.main_navigation
+
 # ================= EXCEL ÜRETME FONKSİYONU =================
 def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df, headings):
     wb = openpyxl.Workbook()
@@ -566,9 +579,6 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
     ws.page_setup.fitToHeight = 0
     ws.sheet_properties.pageSetUpPr.fitToPage = True
 
-    # Saving directly to BytesIO can fail with lxml.etree.SerialisationError(IO_WRITE)
-    # in some Windows/openpyxl combinations. Save to a real temporary file, then
-    # return a fresh in-memory stream for Streamlit's download button.
     temp_path = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as temp_file:
@@ -623,7 +633,6 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
     header_style = ParagraphStyle('HeaderStyle', parent=styles['Normal'], fontName=bold_font, fontSize=10, textColor=colors.whitesmoke, alignment=1)
 
     def safe_text(txt):
-        # Escape text for ReportLab Paragraph while preserving Turkish Unicode.
         return html.escape(str(txt), quote=False).replace("\n", "<br/>")
 
     elements.append(Paragraph(safe_text(school_name), title_style))
@@ -649,13 +658,6 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
                 tatil_aciklama = match_tatil["Tatil Açıklaması"].values[0]
 
         gun_df = df[df["Gün"] == gun]
-        def get_all_t(b_adi):
-            if tatil_aciklama:
-                return safe_text(f"*** TATİL ({tatil_aciklama}) ***" if b_adi == "BAHÇE" else "")
-            matches = gun_df[gun_df["Bölüm/Yer"] == b_adi]["Öğretmen"].tolist()
-            clean_matches = [safe_text(m.split(" (")[0]) for m in matches]
-            return "<br/>".join(clean_matches)
-
         def get_section_text(section_name):
             if tatil_aciklama:
                 return safe_text(f"*** TATİL ({tatil_aciklama}) ***" if section_name == "BAHÇE" else "")
@@ -689,7 +691,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
         my_str = "<br/>".join(safe_text(name) for name in assistants)
         table_data.append([
             Paragraph(f"<b>{safe_text(gun)}</b><br/>({gun_tarihi.strftime('%d.%m.%Y')})", cell_style),
-            Paragraph(get_all_t('BAHÇE'), cell_style),
+            Paragraph(get_section_text('BAHÇE'), cell_style),
             Paragraph(sinif_text, cell_style),
             Paragraph(get_section_text('ANASINIFI KAPI'), cell_style),
             Paragraph(ek_text, cell_style),
@@ -719,7 +721,6 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
 
 
 def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, holidays_df, locations_df, sections_df):
-    """Render the weekly duty schedule as a downloadable Turkish-capable PNG."""
     section_headers = sections_df["Excel Başlığı"].astype(str).tolist() if sections_df is not None and "Excel Başlığı" in sections_df else ["BAHÇE", "SINIF VE KORİDORLAR", "ANASINIFI KAPI", "EK BİNA"]
     if not section_headers:
         section_headers = ["BAHÇE", "SINIF VE KORİDORLAR", "ANASINIFI KAPI", "EK BİNA"]
@@ -992,15 +993,12 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             st.error("Nöbet dağıtımı yapılamadı: öğretmen listesi boş.")
             st.stop()
 
-        # Normalize legacy values once, so Turkish casing and missing fields do not bypass rules.
         for teacher in teachers_list:
             teacher.setdefault("Sabit Yer", "Yok")
             teacher.setdefault("Hariç Tutulan Bölümler", [])
             teacher.setdefault("İzinli Günler", [])
             teacher.setdefault("Haftada 2 Nöbet İstiyor", False)
 
-        # Build all slots first and solve the full week together. A greedy choice can
-        # consume a teacher needed for a more restricted section later in the week.
         slots = []
         for gun in active_gunler:
             for _, loc_row in locs_df.iterrows():
@@ -1025,8 +1023,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
 
         teacher_by_name = {t["Ad Soyad"]: t for t in teachers_list}
         teacher_names = list(teacher_by_name)
-        # This preference influences who gets a second assignment; it is not a hard cap.
-        # A hard cap of one made ordinary staffing needs impossible in many schools.
         max_weekly = {name: len(slots) for name in teacher_names}
 
         def eligible(name, slot):
@@ -1040,7 +1036,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 and info["Sabit Yer"] in ("Yok", bolge)
             )
 
-        # Assign the most constrained slots first; backtracking preserves feasibility.
         slot_candidates = [
             [name for name in teacher_names if eligible(name, slot)]
             for slot in slots
@@ -1048,8 +1043,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         slot_order = sorted(range(len(slots)), key=lambda i: len(slot_candidates[i]))
         assignments = [None] * len(slots)
         counts = {name: 0 for name in teacher_names}
-        # Avoid repeating a teacher's previous week's location. In the fallback,
-        # allow it only for a teacher whose fixed location makes them required there.
         history = st.session_state.history.copy()
         prior_history = history[~history["Tarih/Hafta"].astype(str).isin(existing_weeks | {hafta_adi})] if "Tarih/Hafta" in history.columns else history
         if "Tarih" in prior_history.columns:
@@ -1103,7 +1096,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 for name in slot_candidates[slot_idx]:
                     if counts[name] >= max_weekly[name]:
                         continue
-                    # A teacher may never receive two locations on the same day.
                     already_on_same_day = any(
                         assigned_name == name and slots[other_idx][0] == slot_gun
                         for other_idx, assigned_name in enumerate(assignments)
@@ -1111,8 +1103,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     )
                     if already_on_same_day:
                         continue
-                    # Holidays are removed from active_gunler, so duty days on
-                    # either side of a holiday are treated as consecutive duties.
                     has_adjacent_day = any(
                         assigned_name == name
                         and abs(active_day_order.get(slots[other_idx][0], -99) - slot_day_index) == 1
@@ -1239,18 +1229,9 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
 
         preview_df["Öğretmen"] = preview_df["Öğretmen"].apply(format_teacher_name_with_history)
 
-        st.markdown("""
-        <style>
-        [data-testid="stHorizontalBlock"]:has([data-testid="stDownloadButton"]) {
-            column-gap: 0 !important;
-            gap: 0 !important;
-        }
-        [data-testid="stHorizontalBlock"]:has([data-testid="stDownloadButton"]) [data-testid="stDownloadButton"] button {
-            border-radius: 0 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        col_spacer, col_excel, col_pdf, col_img = st.columns([6, 2, 2, 2], gap="small")
+        # 3 BUTON YAN YANA SAĞA YASLI HİZALAMA
+        col_spacer, col_excel, col_pdf, col_img = st.columns([3, 1, 1, 1], gap="small")
+        
         with col_excel:
             xlsx_data = create_custom_excel(
                 st.session_state.current_schedule, schedule_name_for_export,
@@ -1261,7 +1242,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 st.session_state.excel_headings
             )
             st.download_button(
-                label="📥 Excel Olarak İndir",
+                label="📥 Excel İndir",
                 data=xlsx_data,
                 file_name=f"{schedule_name_for_export}_Nobet_Cizelgesi.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1278,13 +1259,14 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 st.session_state.locations
             )
             st.download_button(
-                label="📄 PDF Olarak İndir",
+                label="📄 PDF İndir",
                 data=pdf_data,
                 file_name=f"{schedule_name_for_export}_Nobet_Cizelgesi.pdf",
                 mime="application/pdf",
                 type="secondary",
                 use_container_width=True
             )
+            
         with col_img:
             image_data = create_schedule_image(
                 st.session_state.current_schedule, schedule_name_for_export,
@@ -1293,13 +1275,14 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 st.session_state.holidays, st.session_state.locations, st.session_state.excel_sections
             )
             st.download_button(
-                label="🖼️ Resim Olarak İndir",
+                label="🖼️ Resim İndir",
                 data=image_data,
                 file_name=f"{schedule_name_for_export}_Nobet_Cizelgesi.png",
                 mime="image/png",
                 type="secondary",
                 use_container_width=True
             )
+
         st.dataframe(preview_df, use_container_width=True)
 
 
@@ -1316,11 +1299,9 @@ elif main_menu == "👥 Öğretmen Yönetimi":
     yer_listesi = ["Yok"] + tum_bolgeler
     gun_listesi = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
 
-    # Rerun sonrası mesaj göster
     if "_tab2_mesaj" in st.session_state:
         st.success(st.session_state.pop("_tab2_mesaj"))
 
-    # --- TOPLU İŞLEMLER PANELİ (FORM YOK, NORMAL BUTON) ---
     with st.expander("⚡ Toplu Kısıtlama Uygulama Paneli (Tüm Öğretmenler İçin)", expanded=True):
         st.markdown("Aşağıdan bir bölüm seçerek **tüm öğretmenlere tek tıkla** hariç tutma kısıtı ekleyebilir veya kaldırabilirsiniz.")
 
@@ -1338,10 +1319,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                          key="btn_toplu_ekle",
                          type="primary",
                          use_container_width=True):
-                # Update both the source records and the keyed multiselect state.
-                # Streamlit keeps keyed widget values across reruns, so changing only
-                # teachers_dict_list would leave the visible controls (and next edits)
-                # on their previous values.
                 yeni_liste = []
                 eklenen_sayi = 0
                 for idx, t in enumerate(st.session_state.teachers_dict_list):
@@ -1376,7 +1353,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
 
     st.markdown("---")
 
-    # --- Yeni Öğretmen Ekleme ---
     with st.expander("➕ Yeni Öğretmen Ekle"):
         col_y1, col_y2 = st.columns([4, 1])
         with col_y1:
@@ -1460,11 +1436,9 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         key="teacher_sort_mode"
     )
 
-    # --- Öğretmenler Listesi (Normal widget'lar, form yok) ---
     silinecek_indexler = []
     degisiklik_var = False
 
-    # Anlık snapshot al
     mevcut_liste = st.session_state.teachers_dict_list
 
     hist_for_counts = st.session_state.history
@@ -1537,7 +1511,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             if st.button("🗑️ Öğretmeni sil", key=f"del_t_{teacher_name}", use_container_width=True):
                 silinecek_indexler.append(idx)
 
-    # Silme işlemi
     if silinecek_indexler:
         yeni_liste = [
             t for i, t in enumerate(st.session_state.teachers_dict_list)
@@ -1548,10 +1521,10 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         save_app_data()
         st.rerun()
 
-    # Değişiklik varsa session_state'i yeniden ata
     if degisiklik_var:
         st.session_state.teachers_dict_list = list(st.session_state.teachers_dict_list)
         save_app_data()
+
 # ================= 3. SEKME: NÖBET YERLERİ VE KONTENJAN =================
 elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
     st.header("Nöbet Yerleri ve Kişi Sayısı Yönetimi")
@@ -1660,6 +1633,7 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
             value=st.session_state.excel_headings.get("Müdür Yardımcısı Başlığı", "MÜDÜR YRD"),
             key="excel_deputy_heading"
         )
+
 # ================= 4. SEKME: OKUL, TATİL VE AYARLAR =================
 elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
     st.header("Okul, Yönetici ve Tatil Günü Ayarları")
@@ -1677,8 +1651,6 @@ elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
     st.markdown("---")
     st.subheader("📅 Okulun Tatil Olduğu Günler (Takvimden Seçim)")
     
-    # Date input provides a predictable calendar picker; the editor below is only for
-    # reviewing/removing saved days and avoids fragile blank rows in data_editor.
     holiday_date = st.date_input("Tatil tarihini takvimden seçin", value=None, key="holiday_date_picker")
     holiday_note = st.text_input("Tatil açıklaması (isteğe bağlı)", key="holiday_note_input", placeholder="Örn. Resmî tatil")
     if st.button("📅 Seçili tarihi tatil olarak kaydet", key="holiday_add", type="primary"):
@@ -1772,7 +1744,7 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
         known_names = [t["Ad Soyad"].strip().upper() for t in st.session_state.teachers_dict_list if t.get("Ad Soyad")]
         if "Öğretmen" in st.session_state.history.columns:
             known_names.extend(st.session_state.history["Öğretmen"].dropna().astype(str).str.strip().str.upper().tolist())
-        known_names.append("AYŞENUR AKBOĞA")  # Keep removed staff matchable in historical files.
+        known_names.append("AYŞENUR AKBOĞA")
         valid_teachers = sorted(set(known_names), key=len, reverse=True)
         known_locations = {
             search_normalize(str(name)): str(name)
@@ -1915,8 +1887,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                 if place is not None:
                                     current_place = place
                                 elif current_place is not None:
-                                    # In newly generated workbooks, each teacher for a
-                                    # location is on its own line after the location label.
                                     place = current_place
                                     teacher_text = line
                                 if place is None and col_idx in excel_place_map:
@@ -1989,8 +1959,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                     ].reset_index(drop=True)
                     retained_periods = set(st.session_state.history["Tarih/Hafta"].astype(str))
                     st.session_state.saved_schedules = {}
-                    # Keep generated schedules; remove only imported old-list data.
-                    # Their saved copies are reconstructed from the remaining history.
                     for period in retained_periods:
                         period_df = st.session_state.history[st.session_state.history["Tarih/Hafta"].astype(str) == period].copy()
                         st.session_state.saved_schedules[period] = period_df
@@ -2067,8 +2035,6 @@ elif main_menu == "📊 İstatistikler":
     else:
         st.info("Müdür yardımcısı görev geçmişi henüz yok.")
 
-# Persist edits to locations, school information, and any other session data that
-# changed during this run. Button actions that rerun save immediately before rerun.
 save_app_data()
 if st.session_state.get("_github_storage_error"):
     st.warning(
