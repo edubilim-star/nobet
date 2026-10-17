@@ -397,51 +397,6 @@ st.markdown("""
 div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 0.45rem !important;
 }
-/* Keep the application's navigation labels visible with custom/hosted themes. */
-[data-testid="stTabs"] [data-baseweb="tab-list"], .stTabs [data-baseweb="tab-list"] {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  overflow-x: auto !important;
-}
-[data-testid="stTabs"] button[data-baseweb="tab"], .stTabs button[data-baseweb="tab"] {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  color: #334155 !important;
-  white-space: nowrap !important;
-}
-[data-testid="stTabs"] button[data-baseweb="tab"] p, .stTabs button[data-baseweb="tab"] p {
-  color: inherit !important;
-  font-size: 0.95rem !important;
-}
-/* Current Streamlit tabs use ARIA roles instead of BaseWeb attributes. */
-[role="tablist"] {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  min-height: 2.8rem !important;
-  overflow-x: auto !important;
-}
-[role="tablist"] [role="tab"] {
-  display: inline-flex !important;
-  align-items: center !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  min-height: 2.8rem !important;
-  padding: 0.55rem 0.85rem !important;
-  flex: 0 0 auto !important;
-  color: #334155 !important;
-  -webkit-text-fill-color: #334155 !important;
-  font-size: 0.95rem !important;
-  white-space: nowrap !important;
-}
-[role="tablist"] [role="tab"] * {
-  visibility: visible !important;
-  opacity: 1 !important;
-  color: inherit !important;
-  -webkit-text-fill-color: inherit !important;
-}
 .app-footer { margin-top: 1.5rem; padding: 0.75rem 0 0.3rem; border-top: 1px solid rgba(128, 128, 128, 0.25); color: #64748b; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-align: left; }
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
@@ -450,15 +405,15 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 </style>
 """, unsafe_allow_html=True)
 
-# --- MENÜ SEKMELERİ ---
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+# --- UYGULAMA GEZİNME MENÜSÜ ---
+main_menu = st.radio("Bölüm seçin", [
     "📅 Nöbet Listesi Oluştur",
     "👥 Öğretmen Yönetimi",
     "📍 Nöbet Yerleri ve Kontenjan",
     "⚙️ Okul, Tatil ve Ayarlar",
     "📂 Eski Listeler & Arşiv",
     "📊 İstatistikler"
-])
+], horizontal=True, label_visibility="collapsed", key="main_navigation")
 
 # ================= EXCEL ÜRETME FONKSİYONU =================
 def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df, headings):
@@ -875,7 +830,7 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
 
 
 # ================= 1. SEKME: NÖBET LİSTESİ OLUŞTUR =================
-with tab1:
+if main_menu == "📅 Nöbet Listesi Oluştur":
     st.header("Haftalık Nöbet Çizelgesi ve Dağıtım Sihirbazı")
 
     def distribute_deputies(start_date, daily_counts, deputy_names, saved_deputy_history, active_days=None):
@@ -1323,7 +1278,7 @@ with tab1:
 
 
 # ================= 2. SEKME: ÖĞRETMEN YÖNETİMİ =================
-with tab2:
+elif main_menu == "👥 Öğretmen Yönetimi":
     st.header("👥 Öğretmen Yönetimi ve Kısıtlar Paneli")
     save_top_left, save_top_center, save_top_right = st.columns([1, 2, 1])
     with save_top_center:
@@ -1572,7 +1527,7 @@ with tab2:
         st.session_state.teachers_dict_list = list(st.session_state.teachers_dict_list)
         save_app_data()
 # ================= 3. SEKME: NÖBET YERLERİ VE KONTENJAN =================
-with tab3:
+elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
     st.header("Nöbet Yerleri ve Kişi Sayısı Yönetimi")
     st.caption("Her yer için aktif günleri seçin. Seçilmeyen günlerde bu yerde nöbet görevi oluşturulmaz.")
     excel_headers = st.session_state.excel_sections["Excel Başlığı"].astype(str).tolist()
@@ -1680,7 +1635,7 @@ with tab3:
             key="excel_deputy_heading"
         )
 # ================= 4. SEKME: OKUL, TATİL VE AYARLAR =================
-with tab4:
+elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
     st.header("Okul, Yönetici ve Tatil Günü Ayarları")
     okul_adi_input = st.text_input("Okul Adı", value=st.session_state.school_info["okul_adi"])
     mudur_adi_input = st.text_input("Okul Müdürü Ad Soyad", value=st.session_state.school_info["mudur_adi"])
@@ -1778,7 +1733,7 @@ with tab4:
 
 
 # ================= 5. SEKME: ESKİ LİSTELER & ARŞİV =================
-with tab5:
+elif main_menu == "📂 Eski Listeler & Arşiv":
     st.header("Eski Listeler ve Nöbet Arşivi")
     st.markdown("Geçmiş Word veya bu uygulamanın oluşturduğu Excel çizelgelerini yükleyin. Excel aktarımı tarih, gün ve nöbet yerlerini arşive işler.")
     
@@ -2028,7 +1983,7 @@ with tab5:
 
 
 # ================= 6. SEKME: İSTATİSTİKLER =================
-with tab6:
+elif main_menu == "📊 İstatistikler":
     st.header("Öğretmen Nöbet Dağılımı ve Çift Nöbet İstatistikleri")
     if not st.session_state.history.empty:
         hist = st.session_state.history
