@@ -19,6 +19,15 @@
       "Excel Bölümü": "BAHÇE"
     },
     {
+      "Nöbet Yeri / Bölüm": "GİRİŞ",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "SINIF VE KORİDORLAR"
+    },
+    {
       "Nöbet Yeri / Bölüm": "1.KAT",
       "Gerekli Öğretmen Sayısı": 1,
       "Aktif Günler": [
@@ -27,15 +36,6 @@
         "ÇARŞAMBA",
         "PERŞEMBE",
         "CUMA"
-      ],
-      "Excel'de Yer Başlığını Göster": true,
-      "Excel Bölümü": "SINIF VE KORİDORLAR"
-    },
-    {
-      "Nöbet Yeri / Bölüm": "GİRİŞ",
-      "Gerekli Öğretmen Sayısı": 1,
-      "Aktif Günler": [
-        "PAZARTESİ"
       ],
       "Excel'de Yer Başlığını Göster": true,
       "Excel Bölümü": "SINIF VE KORİDORLAR"
