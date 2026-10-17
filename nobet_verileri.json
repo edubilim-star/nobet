@@ -41,7 +41,7 @@
         "PERŞEMBE",
         "CUMA"
       ],
-      "Excel'de Yer Başlığını Göster": false,
+      "Excel'de Yer Başlığını Göster": true,
       "Excel Bölümü": "SINIF VE KORİDORLAR"
     },
     {
@@ -54,7 +54,7 @@
         "PERŞEMBE",
         "CUMA"
       ],
-      "Excel'de Yer Başlığını Göster": false,
+      "Excel'de Yer Başlığını Göster": true,
       "Excel Bölümü": "SINIF VE KORİDORLAR"
     },
     {
