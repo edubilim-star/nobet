@@ -397,6 +397,24 @@ st.markdown("""
 div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 0.45rem !important;
 }
+/* Keep the application's navigation labels visible with custom/hosted themes. */
+[data-testid="stTabs"] [data-baseweb="tab-list"], .stTabs [data-baseweb="tab-list"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow-x: auto !important;
+}
+[data-testid="stTabs"] button[data-baseweb="tab"], .stTabs button[data-baseweb="tab"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #334155 !important;
+  white-space: nowrap !important;
+}
+[data-testid="stTabs"] button[data-baseweb="tab"] p, .stTabs button[data-baseweb="tab"] p {
+  color: inherit !important;
+  font-size: 0.95rem !important;
+}
 .app-footer { margin-top: 1.5rem; padding: 0.75rem 0 0.3rem; border-top: 1px solid rgba(128, 128, 128, 0.25); color: #64748b; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-align: left; }
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.35rem !important; }
