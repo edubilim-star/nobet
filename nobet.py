@@ -391,17 +391,24 @@ if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
             if not capacities.empty:
                 row["Gerekli Öğretmen Sayısı"] = capacities.max()
         if "Aktif Günler" in group.columns:
-            active_days = []
-            for days in group["Aktif Günler"]:
-                if isinstance(days, (list, tuple, set)):
-                    active_days.extend(day for day in days if day in WEEKDAYS and day not in active_days)
-            # Empty selection means no active days; do not silently enable the whole week.
+            day_selections = [
+                set(day for day in days if day in WEEKDAYS)
+                if isinstance(days, (list, tuple, set)) else set()
+                for days in group["Aktif Günler"]
+            ]
+            if search_normalize(place_name) == "giris" and len(day_selections) > 1:
+                # Older app versions accidentally appended a full-week GİRİŞ row
+                # on every rerun. Intersect duplicates so a deliberate narrow
+                # selection (such as Monday only) is retained while collapsing them.
+                active_days = [day for day in WEEKDAYS if all(day in selection for selection in day_selections)]
+            else:
+                active_days = [day for day in WEEKDAYS if any(day in selection for selection in day_selections)]
             row["Aktif Günler"] = active_days
         if "Excel'de Yer Başlığını Göster" in group.columns:
             row["Excel'de Yer Başlığını Göster"] = bool(group["Excel'de Yer Başlığını Göster"].fillna(True).any())
         merged_rows.append(row)
     st.session_state.locations = pd.DataFrame(merged_rows).reset_index(drop=True)
-    if not st.session_state.locations["Nöbet Yeri / Bölüm"].astype(str).str.strip().str.casefold().eq("giriş").any():
+    if not st.session_state.locations["Nöbet Yeri / Bölüm"].apply(lambda value: search_normalize(value) == "giris").any():
         new_entry = {column: None for column in st.session_state.locations.columns}
         new_entry["Nöbet Yeri / Bölüm"] = "GİRİŞ"
         if "Gerekli Öğretmen Sayısı" in new_entry:
