@@ -1299,7 +1299,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 candidates.sort(key=lambda name: (
                     counts[name],
                     (0 if teacher_by_name[name]["Haftada 2 Nöbet İstiyor"] else 1)
-                    if any_double_preference and counts[name] <= 1 else 0,
+                    if any_double_preference and counts[name] == 1 else 0,
                     historic_double_weeks.get(name, 0) if counts[name] > 0 else 0,
                     all_place_counts.get((name, slot_place), 0)
                 ))
@@ -1312,9 +1312,10 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     counts[name] -= 1
                 return False
             solved = solve(0)
-            if solved and any_double_preference:
-                # Dağıtımı tamamladıktan sonra erişilebilir her öğretmene iki görev
-                # verecek, mevcut kısıtları koruyan basit yeniden atamaları ara.
+            if solved:
+                # First use surplus duties to cover any eligible teacher left at zero.
+                # Only after first-duty coverage is exhausted should double-duty
+                # preference affect the ordering among teachers with one assignment.
                 def can_take(name, slot_idx, replacing_name=None):
                     if name not in slot_candidates[slot_idx]:
                         return False
@@ -1336,8 +1337,12 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                         return False
                     return True
 
-                for target in teacher_names:
-                    if teacher_by_name[target]["Haftada 2 Nöbet İstiyor"] and counts[target] == 0:
+                eligible_teacher_names = [
+                    name for name in teacher_names
+                    if any(name in candidates for candidates in slot_candidates)
+                ]
+                for target in eligible_teacher_names:
+                    if counts[target] == 0:
                         # Prefer a free slot (reducing another teacher from 2 to 1).
                         for slot_idx, assigned_name in enumerate(assignments):
                             if assigned_name is None:
@@ -1360,7 +1365,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                                     if can_take(target_donor, extra_slot, extra_donor):
                                         assignments[target_slot] = target
                                         assignments[extra_slot] = target_donor
-                                        counts[target_donor] -= 1
+                                        counts[extra_donor] -= 1
                                         counts[target] += 1
                                         break
                                 if counts[target] > 0:
@@ -1461,6 +1466,15 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             st.warning("Öğretmen sayısı ve diğer kurallar nedeniyle bazı öğretmenlere geçen haftaki nöbet yeri yeniden verildi.")
         if same_week_place_fallback:
             st.warning("Diğer kurallarla tüm görevler doldurulamadığı için bazı öğretmenlere aynı hafta içinde aynı yerde ikinci görev verildi.")
+        unassigned_eligible = [
+            name for name in teacher_names
+            if any(name in candidates for candidates in slot_candidates) and counts.get(name, 0) == 0
+        ]
+        if unassigned_eligible:
+            st.warning(
+                "Kısıtlar nedeniyle şu uygun öğretmenlere bu hafta görev verilemedi: "
+                + ", ".join(unassigned_eligible)
+            )
 
     if st.session_state.current_schedule is not None:
         with st.container(border=True):
