@@ -1272,6 +1272,14 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     )
                     if already_on_same_day:
                         continue
+                    already_on_same_place = any(
+                        assigned_name == name
+                        and slots[other_idx][1].strip().casefold() == slot_place.strip().casefold()
+                        for other_idx, assigned_name in enumerate(assignments)
+                        if assigned_name is not None
+                    )
+                    if already_on_same_place:
+                        continue
                     has_adjacent_day = any(
                         assigned_name == name
                         and abs(active_day_order.get(slots[other_idx][0], -99) - slot_day_index) == 1
@@ -1317,6 +1325,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                             continue
                         other_day_index = active_day_order.get(slots[other_idx][0], -1)
                         if assigned_name == name and slots[other_idx][0] == day:
+                            return False
+                        if assigned_name == name and slots[other_idx][1].strip().casefold() == place.strip().casefold():
                             return False
                         if assigned_name == name and abs(other_day_index - day_index) == 1:
                             return False
