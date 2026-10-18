@@ -113,11 +113,7 @@
       "Nöbet Yeri / Bölüm": "GİRİŞ",
       "Gerekli Öğretmen Sayısı": 1,
       "Aktif Günler": [
-        "PAZARTESİ",
-        "SALI",
-        "ÇARŞAMBA",
-        "PERŞEMBE",
-        "CUMA"
+        "PAZARTESİ"
       ],
       "Excel'de Yer Başlığını Göster": true,
       "Excel Bölümü": "SINIF VE KORİDORLAR"
