@@ -462,7 +462,28 @@
     "PERŞEMBE": 1,
     "CUMA": 1
   },
-  "mudur_yardimcisi_gecmisi": {},
+  "mudur_yardimcisi_gecmisi": {
+    "5-9 EKİM NÖBET ": {
+      "start_date": "",
+      "assignments": {
+        "PAZARTESİ": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "SALI": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "ÇARŞAMBA": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "PERŞEMBE": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "CUMA": [
+          "AYŞENUR AKBOĞA"
+        ]
+      }
+    }
+  },
   "history": [
     {
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
