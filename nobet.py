@@ -47,7 +47,7 @@ if "school_info" not in st.session_state:
 if "locations" not in st.session_state:
     st.session_state.locations = pd.DataFrame({
         "Nöbet Yeri / Bölüm": [
-            "BAHÇE", "SINIF 1.KAT", "SINIF 2.KAT", "SINIF 3.KAT", 
+            "BAHÇE", "1.KAT", "2.KAT", "3.KAT", 
             "ANASINIFI KAPI", "EK BİNA 1.KAT", "EK BİNA 2.KAT"
         ],
         "Gerekli Öğretmen Sayısı": [2, 1, 1, 1, 2, 1, 1]
@@ -335,6 +335,47 @@ if not st.session_state.get("_persistence_loaded", False):
         if str(teacher.get("Ad Soyad", "")).strip().upper() != "AYŞENUR AKBOĞA"
     ]
     st.session_state["_persistence_loaded"] = True
+
+def canonical_location_name(value):
+    """Use one canonical label for main-building floors across settings and archives."""
+    name = str(value).strip()
+    normalized = search_normalize(name)
+    aliases = {
+        "sinif 1 kat": "1.KAT",
+        "sinif 2 kat": "2.KAT", "sinif 3 kat": "3.KAT",
+    }
+    return aliases.get(normalized, name)
+
+# Normalize previously saved location names so the same main-building floor is not
+# kept as two separate places in assignment lists, history, or imported schedules.
+if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
+    st.session_state.locations["Nöbet Yeri / Bölüm"] = st.session_state.locations["Nöbet Yeri / Bölüm"].apply(canonical_location_name)
+    merged_rows = []
+    for place_name, group in st.session_state.locations.groupby("Nöbet Yeri / Bölüm", sort=False, dropna=False):
+        row = group.iloc[0].copy()
+        if "Gerekli Öğretmen Sayısı" in group.columns:
+            capacities = pd.to_numeric(group["Gerekli Öğretmen Sayısı"], errors="coerce").dropna()
+            if not capacities.empty:
+                row["Gerekli Öğretmen Sayısı"] = capacities.max()
+        if "Aktif Günler" in group.columns:
+            active_days = []
+            for days in group["Aktif Günler"]:
+                if isinstance(days, (list, tuple, set)):
+                    active_days.extend(day for day in days if day in WEEKDAYS and day not in active_days)
+            row["Aktif Günler"] = active_days or WEEKDAYS.copy()
+        if "Excel'de Yer Başlığını Göster" in group.columns:
+            row["Excel'de Yer Başlığını Göster"] = bool(group["Excel'de Yer Başlığını Göster"].fillna(True).any())
+        merged_rows.append(row)
+    st.session_state.locations = pd.DataFrame(merged_rows).reset_index(drop=True)
+
+for frame_name in ("history", "current_schedule"):
+    frame = st.session_state.get(frame_name)
+    if isinstance(frame, pd.DataFrame) and "Bölüm/Yer" in frame.columns:
+        frame["Bölüm/Yer"] = frame["Bölüm/Yer"].apply(canonical_location_name)
+for schedule_name, frame in list(st.session_state.saved_schedules.items()):
+    if isinstance(frame, pd.DataFrame) and "Bölüm/Yer" in frame.columns:
+        frame["Bölüm/Yer"] = frame["Bölüm/Yer"].apply(canonical_location_name)
+        st.session_state.saved_schedules[schedule_name] = frame
 
 if "Kaynak" not in st.session_state.history.columns:
     st.session_state.history["Kaynak"] = st.session_state.history["Tarih/Hafta"].apply(
@@ -946,16 +987,33 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             default_start_date = st.session_state.get("schedule_start_date", datetime.date(2026, 10, 19))
             if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty and "Tarih" in st.session_state.current_schedule:
                 schedule_dates = pd.to_datetime(st.session_state.current_schedule["Tarih"], errors="coerce").dropna()
-                if not schedule_dates.empty:
+                if not schedule_dates.empty and "schedule_start_date" not in st.session_state:
                     latest_date = schedule_dates.max().date()
                     default_start_date = latest_date - datetime.timedelta(days=latest_date.weekday())
+
+            def update_schedule_period_name():
+                selected_start = st.session_state.get("schedule_start_date", default_start_date)
+                selected_end = selected_start + datetime.timedelta(days=4)
+                month_names = {1: "OCAK", 2: "ŞUBAT", 3: "MART", 4: "NİSAN", 5: "MAYIS", 6: "HAZİRAN", 7: "TEMMUZ", 8: "AĞUSTOS", 9: "EYLÜL", 10: "EKİM", 11: "KASIM", 12: "ARALIK"}
+                st.session_state["schedule_period_name"] = f"{selected_start.day}-{selected_end.day} {month_names[selected_end.month]}"
+                st.session_state["schedule_period_date"] = selected_start
+
+            if "schedule_start_date" not in st.session_state:
+                st.session_state["schedule_start_date"] = default_start_date
+            if "schedule_period_name" not in st.session_state:
+                update_schedule_period_name()
+            elif st.session_state.get("schedule_period_date") != st.session_state["schedule_start_date"]:
+                update_schedule_period_name()
+
             with col1:
-                baslangic_tarihi = st.date_input("Haftanın Başlangıç Tarihi (Pazartesi)", value=default_start_date, key="schedule_start_date")
+                baslangic_tarihi = st.date_input(
+                    "Haftanın Başlangıç Tarihi (Pazartesi)",
+                    key="schedule_start_date",
+                    on_change=update_schedule_period_name,
+                )
             with col2:
                 bitis_tarihi = baslangic_tarihi + datetime.timedelta(days=4)
-                aylar = {1: "OCAK", 2: "ŞUBAT", 3: "MART", 4: "NİSAN", 5: "MAYIS", 6: "HAZİRAN", 7: "TEMMUZ", 8: "AĞUSTOS", 9: "EYLÜL", 10: "EKİM", 11: "KASIM", 12: "ARALIK"}
-                default_donem = f"{baslangic_tarihi.day}-{bitis_tarihi.day} {aylar[bitis_tarihi.month]}"
-                hafta_adi = st.text_input("Nöbet Dönem Adı (Otomatik Gelir)", value=st.session_state.get("schedule_period_name", default_donem), key="schedule_period_name")
+                hafta_adi = st.text_input("Nöbet Dönem Adı (Otomatik Gelir)", key="schedule_period_name")
             generate_clicked = st.button(
                 "🎲 Akıllı Kurallı Dağıtımla Çizelgeyi Oluştur",
                 type="primary", use_container_width=True,
@@ -1933,9 +1991,9 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                             add_word_teachers(text, current_gun, current_place)
 
                         floor_names = {
-                            "1": ("SINIF 1.KAT", "EK BİNA 1.KAT"),
-                            "2": ("SINIF 2.KAT", "EK BİNA 2.KAT"),
-                            "3": ("SINIF 3.KAT", None),
+                            "1": ("1.KAT", "EK BİNA 1.KAT"),
+                            "2": ("2.KAT", "EK BİNA 2.KAT"),
+                            "3": ("3.KAT", None),
                         }
                         for table in doc.tables:
                             rows = [[cell.text.strip() for cell in row.cells] for row in table.rows]
@@ -1983,7 +2041,7 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                             hafta_adi_str = str(sheet["A2"].value).replace(" NÖBET ÇİZELGESİ", "").strip().upper()
                         excel_place_map = {2: "BAHÇE", 3: "SINIF", 4: "ANASINIFI KAPI", 5: "EK BİNA"}
                         floor_locations = {
-                            (3, "1"): "SINIF 1.KAT", (3, "2"): "SINIF 2.KAT", (3, "3"): "SINIF 3.KAT",
+                            (3, "1"): "1.KAT", (3, "2"): "2.KAT", (3, "3"): "3.KAT",
                             (5, "1"): "EK BİNA 1.KAT", (5, "2"): "EK BİNA 2.KAT",
                         }
                         known_locations = {
