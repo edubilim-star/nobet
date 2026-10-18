@@ -962,8 +962,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             )
 
             if archive_options:
-                with st.container(border=True):
-                    st.markdown("#### Önceki çizelgeyi görüntüle")
+                with st.expander("Önceki çizelgeyi görüntüle", expanded=False):
                     archive_choice = st.selectbox(
                         "Kayıtlı çizelgeler (en yeni tarih üstte)", [""] + archive_options,
                         index=( [""] + archive_options).index(current_label) if current_label else 0,
@@ -1933,25 +1932,51 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                 current_place = found_place
                             add_word_teachers(text, current_gun, current_place)
 
+                        floor_names = {
+                            "1": ("SINIF 1.KAT", "EK BİNA 1.KAT"),
+                            "2": ("SINIF 2.KAT", "EK BİNA 2.KAT"),
+                            "3": ("SINIF 3.KAT", None),
+                        }
                         for table in doc.tables:
-                            column_days = {}
-                            column_places = {}
-                            for row in table.rows:
-                                cells = [cell.text.strip() for cell in row.cells]
-                                detected = {index: day_in_text(value) for index, value in enumerate(cells)}
-                                detected = {index: day for index, day in detected.items() if day}
-                                detected_places = {index: location_in_text(value) for index, value in enumerate(cells)}
-                                detected_places = {index: place for index, place in detected_places.items() if place}
-                                column_places.update(detected_places)
-                                if detected:
-                                    column_days.update(detected)
-                                    current_gun = next(iter(detected.values()))
-                                for index, text in enumerate(cells):
-                                    day_value = day_in_text(text) or column_days.get(index, current_gun)
-                                    if day_value:
-                                        current_gun = day_value
-                                    place_value = detected_places.get(index, column_places.get(index, location_in_text(text) or "ESKİ ARŞİV"))
-                                    add_word_teachers(text, day_value, place_value)
+                            rows = [[cell.text.strip() for cell in row.cells] for row in table.rows]
+                            if len(rows) < 3:
+                                continue
+                            # Word templates often use merged cells; repeated cell text is deduplicated below.
+                            headers = rows[1]
+                            for row in rows[2:7]:
+                                day_value = next((day_in_text(cell) for cell in row[:2] if day_in_text(cell)), None)
+                                if not day_value:
+                                    continue
+                                current_gun = day_value
+                                seen_cells = set()
+                                for col_index, cell_text in enumerate(row):
+                                    if not cell_text or cell_text in seen_cells:
+                                        continue
+                                    seen_cells.add(cell_text)
+                                    header_text = headers[col_index] if col_index < len(headers) else ""
+                                    header_norm = search_normalize(header_text)
+                                    if "mudur yrd" in header_norm:
+                                        add_word_teachers(cell_text, day_value, "MÜDÜR YRD")
+                                        continue
+                                    if "sinif ve koridorlar" in header_norm:
+                                        # Each floor label scopes only the names that follow it.
+                                        for match in re.finditer(r"(?i)(?:^|[|\n])\s*([123])\s*\.\s*kat\s*:?\s*([^|\n]*)", cell_text):
+                                            floor_no, names_text = match.groups()
+                                            class_place = floor_names[floor_no][0]
+                                            add_word_teachers(names_text, day_value, class_place)
+                                        continue
+                                    if "ek bina" in header_norm:
+                                        for match in re.finditer(r"(?i)(?:^|[|\n])\s*([12])\s*\.\s*kat\s*:?\s*([^|\n]*)", cell_text):
+                                            floor_no, names_text = match.groups()
+                                            add_word_teachers(names_text, day_value, floor_names[floor_no][1])
+                                        continue
+                                    place_value = location_in_text(header_text)
+                                    if place_value is None and "bahce" in header_norm:
+                                        place_value = "BAHÇE"
+                                    elif place_value is None and "anasinifi kapi" in header_norm:
+                                        place_value = "ANASINIFI KAPI"
+                                    if place_value:
+                                        add_word_teachers(cell_text, day_value, place_value)
                     else:
                         sheet = openpyxl.load_workbook(uploaded_file, data_only=True, read_only=True).active
                         if sheet["A2"].value:
@@ -2001,6 +2026,9 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                 for line in cell_text.splitlines():
                                     prefix, separator, teacher_text = line.partition(":")
                                     place = known_locations.get(search_normalize(prefix)) if separator else None
+                                    floor_match = re.search(r"([123])\s*\.\s*KAT", prefix.upper()) if separator else None
+                                    if place is None and floor_match and col_idx in (3, 5):
+                                        place = floor_locations.get((col_idx, floor_match.group(1)))
                                     if place is not None:
                                         current_place = place
                                     elif current_place is not None:
@@ -2008,9 +2036,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                         teacher_text = line
                                     if place is None and col_idx in excel_place_map:
                                         place = excel_place_map[col_idx]
-                                        floor_match = re.search(r"([123])\s*\.\s*KAT", line.upper())
-                                        if floor_match and col_idx in (3, 5):
-                                            place = floor_locations.get((col_idx, floor_match.group(1)), place)
                                     if place is None:
                                         continue
                                     searchable_teacher_text = f" {search_normalize(teacher_text if separator else line)} "
