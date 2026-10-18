@@ -257,6 +257,39 @@ def save_app_data():
         except Exception as exc:
             st.session_state["_github_storage_error"] = str(exc)
 
+def commit_location_editor_changes():
+    """Commit data-editor deltas before navigation or another widget can rerun the app."""
+    widget_state = st.session_state.get("location_editor", {})
+    if not isinstance(widget_state, dict):
+        return
+    locations = st.session_state.locations.copy().reset_index(drop=True)
+    for raw_index, changes in widget_state.get("edited_rows", {}).items():
+        try:
+            row_index = int(raw_index)
+        except (TypeError, ValueError):
+            continue
+        if 0 <= row_index < len(locations) and isinstance(changes, dict):
+            for column, value in changes.items():
+                if column in locations.columns:
+                    if column == "Aktif Günler":
+                        value = [day for day in value if day in WEEKDAYS] if isinstance(value, (list, tuple, set)) else []
+                    locations.at[row_index, column] = value
+    deleted = sorted(
+        (int(index) for index in widget_state.get("deleted_rows", []) if str(index).isdigit()),
+        reverse=True,
+    )
+    for row_index in deleted:
+        if 0 <= row_index < len(locations):
+            locations = locations.drop(index=row_index)
+    for added in widget_state.get("added_rows", []):
+        if isinstance(added, dict):
+            new_row = {column: added.get(column) for column in locations.columns}
+            if "Aktif Günler" in new_row and not isinstance(new_row["Aktif Günler"], (list, tuple, set)):
+                new_row["Aktif Günler"] = []
+            locations = pd.concat([locations, pd.DataFrame([new_row])], ignore_index=True)
+    st.session_state.locations = locations.reset_index(drop=True)
+    save_app_data()
+
 def _frame_from_records(records, columns):
     frame = pd.DataFrame(records or [])
     if frame.empty:
@@ -1722,6 +1755,8 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
             st.session_state.locations,
             num_rows="dynamic",
             use_container_width=True,
+            key="location_editor",
+            on_change=commit_location_editor_changes,
             column_config={
                 "Nöbet Yeri / Bölüm": st.column_config.TextColumn("Nöbet Yeri / Bölüm", required=True),
                 "Gerekli Öğretmen Sayısı": st.column_config.NumberColumn("Gerekli Öğretmen Sayısı", min_value=0, step=1, default=1),
@@ -1741,6 +1776,9 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
             axis=1
         )
         st.session_state.locations = edited_locs.reset_index(drop=True)
+        # Persist on every editor rerun. A later st.stop() in schedule generation
+        # must not be able to discard the last location-day selection.
+        save_app_data()
         st.caption("Aynı Excel başlığı altındaki yerleri seçip yukarı/aşağı taşıyarak sıralayın. Yer adını gizlerseniz Excel'de yalnızca öğretmen adları görünür.")
         order_section = st.selectbox("Sıralanacak Excel başlığı", excel_headers, key="location_order_section")
         section_positions = [
