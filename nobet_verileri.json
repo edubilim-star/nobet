@@ -556,15 +556,6 @@
     {
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
-      "Gün": "PAZARTESİ",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "AYŞENUR AKBOĞA",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "5-9 EKİM NÖBET ",
-      "Tarih": null,
       "Gün": "SALI",
       "Bölüm/Yer": "BAHÇE",
       "Öğretmen": "ÖZGE KEPENEK",
@@ -637,15 +628,6 @@
     {
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
-      "Gün": "SALI",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "AYŞENUR AKBOĞA",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "5-9 EKİM NÖBET ",
-      "Tarih": null,
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "BAHÇE",
       "Öğretmen": "ESMANUR SEZER",
@@ -712,15 +694,6 @@
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "2.KAT",
       "Öğretmen": "KÜBRA BIYIKOĞLU",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "5-9 EKİM NÖBET ",
-      "Tarih": null,
-      "Gün": "ÇARŞAMBA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "AYŞENUR AKBOĞA",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
     },
@@ -808,15 +781,6 @@
     {
       "Tarih/Hafta": "5-9 EKİM NÖBET ",
       "Tarih": null,
-      "Gün": "PERŞEMBE",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "AYŞENUR AKBOĞA",
-      "Çift Nöbetçi mi": true,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "5-9 EKİM NÖBET ",
-      "Tarih": null,
       "Gün": "CUMA",
       "Bölüm/Yer": "BAHÇE",
       "Öğretmen": "HATİCE BİRER OKAY",
@@ -893,15 +857,6 @@
       "Bölüm/Yer": "2.KAT",
       "Öğretmen": "AYSEL GÜL",
       "Çift Nöbetçi mi": false,
-      "Kaynak": "Eski Liste"
-    },
-    {
-      "Tarih/Hafta": "5-9 EKİM NÖBET ",
-      "Tarih": null,
-      "Gün": "CUMA",
-      "Bölüm/Yer": "ESKİ ARŞİV",
-      "Öğretmen": "AYŞENUR AKBOĞA",
-      "Çift Nöbetçi mi": true,
       "Kaynak": "Eski Liste"
     }
   ],
