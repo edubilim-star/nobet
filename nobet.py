@@ -926,9 +926,19 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         archive_labels.sort(key=lambda item: item[0], reverse=True)
         archive_options = [label for _, label in archive_labels]
         current_label = st.session_state.get("schedule_archive_selection", "")
-        archive_preview_selected = bool(current_label)
         if current_label not in archive_options:
             current_label = ""
+        archive_preview_selected = bool(current_label)
+        selected_name = archive_name_by_label.get(current_label)
+        selected_frame = archive_frames.get(selected_name) if selected_name else None
+        if selected_frame is not None and not selected_frame.empty:
+            st.session_state.current_schedule = selected_frame.copy()
+            selected_dates = pd.to_datetime(selected_frame.get("Tarih", pd.Series(dtype=object)), errors="coerce").dropna()
+            if not selected_dates.empty:
+                selected_start = selected_dates.min().date()
+                selected_start -= datetime.timedelta(days=selected_start.weekday())
+                st.session_state["schedule_start_date"] = selected_start
+            st.session_state["schedule_period_name"] = selected_name
 
         with st.container(border=True):
             st.markdown("#### Yeni haftalık çizelge")
@@ -963,16 +973,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     archive_preview_selected = bool(archive_choice)
                     if archive_choice:
                         selected_name = archive_name_by_label[archive_choice]
-                        selected_frame = archive_frames[selected_name]
-                        if selected_frame is not None and not selected_frame.empty:
-                            st.session_state.current_schedule = selected_frame.copy()
-                            selected_dates = pd.to_datetime(selected_frame.get("Tarih", pd.Series(dtype=object)), errors="coerce").dropna()
-                            if not selected_dates.empty:
-                                selected_start = selected_dates.min().date()
-                                selected_start -= datetime.timedelta(days=selected_start.weekday())
-                                st.session_state["schedule_start_date"] = selected_start
-                            st.session_state["schedule_period_name"] = selected_name
-                            st.caption(f"Ön izleme: {selected_name}")
+                        st.caption(f"Ön izleme: {selected_name}")
     if "overwrite_pending" not in st.session_state:
         st.session_state.overwrite_pending = False
     if "overwrite_week" not in st.session_state:
