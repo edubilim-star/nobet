@@ -505,6 +505,26 @@
           "AYŞENUR AKBOĞA"
         ]
       }
+    },
+    "19-23 EKİM NÖBET ": {
+      "start_date": "",
+      "assignments": {
+        "PAZARTESİ": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "SALI": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "ÇARŞAMBA": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "PERŞEMBE": [
+          "AYŞENUR AKBOĞA"
+        ],
+        "CUMA": [
+          "AYŞENUR AKBOĞA"
+        ]
+      }
     }
   },
   "history": [
@@ -2238,6 +2258,438 @@
     },
     {
       "Tarih/Hafta": "19-23 EKİM NÖBET ",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Öğretmen": "AYŞENUR AKBOĞA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "YUNUS KARACA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "SEHER TAŞ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ESMANUR SEZER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ŞULE YÜKSELAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "EBRU BAĞCI",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "FERİDE ÖZDEMİR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "EMEL KAYABAŞI",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PAZARTESİ",
+      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Öğretmen": "AYŞENUR AKBOĞA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "MERVE AYDEMİR KESİKBAŞ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "NİHAL GÖKSU",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ALEV AYÇA AÇIKEL",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "AYŞEGÜL SÜER",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "MERVE ÜLKER KÖKEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "MELİKE ÖDEN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "ÖZGÜR ESER",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "SALI",
+      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Öğretmen": "AYŞENUR AKBOĞA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "ESMANUR SEZER",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "ÖZGE KEPENEK",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "BEYZA NUR ÇAĞLAR SEZGİN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "HATİCE BİRER OKAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "FATMA ÖZMEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "EBRU BAĞCI",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "FERİDE ÖZDEMİR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "AYŞE ZORKOL",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "ÇARŞAMBA",
+      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Öğretmen": "AYŞENUR AKBOĞA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "KÜBRA BIYIKOĞLU",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "KÜBRA EVREN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "HATİCE BETÜL TURAN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "ŞULE YÜKSELAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "AYSEL GÜL",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "AYŞEGÜL SEVİM BOZĞOLU",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "MERVE ÜLKER KÖKEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "ALEV AYÇA AÇIKEL",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "YUNUS KARACA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "PERŞEMBE",
+      "Bölüm/Yer": "ESKİ ARŞİV",
+      "Öğretmen": "AYŞENUR AKBOĞA",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "HATİCE BİRER OKAY",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "BAHÇE",
+      "Öğretmen": "FATMA ÖZMEN",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "DİLARA SAVAŞKAN",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "MELİSA GÜVENÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "3.KAT",
+      "Öğretmen": "İBRAHİM KILIÇ",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "RABİA ŞAHİN BAKRAKTAR",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "ANASINIFI KAPI",
+      "Öğretmen": "EBRU BAĞCI",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "BERNA ÜLKER",
+      "Çift Nöbetçi mi": false,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
+      "Tarih": null,
+      "Gün": "CUMA",
+      "Bölüm/Yer": "2.KAT",
+      "Öğretmen": "NİHAL GÖKSU",
+      "Çift Nöbetçi mi": true,
+      "Kaynak": "Eski Liste"
+    },
+    {
+      "Tarih/Hafta": "21-25 EYLÜL NÖBET",
       "Tarih": null,
       "Gün": "CUMA",
       "Bölüm/Yer": "ESKİ ARŞİV",
