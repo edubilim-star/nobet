@@ -47,10 +47,10 @@ if "school_info" not in st.session_state:
 if "locations" not in st.session_state:
     st.session_state.locations = pd.DataFrame({
         "Nöbet Yeri / Bölüm": [
-            "BAHÇE", "1.KAT", "2.KAT", "3.KAT", 
+            "BAHÇE", "GİRİŞ", "1.KAT", "2.KAT", "3.KAT", 
             "ANASINIFI KAPI", "EK BİNA 1.KAT", "EK BİNA 2.KAT"
         ],
-        "Gerekli Öğretmen Sayısı": [2, 1, 1, 1, 2, 1, 1]
+        "Gerekli Öğretmen Sayısı": [2, 1, 1, 1, 1, 2, 1, 1]
     })
 
 WEEKDAYS = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
@@ -367,6 +367,20 @@ if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
             row["Excel'de Yer Başlığını Göster"] = bool(group["Excel'de Yer Başlığını Göster"].fillna(True).any())
         merged_rows.append(row)
     st.session_state.locations = pd.DataFrame(merged_rows).reset_index(drop=True)
+    if not st.session_state.locations["Nöbet Yeri / Bölüm"].astype(str).str.strip().str.casefold().eq("giriş").any():
+        new_entry = {column: None for column in st.session_state.locations.columns}
+        new_entry["Nöbet Yeri / Bölüm"] = "GİRİŞ"
+        if "Gerekli Öğretmen Sayısı" in new_entry:
+            new_entry["Gerekli Öğretmen Sayısı"] = 1
+        if "Aktif Günler" in new_entry:
+            new_entry["Aktif Günler"] = WEEKDAYS.copy()
+        if "Excel'de Yer Başlığını Göster" in new_entry:
+            new_entry["Excel'de Yer Başlığını Göster"] = True
+        if "Excel Bölümü" in new_entry:
+            new_entry["Excel Bölümü"] = "SINIF VE KORİDORLAR"
+        st.session_state.locations = pd.concat(
+            [st.session_state.locations, pd.DataFrame([new_entry])], ignore_index=True
+        )
 
 for frame_name in ("history", "current_schedule"):
     frame = st.session_state.get(frame_name)
@@ -2017,6 +2031,9 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                         add_word_teachers(cell_text, day_value, "MÜDÜR YRD")
                                         continue
                                     if "sinif ve koridorlar" in header_norm:
+                                        entrance_match = re.search(r"(?i)(?:^|[|\n])\s*giri[sş]\s*:?\s*([^|\n]*)", cell_text)
+                                        if entrance_match:
+                                            add_word_teachers(entrance_match.group(1), day_value, "GİRİŞ")
                                         # Each floor label scopes only the names that follow it.
                                         for match in re.finditer(r"(?i)(?:^|[|\n])\s*([123])\s*\.\s*kat\s*:?\s*([^|\n]*)", cell_text):
                                             floor_no, names_text = match.groups()
@@ -2084,6 +2101,8 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                 for line in cell_text.splitlines():
                                     prefix, separator, teacher_text = line.partition(":")
                                     place = known_locations.get(search_normalize(prefix)) if separator else None
+                                    if place is None and separator and search_normalize(prefix) in ("giris", "giris bolumu"):
+                                        place = "GİRİŞ"
                                     floor_match = re.search(r"([123])\s*\.\s*KAT", prefix.upper()) if separator else None
                                     if place is None and floor_match and col_idx in (3, 5):
                                         place = floor_locations.get((col_idx, floor_match.group(1)))
