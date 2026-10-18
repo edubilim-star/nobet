@@ -429,12 +429,7 @@
       "Haftada 2 Nöbet İstiyor": false
     }
   ],
-  "holidays": [
-    {
-      "Tarih": "2026-10-29T00:00:00.000",
-      "Tatil Açıklaması": "29 Ekim Cumhuriyet Bayramı"
-    }
-  ],
+  "holidays": [],
   "mudur_yardimcilari": [
     "AYŞENUR AKBOĞA"
   ],
