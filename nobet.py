@@ -362,7 +362,8 @@ if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
             for days in group["Aktif Günler"]:
                 if isinstance(days, (list, tuple, set)):
                     active_days.extend(day for day in days if day in WEEKDAYS and day not in active_days)
-            row["Aktif Günler"] = active_days or WEEKDAYS.copy()
+            # Empty selection means no active days; do not silently enable the whole week.
+            row["Aktif Günler"] = active_days
         if "Excel'de Yer Başlığını Göster" in group.columns:
             row["Excel'de Yer Başlığını Göster"] = bool(group["Excel'de Yer Başlığını Göster"].fillna(True).any())
         merged_rows.append(row)
@@ -406,7 +407,7 @@ if "Aktif Günler" not in st.session_state.locations.columns:
 else:
     st.session_state.locations["Aktif Günler"] = st.session_state.locations["Aktif Günler"].apply(
         lambda days: [day for day in days if day in WEEKDAYS]
-        if isinstance(days, (list, tuple, set)) else WEEKDAYS.copy()
+        if isinstance(days, (list, tuple, set)) else []
     )
 if "Excel'de Yer Başlığını Göster" not in st.session_state.locations.columns:
     st.session_state.locations["Excel'de Yer Başlığını Göster"] = True
