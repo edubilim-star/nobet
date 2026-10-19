@@ -2767,7 +2767,9 @@ elif main_menu == "📊 İstatistikler":
                 final_stats[place_columns] = final_stats[place_columns].fillna(0).astype(int)
             sort_options = ["Ada Göre", "Toplam Nöbet Sayısına Göre", "Çift Nöbet Sayısına Göre"] + [f"Bölüm: {place}" for place in sorted(place_columns, key=str.casefold)]
             with stats_sort_col:
-                sort_choice = st.selectbox("Sırala", sort_options, key="teacher_statistics_sort")
+                with st.popover("Sırala", use_container_width=True):
+                    st.radio("Sıralama ölçütü", sort_options, key="teacher_statistics_sort")
+                sort_choice = st.session_state.get("teacher_statistics_sort", sort_options[0])
             if sort_choice == "Toplam Nöbet Sayısına Göre":
                 final_stats = final_stats.sort_values(["Toplam Nöbet Sayısı", "Öğretmen"], ascending=[False, True], key=lambda column: column.astype(str).str.casefold() if column.name == "Öğretmen" else column)
             elif sort_choice == "Çift Nöbet Sayısına Göre":
