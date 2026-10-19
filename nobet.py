@@ -1021,11 +1021,20 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
             lines = wrap_to_width(value, day_font if col_idx == 0 else body_font, x1 - x0 - 24)
             y = top + 12
             for line in lines:
-                is_place_heading = col_idx > 0 and any(
-                    line.startswith(f"{place}:") for place, (_, _, show_title) in location_info.items() if show_title
-                )
-                line_font = day_font if col_idx == 0 else (bold_body_font if is_place_heading else body_font)
-                draw.text((x0 + 12, y), line, fill="#111827", font=line_font)
+                matched_place = next((
+                    place for place, (_, _, show_title) in location_info.items()
+                    if col_idx > 0 and show_title and line.startswith(f"{place}:")
+                ), None)
+                if col_idx == 0:
+                    draw.text((x0 + 12, y), line, fill="#111827", font=day_font)
+                elif matched_place is not None:
+                    bold_label = f"{matched_place}:"
+                    rest = line[len(bold_label):]
+                    draw.text((x0 + 12, y), bold_label, fill="#111827", font=bold_body_font)
+                    label_width = draw.textbbox((0, 0), bold_label, font=bold_body_font)[2]
+                    draw.text((x0 + 12 + label_width, y), rest, fill="#111827", font=body_font)
+                else:
+                    draw.text((x0 + 12, y), line, fill="#111827", font=body_font)
                 y += body_line_height
         if is_holiday_row:
             merge_left, merge_right = x_positions[1], x_positions[-2]
