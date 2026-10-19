@@ -523,7 +523,7 @@ div[data-testid="stHorizontalBlock"] {
   margin: -2.1rem auto 0.9rem;
   padding: 0.25rem 1rem 0.4rem;
   border-bottom: 2px solid #4f81bd;
-  color: #1e293b;
+  color: inherit;
   font-size: 1.25rem;
   font-weight: 750;
   line-height: 1.35;
@@ -532,10 +532,11 @@ div[data-testid="stHorizontalBlock"] {
 }
 
 .teacher-count-card {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: baseline;
   gap: 0.55rem;
-  margin: 0.25rem 0 0.8rem;
+  margin: 0.25rem 0 0.8rem auto;
   padding: 0.55rem 0.9rem;
   border: 1px solid rgba(79, 129, 189, 0.28);
   border-radius: 0.7rem;
@@ -1137,13 +1138,32 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             )
             double_day_priority = []
             if prioritize_double_days:
-                double_day_priority = st.multiselect(
+                if "double_day_priority_order" not in st.session_state:
+                    st.session_state.double_day_priority_order = list(st.session_state.get("double_day_priority", []))
+                if "double_day_priority_pills" not in st.session_state:
+                    st.session_state.double_day_priority_pills = list(st.session_state.double_day_priority_order)
+
+                def update_double_day_priority_order():
+                    selected = st.session_state.get("double_day_priority_pills", [])
+                    old_order = st.session_state.get("double_day_priority_order", [])
+                    st.session_state.double_day_priority_order = [day for day in old_order if day in selected]
+                    st.session_state.double_day_priority_order.extend(
+                        day for day in selected if day not in old_order
+                    )
+
+                selected_double_days = st.pills(
                     "Öncelik sırasına göre günleri seçin",
                     options=WEEKDAYS,
-                    key="double_day_priority",
-                    placeholder="Günleri seçin",
-                    help="Seçtiğiniz günlerin sırası, çift nöbet önceliğidir.",
+                    selection_mode="multi",
+                    key="double_day_priority_pills",
+                    on_change=update_double_day_priority_order,
+                    help="Günlere tıklama sıranız, çift nöbet önceliğidir.",
                 )
+                double_day_priority = [
+                    day for day in st.session_state.double_day_priority_order if day in selected_double_days
+                ]
+                if double_day_priority:
+                    st.caption("Öncelik sırası: " + " → ".join(double_day_priority))
             generate_clicked = st.button(
                 "🎲 Akıllı Kurallı Dağıtımla Çizelgeyi Oluştur",
                 type="primary", use_container_width=True,
@@ -1316,9 +1336,18 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
         historic_double_weeks = prior_weekly_counts[prior_weekly_counts > 1].reset_index().groupby("Öğretmen").size().to_dict() if not prior_weekly_counts.empty else {}
         all_place_counts = {}
+        last_place_dates = {}
         if not prior_history.empty and {"Öğretmen", "Bölüm/Yer"}.issubset(prior_history.columns):
             known_place_history = prior_history[prior_history["Bölüm/Yer"].isin(locs_df["Nöbet Yeri / Bölüm"].astype(str))]
             all_place_counts = known_place_history.groupby(["Öğretmen", "Bölüm/Yer"]).size().to_dict()
+            if "Tarih" in known_place_history.columns:
+                dated_places = known_place_history.assign(
+                    _rotation_date=pd.to_datetime(known_place_history["Tarih"], errors="coerce").dt.date
+                ).dropna(subset=["_rotation_date"])
+                last_place_dates = {
+                    (str(name), str(place)): max(day.toordinal() for day in days)
+                    for (name, place), days in dated_places.groupby(["Öğretmen", "Bölüm/Yer"])["_rotation_date"]
+                }
         any_double_preference = any(bool(info["Haftada 2 Nöbet İstiyor"]) for info in teacher_by_name.values())
         active_day_order = {day: index for index, day in enumerate(active_gunler)}
 
@@ -1377,10 +1406,11 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 random.shuffle(candidates)
                 candidates.sort(key=lambda name: (
                     counts[name],
+                    all_place_counts.get((name, slot_place), 0),
+                    last_place_dates.get((name, slot_place), 0),
                     (0 if teacher_by_name[name]["Haftada 2 Nöbet İstiyor"] else 1)
                     if any_double_preference and counts[name] == 1 else 0,
                     historic_double_weeks.get(name, 0) if counts[name] > 0 else 0,
-                    all_place_counts.get((name, slot_place), 0)
                 ))
                 for name in candidates:
                     counts[name] += 1
@@ -1569,15 +1599,111 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     first_date = preview_dates.min().date()
                     schedule_start_for_export = first_date - datetime.timedelta(days=first_date.weekday())
             current_deputy_assignments = st.session_state.mudur_yardimcisi_gecmisi.get(schedule_name_for_export, {}).get("assignments", {})
-            hist_df = st.session_state.history
-        
-            def format_teacher_name_with_history(ogretmen_adi):
-                toplam_nobet = len(hist_df[hist_df["Öğretmen"] == ogretmen_adi])
-                teacher_history = hist_df[hist_df["Öğretmen"] == ogretmen_adi]
-                cift_nobet = int((teacher_history.groupby("Tarih/Hafta").size() > 1).sum()) if "Tarih/Hafta" in teacher_history.columns else 0
-                return f"{ogretmen_adi} (Toplam Nöbet: {toplam_nobet} ; Çift Nöbet Haftası: {cift_nobet})"
+            hist_df = st.session_state.history.copy()
+            original_teacher_names = preview_df["Öğretmen"].fillna("").astype(str).tolist()
+            editor_revision = st.session_state.get("schedule_preview_editor_revision", 0)
+            editor_key = f"schedule_preview_teacher_editor_{search_normalize(schedule_name_for_export)}_{editor_revision}"
 
-            preview_df["Öğretmen"] = preview_df["Öğretmen"].apply(format_teacher_name_with_history)
+            def make_preview_table(teacher_names):
+                edited_assignments = preview_df.copy()
+                edited_assignments["Öğretmen"] = teacher_names
+                if "Tarih/Hafta" in hist_df.columns:
+                    history_without_current = hist_df[hist_df["Tarih/Hafta"].astype(str) != schedule_name_for_export].copy()
+                else:
+                    history_without_current = hist_df.copy()
+                combined = pd.concat([history_without_current, edited_assignments], ignore_index=True, sort=False)
+                total_by_teacher = combined.groupby("Öğretmen").size().to_dict() if "Öğretmen" in combined else {}
+                double_by_teacher = {}
+                if {"Tarih/Hafta", "Öğretmen"}.issubset(combined.columns):
+                    weekly = combined.groupby(["Tarih/Hafta", "Öğretmen"]).size()
+                    double_by_teacher = weekly[weekly > 1].reset_index().groupby("Öğretmen").size().to_dict()
+                current_week_counts = pd.Series(teacher_names).value_counts().to_dict()
+                display = edited_assignments.copy()
+                display["Toplam Nöbet"] = display["Öğretmen"].map(total_by_teacher).fillna(0).astype(int)
+                display["Çift Nöbet"] = display["Öğretmen"].map(double_by_teacher).fillna(0).astype(int)
+                display["Çift Nöbet mi"] = display["Öğretmen"].map(lambda name: current_week_counts.get(name, 0) > 1)
+                if "Çift Nöbetçi mi" in display.columns:
+                    display = display.drop(columns=["Çift Nöbetçi mi"])
+                preferred_columns = ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Toplam Nöbet", "Çift Nöbet", "Çift Nöbet mi"]
+                return display[[column for column in preferred_columns if column in display.columns]]
+
+            editor_state = st.session_state.get(editor_key, {})
+            proposed_teacher_names = list(original_teacher_names)
+            if isinstance(editor_state, dict):
+                for row_index, changes in editor_state.get("edited_rows", {}).items():
+                    if isinstance(changes, dict) and "Öğretmen" in changes:
+                        row_index = int(row_index)
+                        if 0 <= row_index < len(proposed_teacher_names):
+                            proposed_teacher_names[row_index] = str(changes["Öğretmen"])
+            preview_table = make_preview_table(proposed_teacher_names)
+            edited_preview = st.data_editor(
+                preview_table,
+                use_container_width=True,
+                hide_index=True,
+                disabled=[column for column in preview_table.columns if column != "Öğretmen"],
+                column_config={
+                    "Tarih": st.column_config.DateColumn("Tarih", format="DD.MM.YYYY"),
+                    "Öğretmen": st.column_config.TextColumn("Öğretmen", required=True),
+                    "Toplam Nöbet": st.column_config.NumberColumn("Toplam Nöbet", format="%d"),
+                    "Çift Nöbet": st.column_config.NumberColumn("Çift Nöbet", format="%d"),
+                    "Çift Nöbet mi": st.column_config.CheckboxColumn("Çift Nöbet mi"),
+                },
+                key=editor_key,
+            )
+            edited_teacher_names = edited_preview["Öğretmen"].fillna("").astype(str).str.strip().tolist()
+            changed_teacher_rows = [
+                index for index, (old_name, new_name) in enumerate(zip(original_teacher_names, edited_teacher_names))
+                if old_name.strip().casefold() != new_name.casefold()
+            ]
+            if st.button(
+                "✅ Öğretmen adı değişikliklerini onayla",
+                key=f"confirm_preview_teacher_names_{search_normalize(schedule_name_for_export)}",
+                disabled=not changed_teacher_rows,
+                use_container_width=False,
+            ):
+                registered_names = {
+                    str(teacher.get("Ad Soyad", "")).strip().casefold(): str(teacher.get("Ad Soyad", "")).strip()
+                    for teacher in st.session_state.teachers_dict_list
+                }
+                unknown_names = sorted({edited_teacher_names[index] for index in changed_teacher_rows if edited_teacher_names[index].casefold() not in registered_names})
+                if unknown_names:
+                    st.warning("Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown_names))
+                else:
+                    updated_schedule = st.session_state.current_schedule.copy()
+                    updated_schedule["Öğretmen"] = [registered_names.get(name.casefold(), name) for name in edited_teacher_names]
+                    updated_weekly_counts = updated_schedule.groupby("Öğretmen").size()
+                    double_names = set(updated_weekly_counts[updated_weekly_counts > 1].index.astype(str))
+                    updated_schedule["Çift Nöbetçi mi"] = updated_schedule["Öğretmen"].astype(str).isin(double_names)
+                    st.session_state.current_schedule = updated_schedule
+                    if schedule_name_for_export in st.session_state.saved_schedules:
+                        st.session_state.saved_schedules[schedule_name_for_export] = updated_schedule.copy()
+
+                    history_week_mask = st.session_state.history["Tarih/Hafta"].astype(str) == schedule_name_for_export
+                    used_history_indexes = set()
+                    for row_index, (_, schedule_row) in enumerate(updated_schedule.iterrows()):
+                        old_name = original_teacher_names[row_index]
+                        row_dates = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce").dt.date
+                        schedule_date = pd.to_datetime(schedule_row.get("Tarih"), errors="coerce")
+                        schedule_date = schedule_date.date() if not pd.isna(schedule_date) else None
+                        matches = st.session_state.history.index[
+                            history_week_mask
+                            & (st.session_state.history["Gün"].astype(str) == str(schedule_row.get("Gün", "")))
+                            & (st.session_state.history["Bölüm/Yer"].astype(str) == str(schedule_row.get("Bölüm/Yer", "")))
+                            & (st.session_state.history["Öğretmen"].astype(str) == old_name)
+                            & (row_dates == schedule_date)
+                        ]
+                        history_index = next((index for index in matches if index not in used_history_indexes), None)
+                        if history_index is not None:
+                            st.session_state.history.at[history_index, "Öğretmen"] = updated_schedule.iloc[row_index]["Öğretmen"]
+                            used_history_indexes.add(history_index)
+                    history_week = st.session_state.history.loc[history_week_mask]
+                    history_week_counts = history_week.groupby("Öğretmen").size()
+                    history_double_names = set(history_week_counts[history_week_counts > 1].index.astype(str))
+                    st.session_state.history.loc[history_week.index, "Çift Nöbetçi mi"] = history_week["Öğretmen"].astype(str).isin(history_double_names).values
+                    save_app_data()
+                    st.success("Öğretmen adı değişiklikleri onaylandı ve nöbet sayıları güncellendi.")
+                    st.session_state.schedule_preview_editor_revision = editor_revision + 1
+                    st.rerun()
 
             # 3 BUTON YAN YANA SAĞA YASLI HİZALAMA
             col_spacer, col_excel, col_pdf, col_img = st.columns([3, 1, 1, 1], gap="small")
@@ -1634,10 +1760,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     use_container_width=True
                 )
 
-            st.dataframe(
-                preview_df, use_container_width=True,
-                column_config={"Tarih": st.column_config.DateColumn("Tarih", format="DD.MM.YYYY")},
-            )
 
 
 # ================= 2. SEKME: ÖĞRETMEN YÖNETİMİ =================
@@ -1646,7 +1768,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         st.header("👥 Öğretmen Yönetimi ve Kısıtlar Paneli")
         save_spacer, save_button_col = st.columns([5, 1.6])
         with save_button_col:
-            if st.button("💾 Ayarları kaydet", key="save_teacher_settings_top", type="secondary", use_container_width=True):
+            if st.button("💾 Ayarları kaydet", key="save_teacher_settings_top", type="primary", use_container_width=True):
                 save_app_data()
                 st.success("Öğretmen listesi ve kısıt ayarları kaydedildi.")
 
@@ -1672,7 +1794,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             with button_add:
                 if st.button("➕ Tüm Öğretmenlerin Hariç Tutulanlarına Ekle",
                              key="btn_toplu_ekle",
-                             type="primary",
+                             type="secondary",
                              use_container_width=True):
                     yeni_liste = []
                     eklenen_sayi = 0
@@ -1860,7 +1982,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                     degisiklik_var = True
 
                 yeni_cift = st.checkbox(
-                    "Gerekirse haftada 2 nöbet alabilir", value=t_data["Haftada 2 Nöbet İstiyor"],
+                    "Çift Nöbet", value=t_data["Haftada 2 Nöbet İstiyor"],
                     key=f"cift_{teacher_name}"
                 )
                 if yeni_cift != t_data["Haftada 2 Nöbet İstiyor"]:
@@ -2434,7 +2556,8 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                             st.success("Tüm nöbet ve arşiv kayıtları silindi.")
                             st.rerun()
 
-            st.dataframe(st.session_state.history, use_container_width=True)
+            archive_display = st.session_state.history.rename(columns={"Çift Nöbetçi mi": "Çift Nöbet mi"})
+            st.dataframe(archive_display, use_container_width=True)
 
 
 # ================= 6. SEKME: İSTATİSTİKLER =================
@@ -2449,15 +2572,15 @@ elif main_menu == "📊 İstatistikler":
             cift_df = weekly_counts[weekly_counts["Haftalık Nöbet"] > 1]
 
             if not cift_df.empty:
-                cift_stats = cift_df.groupby("Öğretmen").size().reset_index(name="Çift Nöbet Haftası Sayısı")
+                cift_stats = cift_df.groupby("Öğretmen").size().reset_index(name="Çift Nöbet Sayısı")
                 final_stats = pd.merge(toplam_stats, cift_stats, on="Öğretmen", how="left")
             else:
                 final_stats = toplam_stats
-                final_stats["Çift Nöbet Haftası Sayısı"] = 0
+                final_stats["Çift Nöbet Sayısı"] = 0
 
             if "Çift Nöbet Sayısı" in final_stats.columns:
                 final_stats = final_stats.drop(columns=["Çift Nöbet Sayısı"])
-            final_stats["Çift Nöbet Haftası Sayısı"] = final_stats["Çift Nöbet Haftası Sayısı"].fillna(0).astype(int)
+            final_stats["Çift Nöbet Sayısı"] = final_stats["Çift Nöbet Sayısı"].fillna(0).astype(int)
 
             if "Bölüm/Yer" in hist.columns:
                 place_stats = hist.pivot_table(
