@@ -494,11 +494,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 4.5rem !important;
 }
 
-/* Üst menü esneklik ayarı */
-div[data-testid="stHorizontalBlock"] {
-  flex-wrap: wrap;
-}
-
 /* İndirme butonlarının sağa yaslanması için */
 .download-btn-container {
   display: flex;
@@ -2780,8 +2775,8 @@ elif main_menu == "📊 İstatistikler":
                 st.dataframe(
                     final_stats, use_container_width=True, hide_index=True,
                     column_config={
-                        "No": st.column_config.NumberColumn("No", width="small", pinned=True),
-                        "Öğretmen": st.column_config.TextColumn("Öğretmen", width="medium", pinned=True),
+                        "No": st.column_config.NumberColumn("No", width=42, pinned=True, alignment="center"),
+                        "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
                     },
                 )
         else:
