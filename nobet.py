@@ -561,6 +561,11 @@ def turkish_title_case(value):
     words = lowered.split()
     return " ".join(("İ" if word.startswith("i") else "I" if word.startswith("ı") else word[:1].upper()) + word[1:] for word in words)
 
+def turkish_upper(value):
+    text = str(value or "").strip()
+    text = text.replace("i", "İ").replace("ı", "I")
+    return text.upper()
+
 school_title = turkish_title_case(st.session_state.school_info.get("okul_adi", "Okul"))
 st.markdown(
     f"<div class='app-title'>{html.escape(school_title)} Nöbet Hazırlama Programı</div>",
@@ -1599,112 +1604,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     first_date = preview_dates.min().date()
                     schedule_start_for_export = first_date - datetime.timedelta(days=first_date.weekday())
             current_deputy_assignments = st.session_state.mudur_yardimcisi_gecmisi.get(schedule_name_for_export, {}).get("assignments", {})
-            hist_df = st.session_state.history.copy()
-            original_teacher_names = preview_df["Öğretmen"].fillna("").astype(str).tolist()
-            editor_revision = st.session_state.get("schedule_preview_editor_revision", 0)
-            editor_key = f"schedule_preview_teacher_editor_{search_normalize(schedule_name_for_export)}_{editor_revision}"
-
-            def make_preview_table(teacher_names):
-                edited_assignments = preview_df.copy()
-                edited_assignments["Öğretmen"] = teacher_names
-                if "Tarih/Hafta" in hist_df.columns:
-                    history_without_current = hist_df[hist_df["Tarih/Hafta"].astype(str) != schedule_name_for_export].copy()
-                else:
-                    history_without_current = hist_df.copy()
-                combined = pd.concat([history_without_current, edited_assignments], ignore_index=True, sort=False)
-                total_by_teacher = combined.groupby("Öğretmen").size().to_dict() if "Öğretmen" in combined else {}
-                double_by_teacher = {}
-                if {"Tarih/Hafta", "Öğretmen"}.issubset(combined.columns):
-                    weekly = combined.groupby(["Tarih/Hafta", "Öğretmen"]).size()
-                    double_by_teacher = weekly[weekly > 1].reset_index().groupby("Öğretmen").size().to_dict()
-                current_week_counts = pd.Series(teacher_names).value_counts().to_dict()
-                display = edited_assignments.copy()
-                display["Toplam Nöbet"] = display["Öğretmen"].map(total_by_teacher).fillna(0).astype(int)
-                display["Çift Nöbet"] = display["Öğretmen"].map(double_by_teacher).fillna(0).astype(int)
-                display["Çift Nöbet mi"] = display["Öğretmen"].map(lambda name: current_week_counts.get(name, 0) > 1)
-                if "Çift Nöbetçi mi" in display.columns:
-                    display = display.drop(columns=["Çift Nöbetçi mi"])
-                preferred_columns = ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Toplam Nöbet", "Çift Nöbet", "Çift Nöbet mi"]
-                return display[[column for column in preferred_columns if column in display.columns]]
-
-            editor_state = st.session_state.get(editor_key, {})
-            proposed_teacher_names = list(original_teacher_names)
-            if isinstance(editor_state, dict):
-                for row_index, changes in editor_state.get("edited_rows", {}).items():
-                    if isinstance(changes, dict) and "Öğretmen" in changes:
-                        row_index = int(row_index)
-                        if 0 <= row_index < len(proposed_teacher_names):
-                            proposed_teacher_names[row_index] = str(changes["Öğretmen"])
-            preview_table = make_preview_table(proposed_teacher_names)
-            edited_preview = st.data_editor(
-                preview_table,
-                use_container_width=True,
-                hide_index=True,
-                disabled=[column for column in preview_table.columns if column != "Öğretmen"],
-                column_config={
-                    "Tarih": st.column_config.DateColumn("Tarih", format="DD.MM.YYYY"),
-                    "Öğretmen": st.column_config.TextColumn("Öğretmen", required=True),
-                    "Toplam Nöbet": st.column_config.NumberColumn("Toplam Nöbet", format="%d"),
-                    "Çift Nöbet": st.column_config.NumberColumn("Çift Nöbet", format="%d"),
-                    "Çift Nöbet mi": st.column_config.CheckboxColumn("Çift Nöbet mi"),
-                },
-                key=editor_key,
-            )
-            edited_teacher_names = edited_preview["Öğretmen"].fillna("").astype(str).str.strip().tolist()
-            changed_teacher_rows = [
-                index for index, (old_name, new_name) in enumerate(zip(original_teacher_names, edited_teacher_names))
-                if old_name.strip().casefold() != new_name.casefold()
-            ]
-            if st.button(
-                "✅ Öğretmen adı değişikliklerini onayla",
-                key=f"confirm_preview_teacher_names_{search_normalize(schedule_name_for_export)}",
-                disabled=not changed_teacher_rows,
-                use_container_width=False,
-            ):
-                registered_names = {
-                    str(teacher.get("Ad Soyad", "")).strip().casefold(): str(teacher.get("Ad Soyad", "")).strip()
-                    for teacher in st.session_state.teachers_dict_list
-                }
-                unknown_names = sorted({edited_teacher_names[index] for index in changed_teacher_rows if edited_teacher_names[index].casefold() not in registered_names})
-                if unknown_names:
-                    st.warning("Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown_names))
-                else:
-                    updated_schedule = st.session_state.current_schedule.copy()
-                    updated_schedule["Öğretmen"] = [registered_names.get(name.casefold(), name) for name in edited_teacher_names]
-                    updated_weekly_counts = updated_schedule.groupby("Öğretmen").size()
-                    double_names = set(updated_weekly_counts[updated_weekly_counts > 1].index.astype(str))
-                    updated_schedule["Çift Nöbetçi mi"] = updated_schedule["Öğretmen"].astype(str).isin(double_names)
-                    st.session_state.current_schedule = updated_schedule
-                    if schedule_name_for_export in st.session_state.saved_schedules:
-                        st.session_state.saved_schedules[schedule_name_for_export] = updated_schedule.copy()
-
-                    history_week_mask = st.session_state.history["Tarih/Hafta"].astype(str) == schedule_name_for_export
-                    used_history_indexes = set()
-                    for row_index, (_, schedule_row) in enumerate(updated_schedule.iterrows()):
-                        old_name = original_teacher_names[row_index]
-                        row_dates = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce").dt.date
-                        schedule_date = pd.to_datetime(schedule_row.get("Tarih"), errors="coerce")
-                        schedule_date = schedule_date.date() if not pd.isna(schedule_date) else None
-                        matches = st.session_state.history.index[
-                            history_week_mask
-                            & (st.session_state.history["Gün"].astype(str) == str(schedule_row.get("Gün", "")))
-                            & (st.session_state.history["Bölüm/Yer"].astype(str) == str(schedule_row.get("Bölüm/Yer", "")))
-                            & (st.session_state.history["Öğretmen"].astype(str) == old_name)
-                            & (row_dates == schedule_date)
-                        ]
-                        history_index = next((index for index in matches if index not in used_history_indexes), None)
-                        if history_index is not None:
-                            st.session_state.history.at[history_index, "Öğretmen"] = updated_schedule.iloc[row_index]["Öğretmen"]
-                            used_history_indexes.add(history_index)
-                    history_week = st.session_state.history.loc[history_week_mask]
-                    history_week_counts = history_week.groupby("Öğretmen").size()
-                    history_double_names = set(history_week_counts[history_week_counts > 1].index.astype(str))
-                    st.session_state.history.loc[history_week.index, "Çift Nöbetçi mi"] = history_week["Öğretmen"].astype(str).isin(history_double_names).values
-                    save_app_data()
-                    st.success("Öğretmen adı değişiklikleri onaylandı ve nöbet sayıları güncellendi.")
-                    st.session_state.schedule_preview_editor_revision = editor_revision + 1
-                    st.rerun()
-
             # 3 BUTON YAN YANA SAĞA YASLI HİZALAMA
             col_spacer, col_excel, col_pdf, col_img = st.columns([3, 1, 1, 1], gap="small")
         
@@ -1759,6 +1658,139 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     type="secondary",
                     use_container_width=True
                 )
+
+
+            hist_df = st.session_state.history.copy()
+            original_teacher_names = preview_df["Öğretmen"].fillna("").astype(str).tolist()
+            preview_name_key = f"schedule_preview_names_{search_normalize(schedule_name_for_export)}"
+            preview_revision_key = f"schedule_preview_revision_{search_normalize(schedule_name_for_export)}"
+            signature_columns = [column for column in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if column in preview_df.columns]
+            preview_signature = hashlib.sha1(
+                preview_df[signature_columns].fillna("").astype(str).to_json(orient="records").encode("utf-8")
+            ).hexdigest()[:10]
+            if st.session_state.get(f"{preview_name_key}_signature") != preview_signature:
+                st.session_state[preview_name_key] = list(original_teacher_names)
+                st.session_state[f"{preview_name_key}_signature"] = preview_signature
+            if preview_revision_key not in st.session_state:
+                st.session_state[preview_revision_key] = 0
+            editor_revision = st.session_state[preview_revision_key]
+            editor_key = f"schedule_preview_teacher_editor_{search_normalize(schedule_name_for_export)}_{preview_signature}_{editor_revision}"
+
+            def persist_preview_teacher_edits():
+                widget_state = st.session_state.get(editor_key, {})
+                edited_rows = widget_state.get("edited_rows", {}) if isinstance(widget_state, dict) else {}
+                stored_names = list(st.session_state.get(preview_name_key, original_teacher_names))
+                case_changed = False
+                for row_index, changes in edited_rows.items():
+                    if isinstance(changes, dict) and "Öğretmen" in changes:
+                        row_index = int(row_index)
+                        if 0 <= row_index < len(stored_names):
+                            typed_name = str(changes["Öğretmen"] or "").strip()
+                            upper_name = turkish_upper(typed_name)
+                            case_changed |= typed_name != upper_name
+                            stored_names[row_index] = upper_name
+                st.session_state[preview_name_key] = stored_names
+                if case_changed:
+                    st.session_state[preview_revision_key] += 1
+
+            def make_preview_table(teacher_names):
+                edited_assignments = preview_df.copy()
+                edited_assignments["Öğretmen"] = teacher_names
+                if "Tarih/Hafta" in hist_df.columns:
+                    history_without_current = hist_df[hist_df["Tarih/Hafta"].astype(str) != schedule_name_for_export].copy()
+                else:
+                    history_without_current = hist_df.copy()
+                combined = pd.concat([history_without_current, edited_assignments], ignore_index=True, sort=False)
+                total_by_teacher = combined.groupby("Öğretmen").size().to_dict() if "Öğretmen" in combined else {}
+                double_by_teacher = {}
+                if {"Tarih/Hafta", "Öğretmen"}.issubset(combined.columns):
+                    weekly = combined.groupby(["Tarih/Hafta", "Öğretmen"]).size()
+                    double_by_teacher = weekly[weekly > 1].reset_index().groupby("Öğretmen").size().to_dict()
+                current_week_counts = pd.Series(teacher_names).value_counts().to_dict()
+                display = edited_assignments.copy()
+                display["Toplam Nöbet"] = display["Öğretmen"].map(total_by_teacher).fillna(0).astype(int)
+                display["Çift Nöbet"] = display["Öğretmen"].map(double_by_teacher).fillna(0).astype(int)
+                display["Çift Nöbet mi"] = display["Öğretmen"].map(lambda name: current_week_counts.get(name, 0) > 1)
+                if "Çift Nöbetçi mi" in display.columns:
+                    display = display.drop(columns=["Çift Nöbetçi mi"])
+                preferred_columns = ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Toplam Nöbet", "Çift Nöbet", "Çift Nöbet mi"]
+                return display[[column for column in preferred_columns if column in display.columns]]
+
+            proposed_teacher_names = list(st.session_state[preview_name_key])
+            preview_table = make_preview_table(proposed_teacher_names)
+            edited_preview = st.data_editor(
+                preview_table,
+                use_container_width=True,
+                hide_index=True,
+                disabled=[column for column in preview_table.columns if column != "Öğretmen"],
+                column_config={
+                    "Tarih": st.column_config.DateColumn("Tarih", format="DD.MM.YYYY"),
+                    "Öğretmen": st.column_config.TextColumn("Öğretmen", required=True),
+                    "Toplam Nöbet": st.column_config.NumberColumn("Toplam Nöbet", format="%d"),
+                    "Çift Nöbet": st.column_config.NumberColumn("Çift Nöbet", format="%d"),
+                    "Çift Nöbet mi": st.column_config.CheckboxColumn("Çift Nöbet mi"),
+                },
+                key=editor_key,
+                on_change=persist_preview_teacher_edits,
+            )
+            edited_teacher_names = [turkish_upper(name) for name in edited_preview["Öğretmen"].fillna("").astype(str).tolist()]
+            st.session_state[preview_name_key] = edited_teacher_names
+            changed_teacher_rows = [
+                index for index, (old_name, new_name) in enumerate(zip(original_teacher_names, edited_teacher_names))
+                if old_name.strip().casefold() != new_name.casefold()
+            ]
+            confirm_spacer, confirm_button_col = st.columns([5, 2])
+            with confirm_button_col:
+                confirm_teacher_changes = st.button(
+                    "✅ Öğretmen adı değişikliklerini onayla",
+                    key=f"confirm_preview_teacher_names_{search_normalize(schedule_name_for_export)}",
+                    disabled=not changed_teacher_rows,
+                    use_container_width=True,
+                )
+            if confirm_teacher_changes:
+                registered_names = {
+                    str(teacher.get("Ad Soyad", "")).strip().casefold(): str(teacher.get("Ad Soyad", "")).strip()
+                    for teacher in st.session_state.teachers_dict_list
+                }
+                unknown_names = sorted({edited_teacher_names[index] for index in changed_teacher_rows if edited_teacher_names[index].casefold() not in registered_names})
+                if unknown_names:
+                    st.warning("Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown_names))
+                else:
+                    updated_schedule = st.session_state.current_schedule.copy()
+                    updated_schedule["Öğretmen"] = [registered_names.get(name.casefold(), name) for name in edited_teacher_names]
+                    updated_weekly_counts = updated_schedule.groupby("Öğretmen").size()
+                    double_names = set(updated_weekly_counts[updated_weekly_counts > 1].index.astype(str))
+                    updated_schedule["Çift Nöbetçi mi"] = updated_schedule["Öğretmen"].astype(str).isin(double_names)
+                    st.session_state.current_schedule = updated_schedule
+                    if schedule_name_for_export in st.session_state.saved_schedules:
+                        st.session_state.saved_schedules[schedule_name_for_export] = updated_schedule.copy()
+
+                    history_week_mask = st.session_state.history["Tarih/Hafta"].astype(str) == schedule_name_for_export
+                    used_history_indexes = set()
+                    for row_index, (_, schedule_row) in enumerate(updated_schedule.iterrows()):
+                        old_name = original_teacher_names[row_index]
+                        row_dates = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce").dt.date
+                        schedule_date = pd.to_datetime(schedule_row.get("Tarih"), errors="coerce")
+                        schedule_date = schedule_date.date() if not pd.isna(schedule_date) else None
+                        matches = st.session_state.history.index[
+                            history_week_mask
+                            & (st.session_state.history["Gün"].astype(str) == str(schedule_row.get("Gün", "")))
+                            & (st.session_state.history["Bölüm/Yer"].astype(str) == str(schedule_row.get("Bölüm/Yer", "")))
+                            & (st.session_state.history["Öğretmen"].astype(str) == old_name)
+                            & (row_dates == schedule_date)
+                        ]
+                        history_index = next((index for index in matches if index not in used_history_indexes), None)
+                        if history_index is not None:
+                            st.session_state.history.at[history_index, "Öğretmen"] = updated_schedule.iloc[row_index]["Öğretmen"]
+                            used_history_indexes.add(history_index)
+                    history_week = st.session_state.history.loc[history_week_mask]
+                    history_week_counts = history_week.groupby("Öğretmen").size()
+                    history_double_names = set(history_week_counts[history_week_counts > 1].index.astype(str))
+                    st.session_state.history.loc[history_week.index, "Çift Nöbetçi mi"] = history_week["Öğretmen"].astype(str).isin(history_double_names).values
+                    save_app_data()
+                    st.success("Öğretmen adı değişiklikleri onaylandı ve nöbet sayıları güncellendi.")
+                    st.rerun()
+
 
 
 
@@ -2470,14 +2502,75 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                         if not edit_rows.empty:
                             editable_archive = edit_rows[[col for col in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if col in edit_rows.columns]].copy()
                             editable_archive["Tarih"] = pd.to_datetime(editable_archive["Tarih"], errors="coerce").dt.strftime("%d.%m.%Y")
-                            st.caption("Öğretmen sütunundaki adları düzenleyip kaydedin.")
+                            archive_slug = search_normalize(edit_archive_name)
+                            archive_revision_key = f"archive_teacher_revision_{archive_slug}"
+                            archive_signature_columns = [column for column in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if column in edit_rows.columns]
+                            archive_signature = hashlib.sha1(
+                                edit_rows[archive_signature_columns].fillna("").astype(str).to_json(orient="records").encode("utf-8")
+                            ).hexdigest()[:10]
+                            archive_names_key = f"archive_teacher_names_{archive_slug}_{archive_signature}"
+                            if archive_names_key not in st.session_state:
+                                st.session_state[archive_names_key] = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                            if archive_revision_key not in st.session_state:
+                                st.session_state[archive_revision_key] = 0
+                            archive_editor_key = f"archive_teacher_editor_{archive_slug}_{st.session_state[archive_revision_key]}"
+                            archive_warning_key = f"archive_teacher_warning_{archive_slug}"
+
+                            def persist_archive_teacher_edits():
+                                widget_state = st.session_state.get(archive_editor_key, {})
+                                edited_rows = widget_state.get("edited_rows", {}) if isinstance(widget_state, dict) else {}
+                                stored_names = list(st.session_state.get(archive_names_key, []))
+                                changed_to_lowercase = False
+                                for row_index, changes in edited_rows.items():
+                                    if isinstance(changes, dict) and "Öğretmen" in changes:
+                                        row_index = int(row_index)
+                                        if 0 <= row_index < len(stored_names):
+                                            typed_name = str(changes["Öğretmen"] or "").strip()
+                                            upper_name = turkish_upper(typed_name)
+                                            changed_to_lowercase |= typed_name != upper_name
+                                            stored_names[row_index] = upper_name
+                                st.session_state[archive_names_key] = stored_names
+                                original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                                registered = {
+                                    str(teacher.get("Ad Soyad", "")).strip().casefold()
+                                    for teacher in st.session_state.teachers_dict_list
+                                }
+                                unknown = sorted({
+                                    name for old_name, name in zip(original_names, stored_names)
+                                    if old_name.strip().casefold() != name.casefold() and name.casefold() not in registered
+                                })
+                                st.session_state[archive_warning_key] = (
+                                    "Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown)
+                                    if unknown else ""
+                                )
+                                if changed_to_lowercase:
+                                    st.session_state[archive_revision_key] += 1
+
+                            editable_archive["Öğretmen"] = st.session_state[archive_names_key]
+                            st.caption("İsim değişince kayıtlı öğretmen listesinde aranır ve büyük harfe çevrilir. Kaydetmek için onaylayın.")
                             edited_archive = st.data_editor(
                                 editable_archive, use_container_width=True, hide_index=True,
                                 disabled=[col for col in editable_archive.columns if col != "Öğretmen"],
-                                key=f"archive_teacher_editor_{edit_archive_name}",
+                                key=archive_editor_key,
+                                on_change=persist_archive_teacher_edits,
                             )
+                            if st.session_state.get(archive_warning_key):
+                                st.warning(st.session_state[archive_warning_key])
                             if st.button("💾 Öğretmen adı değişikliklerini kaydet", key="save_archive_teacher_names"):
-                                edited_names = edited_archive["Öğretmen"].fillna("").astype(str).str.strip().tolist()
+                                edited_names = [turkish_upper(name) for name in edited_archive["Öğretmen"].fillna("").astype(str).tolist()]
+                                original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                                registered = {
+                                    str(teacher.get("Ad Soyad", "")).strip().casefold(): str(teacher.get("Ad Soyad", "")).strip()
+                                    for teacher in st.session_state.teachers_dict_list
+                                }
+                                unknown = sorted({
+                                    name for old_name, name in zip(original_names, edited_names)
+                                    if old_name.strip().casefold() != name.casefold() and name.casefold() not in registered
+                                })
+                                if unknown:
+                                    st.warning("Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown))
+                                    st.stop()
+                                edited_names = [registered.get(name.casefold(), name) for name in edited_names]
                                 target_indexes = edit_rows.index.tolist()
                                 for idx, teacher_name in zip(target_indexes, edited_names):
                                     st.session_state.history.at[idx, "Öğretmen"] = teacher_name
