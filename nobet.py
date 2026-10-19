@@ -2767,9 +2767,10 @@ elif main_menu == "📊 İstatistikler":
                 final_stats[place_columns] = final_stats[place_columns].fillna(0).astype(int)
             sort_options = ["Ada Göre", "Toplam Nöbet Sayısına Göre", "Çift Nöbet Sayısına Göre"] + [f"Bölüm: {place}" for place in sorted(place_columns, key=str.casefold)]
             with stats_sort_col:
-                with st.popover("Sırala", use_container_width=True):
-                    st.radio("Sıralama ölçütü", sort_options, key="teacher_statistics_sort")
-                sort_choice = st.session_state.get("teacher_statistics_sort", sort_options[0])
+                sort_choice = st.selectbox(
+                    "Sırala", sort_options, key="teacher_statistics_sort",
+                    accept_new_options=False,
+                )
             if sort_choice == "Toplam Nöbet Sayısına Göre":
                 final_stats = final_stats.sort_values(["Toplam Nöbet Sayısı", "Öğretmen"], ascending=[False, True], key=lambda column: column.astype(str).str.casefold() if column.name == "Öğretmen" else column)
             elif sort_choice == "Çift Nöbet Sayısına Göre":
@@ -2780,10 +2781,15 @@ elif main_menu == "📊 İstatistikler":
             else:
                 final_stats = final_stats.sort_values("Öğretmen", key=lambda column: column.astype(str).str.casefold())
             final_stats.insert(0, "No", range(1, len(final_stats) + 1))
-            if sort_choice.startswith("Bölüm: ") and selected_place in final_stats.columns:
-                reordered_columns = ["No", "Öğretmen", selected_place] + [
+            priority_column = (
+                selected_place if sort_choice.startswith("Bölüm: ")
+                else "Çift Nöbet Sayısı" if sort_choice == "Çift Nöbet Sayısına Göre"
+                else None
+            )
+            if priority_column in final_stats.columns:
+                reordered_columns = ["No", "Öğretmen", priority_column] + [
                     column for column in final_stats.columns
-                    if column not in {"No", "Öğretmen", selected_place}
+                    if column not in {"No", "Öğretmen", priority_column}
                 ]
                 final_stats = final_stats[reordered_columns]
             # Her ekran genişliğinde ilk iki tanımlayıcı sütunu görünür tut.
