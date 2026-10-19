@@ -17,6 +17,8 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from docx import Document
 import openpyxl
+from openpyxl.cell.rich_text import CellRichText, TextBlock
+from openpyxl.cell.text import InlineFont
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -634,6 +636,8 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
 
     header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
     header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    place_name_font = InlineFont(rFont="Calibri", sz=10, b=True)
+    regular_text_font = InlineFont(rFont="Calibri", sz=10)
     thin_border = Border(
         left=Side(style="thin", color="000000"), right=Side(style="thin", color="000000"),
         top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
@@ -672,19 +676,20 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
             if tatil_aciklama:
                 section_value = f"*** TATİL ({tatil_aciklama}) ***" if index == 0 else ""
             else:
-                section_lines = []
+                section_value = CellRichText()
                 for location, _, show_title in group_locations:
                     matches = gun_df[gun_df["Bölüm/Yer"] == location]["Öğretmen"].tolist()
                     clean_matches = [name.split(" (")[0] for name in matches]
                     if clean_matches:
+                        if section_value:
+                            section_value.append(TextBlock(regular_text_font, "\n"))
                         if show_title:
-                            section_lines.append(
-                                f"{location}: {clean_matches[0]}"
-                                + ("\n" + "\n".join(clean_matches[1:]) if len(clean_matches) > 1 else "")
-                            )
+                            section_value.append(TextBlock(place_name_font, location))
+                            section_value.append(TextBlock(regular_text_font, ": " + "\n".join(clean_matches)))
                         else:
-                            section_lines.append("\n".join(clean_matches))
-                section_value = "\n".join(section_lines)
+                            section_value.append(TextBlock(regular_text_font, "\n".join(clean_matches)))
+                if not section_value:
+                    section_value = ""
             ws.cell(row=row, column=first_data_col + index, value=section_value)
 
         if tatil_aciklama and last_col > 2:
