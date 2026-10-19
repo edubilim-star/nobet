@@ -2778,6 +2778,12 @@ elif main_menu == "📊 İstatistikler":
             else:
                 final_stats = final_stats.sort_values("Öğretmen", key=lambda column: column.astype(str).str.casefold())
             final_stats.insert(0, "No", range(1, len(final_stats) + 1))
+            if sort_choice.startswith("Bölüm: ") and selected_place in final_stats.columns:
+                reordered_columns = ["No", "Öğretmen", selected_place] + [
+                    column for column in final_stats.columns
+                    if column not in {"No", "Öğretmen", selected_place}
+                ]
+                final_stats = final_stats[reordered_columns]
             # Her ekran genişliğinde ilk iki tanımlayıcı sütunu görünür tut.
             with st.container(border=True):
                 st.dataframe(
