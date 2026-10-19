@@ -2578,8 +2578,6 @@ elif main_menu == "📊 İstatistikler":
                 final_stats = toplam_stats
                 final_stats["Çift Nöbet Sayısı"] = 0
 
-            if "Çift Nöbet Sayısı" in final_stats.columns:
-                final_stats = final_stats.drop(columns=["Çift Nöbet Sayısı"])
             final_stats["Çift Nöbet Sayısı"] = final_stats["Çift Nöbet Sayısı"].fillna(0).astype(int)
 
             if "Bölüm/Yer" in hist.columns:
