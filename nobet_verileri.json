@@ -2920,7 +2920,7 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MÜNEVER ALICI",
+      "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3164,7 +3164,7 @@
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "EK BİNA 2.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
-      "Çift Nöbetçi mi": false,
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3209,7 +3209,7 @@
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MÜNEVER ALICI",
-      "Çift Nöbetçi mi": true,
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3336,7 +3336,7 @@
       "Tarih": "2026-10-26T00:00:00.000",
       "Gün": "PAZARTESİ",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "MÜNEVER ALICI",
+      "Öğretmen": "İBRAHİM KILIÇ",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -3580,7 +3580,7 @@
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "EK BİNA 2.KAT",
       "Öğretmen": "İBRAHİM KILIÇ",
-      "Çift Nöbetçi mi": false,
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3625,7 +3625,7 @@
       "Gün": "PERŞEMBE",
       "Bölüm/Yer": "3.KAT",
       "Öğretmen": "MÜNEVER ALICI",
-      "Çift Nöbetçi mi": true,
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -3753,7 +3753,7 @@
         "Tarih": "2026-10-26T00:00:00.000",
         "Gün": "PAZARTESİ",
         "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "MÜNEVER ALICI",
+        "Öğretmen": "İBRAHİM KILIÇ",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -3997,7 +3997,7 @@
         "Gün": "ÇARŞAMBA",
         "Bölüm/Yer": "EK BİNA 2.KAT",
         "Öğretmen": "İBRAHİM KILIÇ",
-        "Çift Nöbetçi mi": false,
+        "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
       {
@@ -4042,7 +4042,7 @@
         "Gün": "PERŞEMBE",
         "Bölüm/Yer": "3.KAT",
         "Öğretmen": "MÜNEVER ALICI",
-        "Çift Nöbetçi mi": true,
+        "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
