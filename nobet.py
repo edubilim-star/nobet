@@ -787,6 +787,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
         raise RuntimeError("Türkçe karakter destekli yazı tipi bulunamadı. Uygulamayla birlikte fonts/NotoSans-Regular.ttf ve fonts/NotoSans-Bold.ttf dosyalarını yükleyin.")
     title_style = ParagraphStyle('TitleStyle', parent=styles['Heading1'], fontName=bold_font, fontSize=14, alignment=1)
     cell_style = ParagraphStyle('CellStyle', parent=styles['Normal'], fontName=regular_font, fontSize=9)
+    holiday_style = ParagraphStyle('HolidayStyle', parent=cell_style, fontName=bold_font, alignment=1)
     right_style = ParagraphStyle('RightStyle', parent=cell_style, alignment=2)
     header_style = ParagraphStyle('HeaderStyle', parent=styles['Normal'], fontName=bold_font, fontSize=10, textColor=colors.whitesmoke, alignment=1)
 
@@ -852,7 +853,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
             holiday_rows.append(len(table_data))
             table_data.append([
                 Paragraph(f"<b>{safe_text(gun)}</b><br/>({gun_tarihi.strftime('%d.%m.%Y')})", cell_style),
-                Paragraph(f"<b>*** TATİL ({safe_text(tatil_aciklama)}) ***</b>", cell_style),
+                Paragraph(f"*** TATİL ({safe_text(tatil_aciklama)}) ***", holiday_style),
                 "", "", "", ""
             ])
         else:
@@ -2731,7 +2732,9 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
 # ================= 6. SEKME: İSTATİSTİKLER =================
 elif main_menu == "📊 İstatistikler":
     with st.container(border=True):
-        st.header("Öğretmen Nöbet Dağılımı ve Çift Nöbet İstatistikleri")
+        stats_title_col, stats_sort_col = st.columns([7, 3], vertical_alignment="center")
+        with stats_title_col:
+            st.header("Öğretmen Nöbet Dağılımı ve Çift Nöbet İstatistikleri")
         if not st.session_state.history.empty:
             hist = st.session_state.history
         
@@ -2748,6 +2751,7 @@ elif main_menu == "📊 İstatistikler":
 
             final_stats["Çift Nöbet Sayısı"] = final_stats["Çift Nöbet Sayısı"].fillna(0).astype(int)
 
+            place_columns = []
             if "Bölüm/Yer" in hist.columns:
                 place_stats = hist.pivot_table(
                     index="Öğretmen", columns="Bölüm/Yer", values="Tarih/Hafta",
@@ -2756,9 +2760,20 @@ elif main_menu == "📊 İstatistikler":
                 place_stats.columns = [str(place) for place in place_stats.columns]
                 place_stats = place_stats.reset_index()
                 final_stats = pd.merge(final_stats, place_stats, on="Öğretmen", how="left")
-                place_columns = [column for column in final_stats.columns if column.endswith(" nöbeti")]
+                place_columns = [str(place) for place in hist["Bölüm/Yer"].dropna().astype(str).unique() if str(place) in final_stats.columns]
                 final_stats[place_columns] = final_stats[place_columns].fillna(0).astype(int)
-            final_stats = final_stats.sort_values("Öğretmen", key=lambda column: column.astype(str).str.casefold())
+            sort_options = ["Ada Göre", "Toplam Nöbet Sayısına Göre", "Çift Nöbet Sayısına Göre"] + [f"Bölüm: {place}" for place in sorted(place_columns, key=str.casefold)]
+            with stats_sort_col:
+                sort_choice = st.selectbox("Sırala", sort_options, key="teacher_statistics_sort")
+            if sort_choice == "Toplam Nöbet Sayısına Göre":
+                final_stats = final_stats.sort_values(["Toplam Nöbet Sayısı", "Öğretmen"], ascending=[False, True], key=lambda column: column.astype(str).str.casefold() if column.name == "Öğretmen" else column)
+            elif sort_choice == "Çift Nöbet Sayısına Göre":
+                final_stats = final_stats.sort_values(["Çift Nöbet Sayısı", "Öğretmen"], ascending=[False, True], key=lambda column: column.astype(str).str.casefold() if column.name == "Öğretmen" else column)
+            elif sort_choice.startswith("Bölüm: "):
+                selected_place = sort_choice[len("Bölüm: "):]
+                final_stats = final_stats.sort_values([selected_place, "Öğretmen"], ascending=[False, True], key=lambda column: column.astype(str).str.casefold() if column.name == "Öğretmen" else column)
+            else:
+                final_stats = final_stats.sort_values("Öğretmen", key=lambda column: column.astype(str).str.casefold())
             final_stats.insert(0, "No", range(1, len(final_stats) + 1))
             # Her ekran genişliğinde ilk iki tanımlayıcı sütunu görünür tut.
             with st.container(border=True):
