@@ -305,7 +305,9 @@
         "ANASINIFI KAPI",
         "GİRİŞ"
       ],
-      "İzinli Günler": [],
+      "İzinli Günler": [
+        "ÇARŞAMBA"
+      ],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
