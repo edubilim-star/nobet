@@ -2789,7 +2789,7 @@ elif main_menu == "📊 İstatistikler":
                 st.dataframe(
                     final_stats, use_container_width=True, hide_index=True,
                     column_config={
-                        "No": st.column_config.NumberColumn("No", width="small", pinned=True),
+                        "No": st.column_config.NumberColumn("No", width=36, pinned=True),
                         "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
                     },
                 )
