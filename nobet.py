@@ -17,8 +17,6 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from docx import Document
 import openpyxl
-from openpyxl.cell.rich_text import CellRichText, TextBlock
-from openpyxl.cell.text import InlineFont
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -636,8 +634,6 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
 
     header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
     header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
-    bold_inline_font = InlineFont(rFont="Calibri", sz=10, b=True)
-    regular_inline_font = InlineFont(rFont="Calibri", sz=10)
     thin_border = Border(
         left=Side(style="thin", color="000000"), right=Side(style="thin", color="000000"),
         top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
@@ -651,6 +647,7 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
 
     gunler = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
     start_row = 4
+    holiday_excel_rows = []
     for idx, gun in enumerate(gunler):
         row = start_row + idx
         gun_tarihi = start_date + datetime.timedelta(days=idx)
@@ -675,26 +672,23 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
             if tatil_aciklama:
                 section_value = f"*** TATİL ({tatil_aciklama}) ***" if index == 0 else ""
             else:
-                section_value = CellRichText()
+                section_lines = []
                 for location, _, show_title in group_locations:
                     matches = gun_df[gun_df["Bölüm/Yer"] == location]["Öğretmen"].tolist()
                     clean_matches = [name.split(" (")[0] for name in matches]
                     if clean_matches:
-                        if section_value:
-                            section_value.append(TextBlock(regular_inline_font, "\n"))
                         if show_title:
-                            section_value.append(TextBlock(bold_inline_font, f"{location}: "))
-                            section_value.append(TextBlock(regular_inline_font, "\n".join(clean_matches)))
+                            section_lines.append(
+                                f"{location}: {clean_matches[0]}"
+                                + ("\n" + "\n".join(clean_matches[1:]) if len(clean_matches) > 1 else "")
+                            )
                         else:
-                            section_value.append(TextBlock(regular_inline_font, "\n".join(clean_matches)))
-                if not section_value:
-                    section_value = ""
+                            section_lines.append("\n".join(clean_matches))
+                section_value = "\n".join(section_lines)
             ws.cell(row=row, column=first_data_col + index, value=section_value)
 
         if tatil_aciklama and last_col > 2:
-            ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=last_col)
-            holiday_cell = ws.cell(row=row, column=2)
-            holiday_cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+            holiday_excel_rows.append(row)
 
         assistants = my_listesi.get(gun, []) if isinstance(my_listesi, dict) else my_listesi
         if not tatil_aciklama:
@@ -707,8 +701,13 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
             cell.border = thin_border
             cell.alignment = Alignment(horizontal="center" if col in [1, deputy_col] else "left", vertical="center", wrap_text=True)
             cell.font = Font(name="Calibri", size=10, bold=(col==1))
-        if tatil_aciklama:
-            holiday_cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    # Merge holiday cells only after all cell values and styles are prepared.
+    for holiday_row in holiday_excel_rows:
+        ws.merge_cells(start_row=holiday_row, start_column=2, end_row=holiday_row, end_column=last_col)
+        ws.cell(row=holiday_row, column=2).alignment = Alignment(
+            horizontal="center", vertical="center", wrap_text=True
+        )
 
     footer_row = start_row + len(gunler) + 1
     ws.merge_cells(start_row=footer_row, start_column=1, end_row=footer_row+1, end_column=last_col)
@@ -2775,7 +2774,7 @@ elif main_menu == "📊 İstatistikler":
                 st.dataframe(
                     final_stats, use_container_width=True, hide_index=True,
                     column_config={
-                        "No": st.column_config.NumberColumn("No", width=42, pinned=True, alignment="center"),
+                        "No": st.column_config.NumberColumn("No", width="small", pinned=True),
                         "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
                     },
                 )
