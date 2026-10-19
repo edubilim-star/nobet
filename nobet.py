@@ -642,8 +642,14 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
                 section_value = "\n".join(lines)
             ws.cell(row=row, column=first_data_col + index, value=section_value)
 
+        if tatil_aciklama and last_col > 2:
+            ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=last_col)
+            holiday_cell = ws.cell(row=row, column=2)
+            holiday_cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
         assistants = my_listesi.get(gun, []) if isinstance(my_listesi, dict) else my_listesi
-        ws.cell(row=row, column=deputy_col, value="\n".join(assistants))
+        if not tatil_aciklama:
+            ws.cell(row=row, column=deputy_col, value="\n".join(assistants))
         
         ws.row_dimensions[row].height = 70
         
@@ -652,6 +658,8 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
             cell.border = thin_border
             cell.alignment = Alignment(horizontal="center" if col in [1, deputy_col] else "left", vertical="center", wrap_text=True)
             cell.font = Font(name="Calibri", size=10, bold=(col==1))
+        if tatil_aciklama:
+            holiday_cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
     footer_row = start_row + len(gunler) + 1
     ws.merge_cells(start_row=footer_row, start_column=1, end_row=footer_row+1, end_column=last_col)
@@ -816,7 +824,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
     return pdf_buffer
 
 
-def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, holidays_df, locations_df, sections_df):
+def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df):
     section_headers = sections_df["Excel Başlığı"].astype(str).tolist() if sections_df is not None and "Excel Başlığı" in sections_df else ["BAHÇE", "SINIF VE KORİDORLAR", "ANASINIFI KAPI", "EK BİNA"]
     if not section_headers:
         section_headers = ["BAHÇE", "SINIF VE KORİDORLAR", "ANASINIFI KAPI", "EK BİNA"]
@@ -911,7 +919,8 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
             for col_idx, value in enumerate(values)
         )
         row_heights.append(max(150, line_count * body_line_height + 28))
-    footer_height = 120
+    note_lines = wrap_to_width(note_text, body_font, table_width)
+    footer_height = max(150, len(note_lines) * body_line_height + 110)
     height = title_height + header_height + sum(row_heights) + footer_height
     image = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(image)
@@ -943,7 +952,12 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
                 y += body_line_height
         top += row_height
 
-    footer_y = top + 35
+    footer_y = top + 20
+    note_y = footer_y
+    for line in note_lines:
+        draw.text((margin, note_y), line, fill="#111827", font=body_font)
+        note_y += body_line_height
+    footer_y = max(footer_y + 45, note_y + 15)
     draw.text((width - margin, footer_y), str(principal_name), fill="#111827", font=body_font, anchor="rt")
     draw.text((width - margin, footer_y + 40), "OKUL MÜDÜRÜ", fill="#111827", font=body_font, anchor="rt")
     output = io.BytesIO()
@@ -1029,12 +1043,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         selected_frame = archive_frames.get(selected_name) if selected_name else None
         if selected_frame is not None and not selected_frame.empty:
             st.session_state.current_schedule = selected_frame.copy()
-            selected_dates = pd.to_datetime(selected_frame.get("Tarih", pd.Series(dtype=object)), errors="coerce").dropna()
-            if not selected_dates.empty:
-                selected_start = selected_dates.min().date()
-                selected_start -= datetime.timedelta(days=selected_start.weekday())
-                st.session_state["schedule_start_date"] = selected_start
-            st.session_state["schedule_period_name"] = selected_name
 
         with st.container(border=True):
             st.markdown("#### Yeni haftalık çizelge")
@@ -1069,6 +1077,21 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             with col2:
                 bitis_tarihi = baslangic_tarihi + datetime.timedelta(days=4)
                 hafta_adi = st.text_input("Nöbet Dönem Adı (Otomatik Gelir)", key="schedule_period_name")
+            prioritize_double_days = st.checkbox(
+                "Çift nöbet günlerini öncelik sırasına göre seç",
+                key="prioritize_double_days",
+                help="Açıkken seçtiğiniz günlerde, uygun olduğu ölçüde çift nöbetler önce değerlendirilir.",
+            )
+            double_day_priority = []
+            if prioritize_double_days:
+                if "double_day_priority" not in st.session_state:
+                    st.session_state["double_day_priority"] = []
+                double_day_priority = st.multiselect(
+                    "Çift günlerini seç (üstten alta öncelik sırası)",
+                    options=WEEKDAYS,
+                    key="double_day_priority",
+                    help="Listede seçtiğiniz günlerin sırası, çift nöbet önceliğidir.",
+                )
             generate_clicked = st.button(
                 "🎲 Akıllı Kurallı Dağıtımla Çizelgeyi Oluştur",
                 type="primary", use_container_width=True,
@@ -1201,12 +1224,16 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             [name for name in teacher_names if eligible(name, slot)]
             for slot in slots
         ]
+        double_day_rank = {
+            day: index for index, day in enumerate(double_day_priority)
+        } if prioritize_double_days else {}
         # Önce daha az seçeneği olan görevleri çöz; eşitlikte çift isteyenlere
         # uygun daha geniş görevleri erken ele al ki sıfır sayılılar dışarıda kalmasın.
         slot_order = sorted(
             range(len(slots)),
             key=lambda i: (
                 len(slot_candidates[i]),
+                double_day_rank.get(slots[i][0], len(double_day_rank)),
                 -sum(bool(teacher_by_name[name]["Haftada 2 Nöbet İstiyor"]) for name in slot_candidates[i]),
             ),
         )
@@ -1542,7 +1569,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     st.session_state.current_schedule, schedule_name_for_export,
                     current_deputy_assignments, schedule_start_for_export,
                     st.session_state.school_info["okul_adi"], st.session_state.school_info["mudur_adi"],
-                    st.session_state.holidays, st.session_state.locations, st.session_state.excel_sections
+                    st.session_state.school_info["not_metni"], st.session_state.holidays,
+                    st.session_state.locations, st.session_state.excel_sections
                 )
                 st.download_button(
                     label="🖼️ Resim İndir",
@@ -1827,6 +1855,9 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
             else guess_excel_section(row.get("Nöbet Yeri / Bölüm", ""), excel_headers),
             axis=1
         )
+        section_order_map = {str(header).strip(): index for index, header in enumerate(excel_headers)}
+        edited_locs["_section_order"] = edited_locs["Excel Bölümü"].astype(str).map(section_order_map).fillna(len(section_order_map))
+        edited_locs = edited_locs.sort_values("_section_order", kind="stable").drop(columns="_section_order")
         st.session_state.locations = edited_locs.reset_index(drop=True)
         # Persist on every editor rerun. A later st.stop() in schedule generation
         # must not be able to discard the last location-day selection.
@@ -2244,12 +2275,85 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
 
         with st.container(border=True):
             st.subheader("Kayıtlı Listeler ve Eski Nöbet Arşivi")
+            backup_payload = {
+                "backup_version": 1,
+                "history": _records_for_json(st.session_state.history),
+                "saved_schedules": {
+                    str(name): _records_for_json(frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame))
+                    for name, frame in st.session_state.saved_schedules.items()
+                },
+                "current_schedule": _records_for_json(st.session_state.current_schedule),
+                "mudur_yardimcisi_gecmisi": st.session_state.mudur_yardimcisi_gecmisi,
+            }
+            backup_left, backup_right = st.columns(2)
+            with backup_left:
+                st.download_button(
+                    "📦 Tüm arşivi yedekle",
+                    data=json.dumps(backup_payload, ensure_ascii=False, indent=2),
+                    file_name=f"nobet_arsiv_yedegi_{datetime.date.today().isoformat()}.json",
+                    mime="application/json", use_container_width=True,
+                    key="download_archive_backup",
+                )
+            with backup_right:
+                backup_file = st.file_uploader("Arşiv yedeği seçin", type=["json"], key="archive_backup_upload")
+                if st.button("♻️ Yedeği geri yükle", key="restore_archive_backup", disabled=backup_file is None, use_container_width=True):
+                    try:
+                        restored = json.loads(backup_file.getvalue().decode("utf-8-sig"))
+                        if not isinstance(restored, dict) or not all(key in restored for key in ("history", "saved_schedules", "mudur_yardimcisi_gecmisi")):
+                            raise ValueError("Dosya geçerli bir nöbet arşiv yedeği değil.")
+                        history_columns = ["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"]
+                        st.session_state.history = pd.DataFrame(restored["history"]).reindex(columns=history_columns)
+                        st.session_state.history["Tarih"] = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce")
+                        st.session_state.saved_schedules = {str(name): pd.DataFrame(rows) for name, rows in restored["saved_schedules"].items()}
+                        current_rows = restored.get("current_schedule")
+                        st.session_state.current_schedule = pd.DataFrame(current_rows) if current_rows else None
+                        st.session_state.mudur_yardimcisi_gecmisi = restored["mudur_yardimcisi_gecmisi"]
+                        st.session_state.processed_uploads = set()
+                        save_app_data()
+                        st.success("Arşiv yedeği geri yüklendi.")
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(f"Yedek geri yüklenemedi: {exc}")
+
             if (not st.session_state.history.empty and "Tarih/Hafta" in st.session_state.history.columns) or st.session_state.mudur_yardimcisi_gecmisi:
                 archive_names = set(st.session_state.mudur_yardimcisi_gecmisi.keys())
                 if not st.session_state.history.empty and "Tarih/Hafta" in st.session_state.history.columns:
                     archive_names.update(st.session_state.history["Tarih/Hafta"].dropna().astype(str).unique().tolist())
                 archive_names = sorted(archive_names)
                 if archive_names:
+                    with st.expander("Arşivde öğretmen adlarını düzenle", expanded=False):
+                        edit_archive_name = st.selectbox("Düzenlenecek eski liste", archive_names, key="archive_teacher_edit_period")
+                        edit_rows = st.session_state.history[
+                            st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
+                        ].copy()
+                        if not edit_rows.empty:
+                            editable_archive = edit_rows[[col for col in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if col in edit_rows.columns]].copy()
+                            editable_archive["Tarih"] = pd.to_datetime(editable_archive["Tarih"], errors="coerce").dt.strftime("%d.%m.%Y")
+                            st.caption("Öğretmen sütunundaki adları düzenleyip kaydedin.")
+                            edited_archive = st.data_editor(
+                                editable_archive, use_container_width=True, hide_index=True,
+                                disabled=[col for col in editable_archive.columns if col != "Öğretmen"],
+                                key=f"archive_teacher_editor_{edit_archive_name}",
+                            )
+                            if st.button("💾 Öğretmen adı değişikliklerini kaydet", key="save_archive_teacher_names"):
+                                edited_names = edited_archive["Öğretmen"].fillna("").astype(str).str.strip().tolist()
+                                target_indexes = edit_rows.index.tolist()
+                                for idx, teacher_name in zip(target_indexes, edited_names):
+                                    st.session_state.history.at[idx, "Öğretmen"] = teacher_name
+                                current_week = st.session_state.history[
+                                    st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
+                                ]
+                                weekly_counts = current_week.groupby("Öğretmen").size()
+                                double_names = set(weekly_counts[weekly_counts > 1].index.astype(str))
+                                st.session_state.history.loc[current_week.index, "Çift Nöbetçi mi"] = current_week["Öğretmen"].astype(str).isin(double_names).values
+                                if edit_archive_name in st.session_state.saved_schedules:
+                                    st.session_state.saved_schedules[edit_archive_name] = current_week.copy().reset_index(drop=True)
+                                if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty and "Tarih/Hafta" in st.session_state.current_schedule:
+                                    if (st.session_state.current_schedule["Tarih/Hafta"].astype(str) == edit_archive_name).any():
+                                        st.session_state.current_schedule = current_week.copy().reset_index(drop=True)
+                                save_app_data()
+                                st.success("Öğretmen adları güncellendi.")
+                                st.rerun()
                     with st.expander("Arşiv kayıtlarını yönet", expanded=False):
                         selected_archive = st.selectbox("Silmek istediğiniz liste veya dönemi seçin", archive_names, key="archive_to_delete")
                         if st.button("🗑️ Seçili listeyi sil", key="delete_archive", type="secondary", use_container_width=True):
@@ -2265,23 +2369,13 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                             st.success(f"'{selected_archive}' silindi; ilgili kayıtlar istatistiklerden kaldırıldı.")
                             st.rerun()
                         if st.button("🧹 Eski listelerin tamamını sil", key="delete_all_archives", use_container_width=True):
-                            st.session_state.history = st.session_state.history[
-                                st.session_state.history["Kaynak"] == "Oluşturulan"
-                            ].reset_index(drop=True)
-                            retained_periods = set(st.session_state.history["Tarih/Hafta"].astype(str))
+                            st.session_state.history = pd.DataFrame(columns=["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"])
                             st.session_state.saved_schedules = {}
-                            for period in retained_periods:
-                                period_df = st.session_state.history[st.session_state.history["Tarih/Hafta"].astype(str) == period].copy()
-                                st.session_state.saved_schedules[period] = period_df
-                            st.session_state.mudur_yardimcisi_gecmisi = {
-                                period: entry for period, entry in st.session_state.mudur_yardimcisi_gecmisi.items()
-                                if period in retained_periods
-                            }
-                            if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty:
-                                if not (st.session_state.current_schedule["Tarih/Hafta"].astype(str).isin(retained_periods)).any():
-                                    st.session_state.current_schedule = None
+                            st.session_state.mudur_yardimcisi_gecmisi = {}
+                            st.session_state.current_schedule = None
+                            st.session_state.processed_uploads = set()
                             save_app_data()
-                            st.success("Eski Word/Excel listeleri silindi; bu listelerin istatistikleri kaldırıldı.")
+                            st.success("Tüm nöbet ve arşiv kayıtları silindi.")
                             st.rerun()
 
             st.dataframe(st.session_state.history, use_container_width=True)
