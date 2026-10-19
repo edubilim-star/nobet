@@ -523,6 +523,7 @@ div[data-testid="stHorizontalBlock"] {
 """, unsafe_allow_html=True)
 
 # --- UYGULAMA GEZİNME MENÜSÜ ---
+st.title(f"{st.session_state.school_info.get('okul_adi', 'Okul')} Nöbet Hazırlama Programı")
 MENU_OPTIONS = [
     "📅 Nöbet Listesi Oluştur",
     "👥 Öğretmen Yönetimi",
@@ -1084,14 +1085,19 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             )
             double_day_priority = []
             if prioritize_double_days:
-                if "double_day_priority" not in st.session_state:
-                    st.session_state["double_day_priority"] = []
-                double_day_priority = st.multiselect(
-                    "Çift günlerini seç (üstten alta öncelik sırası)",
-                    options=WEEKDAYS,
-                    key="double_day_priority",
-                    help="Listede seçtiğiniz günlerin sırası, çift nöbet önceliğidir.",
-                )
+                st.caption("Çift nöbet önceliğini belirlemek için günleri sırasıyla seçin.")
+                chosen_days = []
+                for priority_index in range(len(WEEKDAYS)):
+                    key = f"double_day_priority_{priority_index}"
+                    available_days = [day for day in WEEKDAYS if day not in chosen_days]
+                    options = ["Öncelik yok"] + available_days
+                    previous_choice = st.session_state.get(key, "Öncelik yok")
+                    if previous_choice not in options:
+                        st.session_state[key] = "Öncelik yok"
+                    selected_day = st.selectbox(f"{priority_index + 1}. öncelikli gün", options, key=key)
+                    if selected_day != "Öncelik yok":
+                        chosen_days.append(selected_day)
+                double_day_priority = chosen_days
             generate_clicked = st.button(
                 "🎲 Akıllı Kurallı Dağıtımla Çizelgeyi Oluştur",
                 type="primary", use_container_width=True,
@@ -1511,6 +1517,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             schedule_name_for_export = str(preview_df["Tarih/Hafta"].dropna().iloc[0]) if "Tarih/Hafta" in preview_df and not preview_df["Tarih/Hafta"].dropna().empty else hafta_adi
             schedule_start_for_export = baslangic_tarihi
             if "Tarih" in preview_df.columns:
+                preview_df["Tarih"] = pd.to_datetime(preview_df["Tarih"], errors="coerce").dt.date
                 preview_dates = pd.to_datetime(preview_df["Tarih"], errors="coerce").dropna()
                 if not preview_dates.empty:
                     first_date = preview_dates.min().date()
@@ -1581,7 +1588,10 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     use_container_width=True
                 )
 
-            st.dataframe(preview_df, use_container_width=True)
+            st.dataframe(
+                preview_df, use_container_width=True,
+                column_config={"Tarih": st.column_config.DateColumn("Tarih", format="DD.MM.YYYY")},
+            )
 
 
 # ================= 2. SEKME: ÖĞRETMEN YÖNETİMİ =================
@@ -1703,10 +1713,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 st.success(f"{len(added_names)} öğretmen eklendi.")
                 st.rerun()
 
-        st.markdown("---")
-        st.subheader("📋 Öğretmen Listesi ve Kısıt Ayarları")
-        st.caption("Nöbet sayaçları arşivdeki çizelgelere göre hesaplanır. Listeyi ada veya nöbet sayılarına göre sıralayabilirsiniz.")
-
         if "confirm_delete_all_teachers" not in st.session_state:
             st.session_state.confirm_delete_all_teachers = False
         if st.button("🗑️ Tüm öğretmenleri sil", key="delete_all_teachers_start", use_container_width=True):
@@ -1728,6 +1734,10 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 if st.button("İptal", key="delete_all_teachers_cancel", use_container_width=True):
                     st.session_state.confirm_delete_all_teachers = False
                     st.rerun()
+
+        st.markdown("---")
+        st.subheader("📋 Öğretmen Listesi ve Kısıt Ayarları")
+        st.caption("Nöbet sayaçları arşivdeki çizelgelere göre hesaplanır. Listeyi ada veya nöbet sayılarına göre sıralayabilirsiniz.")
 
         sort_mode = st.selectbox(
             "Öğretmenleri sırala",
@@ -2275,52 +2285,11 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
 
         with st.container(border=True):
             st.subheader("Kayıtlı Listeler ve Eski Nöbet Arşivi")
-            backup_payload = {
-                "backup_version": 1,
-                "history": _records_for_json(st.session_state.history),
-                "saved_schedules": {
-                    str(name): _records_for_json(frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame))
-                    for name, frame in st.session_state.saved_schedules.items()
-                },
-                "current_schedule": _records_for_json(st.session_state.current_schedule),
-                "mudur_yardimcisi_gecmisi": st.session_state.mudur_yardimcisi_gecmisi,
-            }
-            backup_left, backup_right = st.columns(2)
-            with backup_left:
-                st.download_button(
-                    "📦 Tüm arşivi yedekle",
-                    data=json.dumps(backup_payload, ensure_ascii=False, indent=2),
-                    file_name=f"nobet_arsiv_yedegi_{datetime.date.today().isoformat()}.json",
-                    mime="application/json", use_container_width=True,
-                    key="download_archive_backup",
-                )
-            with backup_right:
-                backup_file = st.file_uploader("Arşiv yedeği seçin", type=["json"], key="archive_backup_upload")
-                if st.button("♻️ Yedeği geri yükle", key="restore_archive_backup", disabled=backup_file is None, use_container_width=True):
-                    try:
-                        restored = json.loads(backup_file.getvalue().decode("utf-8-sig"))
-                        if not isinstance(restored, dict) or not all(key in restored for key in ("history", "saved_schedules", "mudur_yardimcisi_gecmisi")):
-                            raise ValueError("Dosya geçerli bir nöbet arşiv yedeği değil.")
-                        history_columns = ["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"]
-                        st.session_state.history = pd.DataFrame(restored["history"]).reindex(columns=history_columns)
-                        st.session_state.history["Tarih"] = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce")
-                        st.session_state.saved_schedules = {str(name): pd.DataFrame(rows) for name, rows in restored["saved_schedules"].items()}
-                        current_rows = restored.get("current_schedule")
-                        st.session_state.current_schedule = pd.DataFrame(current_rows) if current_rows else None
-                        st.session_state.mudur_yardimcisi_gecmisi = restored["mudur_yardimcisi_gecmisi"]
-                        st.session_state.processed_uploads = set()
-                        save_app_data()
-                        st.success("Arşiv yedeği geri yüklendi.")
-                        st.rerun()
-                    except Exception as exc:
-                        st.error(f"Yedek geri yüklenemedi: {exc}")
-
-            if (not st.session_state.history.empty and "Tarih/Hafta" in st.session_state.history.columns) or st.session_state.mudur_yardimcisi_gecmisi:
-                archive_names = set(st.session_state.mudur_yardimcisi_gecmisi.keys())
-                if not st.session_state.history.empty and "Tarih/Hafta" in st.session_state.history.columns:
-                    archive_names.update(st.session_state.history["Tarih/Hafta"].dropna().astype(str).unique().tolist())
-                archive_names = sorted(archive_names)
-                if archive_names:
+            archive_names = set(st.session_state.mudur_yardimcisi_gecmisi.keys())
+            if not st.session_state.history.empty and "Tarih/Hafta" in st.session_state.history.columns:
+                archive_names.update(st.session_state.history["Tarih/Hafta"].dropna().astype(str).unique().tolist())
+            archive_names = sorted(archive_names) or [""]
+            if archive_names:
                     with st.expander("Arşivde öğretmen adlarını düzenle", expanded=False):
                         edit_archive_name = st.selectbox("Düzenlenecek eski liste", archive_names, key="archive_teacher_edit_period")
                         edit_rows = st.session_state.history[
@@ -2355,6 +2324,43 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                 st.success("Öğretmen adları güncellendi.")
                                 st.rerun()
                     with st.expander("Arşiv kayıtlarını yönet", expanded=False):
+                        backup_payload = {
+                            "backup_version": 1,
+                            "history": _records_for_json(st.session_state.history),
+                            "saved_schedules": {
+                                str(name): _records_for_json(frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame))
+                                for name, frame in st.session_state.saved_schedules.items()
+                            },
+                            "current_schedule": _records_for_json(st.session_state.current_schedule),
+                            "mudur_yardimcisi_gecmisi": st.session_state.mudur_yardimcisi_gecmisi,
+                        }
+                        st.download_button(
+                            "📦 Tüm arşivi yedekle",
+                            data=json.dumps(backup_payload, ensure_ascii=False, indent=2),
+                            file_name=f"nobet_arsiv_yedegi_{datetime.date.today().isoformat()}.json",
+                            mime="application/json", use_container_width=True,
+                            key="download_archive_backup",
+                        )
+                        backup_file = st.file_uploader("Arşiv yedeğini seçin", type=["json"], key="archive_backup_upload")
+                        if st.button("♻️ Yedeği geri yükle", key="restore_archive_backup", disabled=backup_file is None, use_container_width=True):
+                            try:
+                                restored = json.loads(backup_file.getvalue().decode("utf-8-sig"))
+                                if not isinstance(restored, dict) or not all(key in restored for key in ("history", "saved_schedules", "mudur_yardimcisi_gecmisi")):
+                                    raise ValueError("Dosya geçerli bir nöbet arşiv yedeği değil.")
+                                history_columns = ["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"]
+                                st.session_state.history = pd.DataFrame(restored["history"]).reindex(columns=history_columns)
+                                st.session_state.history["Tarih"] = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce")
+                                st.session_state.saved_schedules = {str(name): pd.DataFrame(rows) for name, rows in restored["saved_schedules"].items()}
+                                current_rows = restored.get("current_schedule")
+                                st.session_state.current_schedule = pd.DataFrame(current_rows) if current_rows else None
+                                st.session_state.mudur_yardimcisi_gecmisi = restored["mudur_yardimcisi_gecmisi"]
+                                st.session_state.processed_uploads = set()
+                                save_app_data()
+                                st.success("Arşiv yedeği geri yüklendi.")
+                                st.rerun()
+                            except Exception as exc:
+                                st.error(f"Yedek geri yüklenemedi: {exc}")
+                        st.markdown("---")
                         selected_archive = st.selectbox("Silmek istediğiniz liste veya dönemi seçin", archive_names, key="archive_to_delete")
                         if st.button("🗑️ Seçili listeyi sil", key="delete_archive", type="secondary", use_container_width=True):
                             st.session_state.history = st.session_state.history[
