@@ -1675,22 +1675,39 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 st.session_state[preview_revision_key] = 0
             editor_revision = st.session_state[preview_revision_key]
             editor_key = f"schedule_preview_teacher_editor_{search_normalize(schedule_name_for_export)}_{preview_signature}_{editor_revision}"
+            preview_warning_key = f"schedule_preview_teacher_warning_{search_normalize(schedule_name_for_export)}"
 
             def persist_preview_teacher_edits():
                 widget_state = st.session_state.get(editor_key, {})
                 edited_rows = widget_state.get("edited_rows", {}) if isinstance(widget_state, dict) else {}
                 stored_names = list(st.session_state.get(preview_name_key, original_teacher_names))
-                case_changed = False
+                needs_refresh = False
+                registered = {
+                    str(teacher.get("Ad Soyad", "")).strip().casefold()
+                    for teacher in st.session_state.teachers_dict_list
+                }
+                rejected = []
                 for row_index, changes in edited_rows.items():
                     if isinstance(changes, dict) and "Öğretmen" in changes:
                         row_index = int(row_index)
                         if 0 <= row_index < len(stored_names):
                             typed_name = str(changes["Öğretmen"] or "").strip()
                             upper_name = turkish_upper(typed_name)
-                            case_changed |= typed_name != upper_name
-                            stored_names[row_index] = upper_name
+                            needs_refresh |= typed_name != upper_name
+                            if (upper_name.casefold() != original_teacher_names[row_index].strip().casefold()
+                                    and upper_name.casefold() not in registered):
+                                rejected.append(upper_name)
+                                stored_names[row_index] = original_teacher_names[row_index]
+                                needs_refresh = True
+                            else:
+                                stored_names[row_index] = upper_name
                 st.session_state[preview_name_key] = stored_names
-                if case_changed:
+                st.session_state[preview_warning_key] = (
+                    "Kayıtlı olmayan öğretmen adı: " + ", ".join(sorted(set(rejected)))
+                    + ". Eski öğretmen adı geri yüklendi."
+                    if rejected else ""
+                )
+                if needs_refresh:
                     st.session_state[preview_revision_key] += 1
 
             def make_preview_table(teacher_names):
@@ -1718,6 +1735,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
 
             proposed_teacher_names = list(st.session_state[preview_name_key])
             preview_table = make_preview_table(proposed_teacher_names)
+            if st.session_state.get(preview_warning_key):
+                st.warning(st.session_state[preview_warning_key])
             edited_preview = st.data_editor(
                 preview_table,
                 use_container_width=True,
@@ -1754,7 +1773,17 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 }
                 unknown_names = sorted({edited_teacher_names[index] for index in changed_teacher_rows if edited_teacher_names[index].casefold() not in registered_names})
                 if unknown_names:
-                    st.warning("Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown_names))
+                    st.session_state[preview_warning_key] = (
+                        "Kayıtlı olmayan öğretmen adı: " + ", ".join(unknown_names)
+                        + ". Eski öğretmen adı geri yüklendi."
+                    )
+                    restored_names = list(edited_teacher_names)
+                    for index in changed_teacher_rows:
+                        if restored_names[index].casefold() not in registered_names:
+                            restored_names[index] = original_teacher_names[index]
+                    st.session_state[preview_name_key] = restored_names
+                    st.session_state[preview_revision_key] += 1
+                    st.rerun()
                 else:
                     updated_schedule = st.session_state.current_schedule.copy()
                     updated_schedule["Öğretmen"] = [registered_names.get(name.casefold(), name) for name in edited_teacher_names]
@@ -2520,42 +2549,46 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                 widget_state = st.session_state.get(archive_editor_key, {})
                                 edited_rows = widget_state.get("edited_rows", {}) if isinstance(widget_state, dict) else {}
                                 stored_names = list(st.session_state.get(archive_names_key, []))
-                                changed_to_lowercase = False
+                                needs_refresh = False
+                                original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                                registered = {
+                                    str(teacher.get("Ad Soyad", "")).strip().casefold()
+                                    for teacher in st.session_state.teachers_dict_list
+                                }
+                                rejected = []
                                 for row_index, changes in edited_rows.items():
                                     if isinstance(changes, dict) and "Öğretmen" in changes:
                                         row_index = int(row_index)
                                         if 0 <= row_index < len(stored_names):
                                             typed_name = str(changes["Öğretmen"] or "").strip()
                                             upper_name = turkish_upper(typed_name)
-                                            changed_to_lowercase |= typed_name != upper_name
-                                            stored_names[row_index] = upper_name
+                                            needs_refresh |= typed_name != upper_name
+                                            if (upper_name.casefold() != original_names[row_index].strip().casefold()
+                                                    and upper_name.casefold() not in registered):
+                                                rejected.append(upper_name)
+                                                stored_names[row_index] = original_names[row_index]
+                                                needs_refresh = True
+                                            else:
+                                                stored_names[row_index] = upper_name
                                 st.session_state[archive_names_key] = stored_names
-                                original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
-                                registered = {
-                                    str(teacher.get("Ad Soyad", "")).strip().casefold()
-                                    for teacher in st.session_state.teachers_dict_list
-                                }
-                                unknown = sorted({
-                                    name for old_name, name in zip(original_names, stored_names)
-                                    if old_name.strip().casefold() != name.casefold() and name.casefold() not in registered
-                                })
                                 st.session_state[archive_warning_key] = (
-                                    "Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown)
-                                    if unknown else ""
+                                    "Kayıtlı olmayan öğretmen adı: " + ", ".join(sorted(set(rejected)))
+                                    + ". Eski öğretmen adı geri yüklendi."
+                                    if rejected else ""
                                 )
-                                if changed_to_lowercase:
+                                if needs_refresh:
                                     st.session_state[archive_revision_key] += 1
 
                             editable_archive["Öğretmen"] = st.session_state[archive_names_key]
                             st.caption("İsim değişince kayıtlı öğretmen listesinde aranır ve büyük harfe çevrilir. Kaydetmek için onaylayın.")
+                            if st.session_state.get(archive_warning_key):
+                                st.warning(st.session_state[archive_warning_key])
                             edited_archive = st.data_editor(
                                 editable_archive, use_container_width=True, hide_index=True,
                                 disabled=[col for col in editable_archive.columns if col != "Öğretmen"],
                                 key=archive_editor_key,
                                 on_change=persist_archive_teacher_edits,
                             )
-                            if st.session_state.get(archive_warning_key):
-                                st.warning(st.session_state[archive_warning_key])
                             if st.button("💾 Öğretmen adı değişikliklerini kaydet", key="save_archive_teacher_names"):
                                 edited_names = [turkish_upper(name) for name in edited_archive["Öğretmen"].fillna("").astype(str).tolist()]
                                 original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
@@ -2568,8 +2601,17 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                     if old_name.strip().casefold() != name.casefold() and name.casefold() not in registered
                                 })
                                 if unknown:
-                                    st.warning("Bu öğretmen adları kayıtlı öğretmen listesinde bulunamadı: " + ", ".join(unknown))
-                                    st.stop()
+                                    st.session_state[archive_warning_key] = (
+                                        "Kayıtlı olmayan öğretmen adı: " + ", ".join(unknown)
+                                        + ". Eski öğretmen adı geri yüklendi."
+                                    )
+                                    restored_names = list(edited_names)
+                                    for index, (old_name, new_name) in enumerate(zip(original_names, edited_names)):
+                                        if old_name.strip().casefold() != new_name.casefold() and new_name.casefold() not in registered:
+                                            restored_names[index] = old_name
+                                    st.session_state[archive_names_key] = restored_names
+                                    st.session_state[archive_revision_key] += 1
+                                    st.rerun()
                                 edited_names = [registered.get(name.casefold(), name) for name in edited_names]
                                 target_indexes = edit_rows.index.tolist()
                                 for idx, teacher_name in zip(target_indexes, edited_names):
