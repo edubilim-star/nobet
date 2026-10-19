@@ -807,6 +807,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
     ]]
 
     gunler = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
+    holiday_rows = []
     for idx, gun in enumerate(gunler):
         gun_tarihi = start_date + datetime.timedelta(days=idx)
         tatil_aciklama = ""
@@ -847,14 +848,22 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
 
         assistants = my_listesi.get(gun, []) if isinstance(my_listesi, dict) else my_listesi
         my_str = "<br/>".join(safe_text(name) for name in assistants)
-        table_data.append([
-            Paragraph(f"<b>{safe_text(gun)}</b><br/>({gun_tarihi.strftime('%d.%m.%Y')})", cell_style),
-            Paragraph(get_section_text('BAHÇE'), cell_style),
-            Paragraph(sinif_text, cell_style),
-            Paragraph(get_section_text('ANASINIFI KAPI'), cell_style),
-            Paragraph(ek_text, cell_style),
-            Paragraph(my_str, cell_style)
-        ])
+        if tatil_aciklama:
+            holiday_rows.append(len(table_data))
+            table_data.append([
+                Paragraph(f"<b>{safe_text(gun)}</b><br/>({gun_tarihi.strftime('%d.%m.%Y')})", cell_style),
+                Paragraph(f"<b>*** TATİL ({safe_text(tatil_aciklama)}) ***</b>", cell_style),
+                "", "", "", ""
+            ])
+        else:
+            table_data.append([
+                Paragraph(f"<b>{safe_text(gun)}</b><br/>({gun_tarihi.strftime('%d.%m.%Y')})", cell_style),
+                Paragraph(get_section_text('BAHÇE'), cell_style),
+                Paragraph(sinif_text, cell_style),
+                Paragraph(get_section_text('ANASINIFI KAPI'), cell_style),
+                Paragraph(ek_text, cell_style),
+                Paragraph(my_str, cell_style)
+            ])
 
     t = Table(table_data, colWidths=[90, 120, 150, 120, 120, 100])
     t.setStyle(TableStyle([
@@ -865,6 +874,12 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
         ('TOPPADDING', (0,0), (-1,-1), 6),
         ('BOTTOMPADDING', (0,0), (-1,-1), 6),
     ]))
+    for row_index in holiday_rows:
+        t.setStyle(TableStyle([
+            ('SPAN', (1, row_index), (-1, row_index)),
+            ('ALIGN', (1, row_index), (-1, row_index), 'CENTER'),
+            ('VALIGN', (1, row_index), (-1, row_index), 'MIDDLE'),
+        ]))
     
     elements.append(t)
     elements.append(Spacer(1, 15))
@@ -969,8 +984,13 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
     body_line_height = measure_draw.textbbox((0, 0), "Ay", font=body_font)[3] + 2
     row_heights = []
     for values in daily_values:
+        is_holiday_row = bool(values[1].startswith("*** TATİL"))
         line_count = max(
-            len(wrap_to_width(value, day_font if col_idx == 0 else body_font, widths[col_idx] - 24))
+            len(wrap_to_width(
+                value,
+                day_font if col_idx == 0 else (bold_body_font if is_holiday_row and col_idx == 1 else body_font),
+                (sum(widths[1:-1]) - 24) if is_holiday_row and col_idx == 1 else widths[col_idx] - 24,
+            ))
             for col_idx, value in enumerate(values)
         )
         row_heights.append(max(150, line_count * body_line_height + 28))
@@ -997,9 +1017,12 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
     top = table_top + header_height
     for day_idx, values in enumerate(daily_values):
         row_height = row_heights[day_idx]
+        is_holiday_row = bool(values[1].startswith("*** TATİL"))
         for col_idx, value in enumerate(values):
             x0, x1 = x_positions[col_idx], x_positions[col_idx + 1]
             draw.rectangle((x0, top, x1, top + row_height), fill="white", outline="#374151", width=2)
+            if is_holiday_row and 1 <= col_idx < len(columns) - 1:
+                continue
             lines = wrap_to_width(value, day_font if col_idx == 0 else body_font, x1 - x0 - 24)
             y = top + 12
             for line in lines:
@@ -1008,6 +1031,16 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
                 )
                 line_font = day_font if col_idx == 0 else (bold_body_font if is_place_heading else body_font)
                 draw.text((x0 + 12, y), line, fill="#111827", font=line_font)
+                y += body_line_height
+        if is_holiday_row:
+            merge_left, merge_right = x_positions[1], x_positions[-2]
+            draw.rectangle((merge_left, top, merge_right, top + row_height), fill="white", outline="#374151", width=2)
+            holiday_text = values[1]
+            lines = wrap_to_width(holiday_text, bold_body_font, merge_right - merge_left - 24)
+            text_height = len(lines) * body_line_height
+            y = top + max(12, (row_height - text_height) // 2)
+            for line in lines:
+                draw.text(((merge_left + merge_right) // 2, y), line, fill="#111827", font=bold_body_font, anchor="mt")
                 y += body_line_height
         top += row_height
 
@@ -2523,7 +2556,7 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                 archive_names.update(st.session_state.history["Tarih/Hafta"].dropna().astype(str).unique().tolist())
             archive_names = sorted(archive_names) or [""]
             if archive_names:
-                    with st.expander("Arşivde öğretmen adlarını düzenle", expanded=False):
+                    with st.expander("↗️ Arşivde öğretmen adlarını düzenle", expanded=False):
                         edit_archive_name = st.selectbox("Düzenlenecek eski liste", archive_names, key="archive_teacher_edit_period")
                         edit_rows = st.session_state.history[
                             st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
