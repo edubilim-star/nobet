@@ -2785,13 +2785,19 @@ elif main_menu == "📊 İstatistikler":
                 ]
                 final_stats = final_stats[reordered_columns]
             # Her ekran genişliğinde ilk iki tanımlayıcı sütunu görünür tut.
+            stats_column_config = {
+                "No": st.column_config.NumberColumn("No", width=36, pinned=True, alignment="center"),
+                "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
+            }
+            for numeric_column in final_stats.select_dtypes(include="number").columns:
+                if numeric_column != "No":
+                    stats_column_config[numeric_column] = st.column_config.NumberColumn(
+                        str(numeric_column), format="%d", alignment="center"
+                    )
             with st.container(border=True):
                 st.dataframe(
                     final_stats, use_container_width=True, hide_index=True,
-                    column_config={
-                        "No": st.column_config.NumberColumn("No", width=36, pinned=True),
-                        "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
-                    },
+                    column_config=stats_column_config,
                 )
         else:
             st.warning("Henüz sistemde işlenmiş nöbet verisi bulunmuyor.")
