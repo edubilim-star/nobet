@@ -17,6 +17,8 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from docx import Document
 import openpyxl
+from openpyxl.cell.rich_text import CellRichText, TextBlock
+from openpyxl.cell.text import InlineFont
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -515,6 +517,36 @@ div[data-testid="stHorizontalBlock"] {
   text-align: left; 
 }
 
+.app-title {
+  width: fit-content;
+  max-width: 100%;
+  margin: -2.1rem auto 0.9rem;
+  padding: 0.25rem 1rem 0.4rem;
+  border-bottom: 2px solid #4f81bd;
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 750;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.teacher-count-card {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin: 0.25rem 0 0.8rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(79, 129, 189, 0.28);
+  border-radius: 0.7rem;
+  background: linear-gradient(110deg, rgba(79, 129, 189, 0.12), rgba(79, 129, 189, 0.035));
+  color: #334155;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.teacher-count-card span { font-size: 0.9rem; font-weight: 600; }
+.teacher-count-card strong { color: #1d4e89; font-size: 1.45rem; line-height: 1; }
+.teacher-count-card small { color: #64748b; font-size: 0.78rem; }
+
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 4.5rem !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
@@ -523,7 +555,16 @@ div[data-testid="stHorizontalBlock"] {
 """, unsafe_allow_html=True)
 
 # --- UYGULAMA GEZİNME MENÜSÜ ---
-st.title(f"{st.session_state.school_info.get('okul_adi', 'Okul')} Nöbet Hazırlama Programı")
+def turkish_title_case(value):
+    lowered = str(value or "Okul").strip().lower().replace("i\u0307", "i")
+    words = lowered.split()
+    return " ".join(("İ" if word.startswith("i") else "I" if word.startswith("ı") else word[:1].upper()) + word[1:] for word in words)
+
+school_title = turkish_title_case(st.session_state.school_info.get("okul_adi", "Okul"))
+st.markdown(
+    f"<div class='app-title'>{html.escape(school_title)} Nöbet Hazırlama Programı</div>",
+    unsafe_allow_html=True,
+)
 MENU_OPTIONS = [
     "📅 Nöbet Listesi Oluştur",
     "👥 Öğretmen Yönetimi",
@@ -594,6 +635,8 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
 
     header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
     header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    bold_inline_font = InlineFont(rFont="Calibri", sz=10, b=True)
+    regular_inline_font = InlineFont(rFont="Calibri", sz=10)
     thin_border = Border(
         left=Side(style="thin", color="000000"), right=Side(style="thin", color="000000"),
         top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
@@ -631,16 +674,20 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
             if tatil_aciklama:
                 section_value = f"*** TATİL ({tatil_aciklama}) ***" if index == 0 else ""
             else:
-                lines = []
+                section_value = CellRichText()
                 for location, _, show_title in group_locations:
                     matches = gun_df[gun_df["Bölüm/Yer"] == location]["Öğretmen"].tolist()
                     clean_matches = [name.split(" (")[0] for name in matches]
                     if clean_matches:
+                        if section_value:
+                            section_value.append(TextBlock(regular_inline_font, "\n"))
                         if show_title:
-                            lines.append(f"{location}: {clean_matches[0]}" + ("\n" + "\n".join(clean_matches[1:]) if len(clean_matches) > 1 else ""))
+                            section_value.append(TextBlock(bold_inline_font, f"{location}: "))
+                            section_value.append(TextBlock(regular_inline_font, "\n".join(clean_matches)))
                         else:
-                            lines.append("\n".join(clean_matches))
-                section_value = "\n".join(lines)
+                            section_value.append(TextBlock(regular_inline_font, "\n".join(clean_matches)))
+                if not section_value:
+                    section_value = ""
             ws.cell(row=row, column=first_data_col + index, value=section_value)
 
         if tatil_aciklama and last_col > 2:
@@ -845,6 +892,7 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
     title_font = ImageFont.truetype(bold_path, 42)
     header_font = ImageFont.truetype(bold_path, 28)
     body_font = ImageFont.truetype(regular_path, 25)
+    bold_body_font = ImageFont.truetype(bold_path, 25)
     day_font = ImageFont.truetype(bold_path, 25)
     measure_draw = ImageDraw.Draw(Image.new("RGB", (1, 1), "white"))
 
@@ -949,7 +997,11 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
             lines = wrap_to_width(value, day_font if col_idx == 0 else body_font, x1 - x0 - 24)
             y = top + 12
             for line in lines:
-                draw.text((x0 + 12, y), line, fill="#111827", font=day_font if col_idx == 0 else body_font)
+                is_place_heading = col_idx > 0 and any(
+                    line.startswith(f"{place}:") for place, (_, _, show_title) in location_info.items() if show_title
+                )
+                line_font = day_font if col_idx == 0 else (bold_body_font if is_place_heading else body_font)
+                draw.text((x0 + 12, y), line, fill="#111827", font=line_font)
                 y += body_line_height
         top += row_height
 
@@ -1079,25 +1131,19 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 bitis_tarihi = baslangic_tarihi + datetime.timedelta(days=4)
                 hafta_adi = st.text_input("Nöbet Dönem Adı (Otomatik Gelir)", key="schedule_period_name")
             prioritize_double_days = st.checkbox(
-                "Çift nöbet günlerini öncelik sırasına göre seç",
+                "Çift günlerini seç",
                 key="prioritize_double_days",
                 help="Açıkken seçtiğiniz günlerde, uygun olduğu ölçüde çift nöbetler önce değerlendirilir.",
             )
             double_day_priority = []
             if prioritize_double_days:
-                st.caption("Çift nöbet önceliğini belirlemek için günleri sırasıyla seçin.")
-                chosen_days = []
-                for priority_index in range(len(WEEKDAYS)):
-                    key = f"double_day_priority_{priority_index}"
-                    available_days = [day for day in WEEKDAYS if day not in chosen_days]
-                    options = ["Öncelik yok"] + available_days
-                    previous_choice = st.session_state.get(key, "Öncelik yok")
-                    if previous_choice not in options:
-                        st.session_state[key] = "Öncelik yok"
-                    selected_day = st.selectbox(f"{priority_index + 1}. öncelikli gün", options, key=key)
-                    if selected_day != "Öncelik yok":
-                        chosen_days.append(selected_day)
-                double_day_priority = chosen_days
+                double_day_priority = st.multiselect(
+                    "Öncelik sırasına göre günleri seçin",
+                    options=WEEKDAYS,
+                    key="double_day_priority",
+                    placeholder="Günleri seçin",
+                    help="Seçtiğiniz günlerin sırası, çift nöbet önceliğidir.",
+                )
             generate_clicked = st.button(
                 "🎲 Akıllı Kurallı Dağıtımla Çizelgeyi Oluştur",
                 type="primary", use_container_width=True,
@@ -1598,9 +1644,9 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
 elif main_menu == "👥 Öğretmen Yönetimi":
     with st.container(border=True):
         st.header("👥 Öğretmen Yönetimi ve Kısıtlar Paneli")
-        save_top_left, save_top_center, save_top_right = st.columns([1, 2, 1])
-        with save_top_center:
-            if st.button("💾 Öğretmen ayarlarını kaydet", key="save_teacher_settings_top", type="primary", use_container_width=True):
+        save_spacer, save_button_col = st.columns([5, 1.6])
+        with save_button_col:
+            if st.button("💾 Ayarları kaydet", key="save_teacher_settings_top", type="secondary", use_container_width=True):
                 save_app_data()
                 st.success("Öğretmen listesi ve kısıt ayarları kaydedildi.")
 
@@ -1751,7 +1797,11 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         mevcut_liste = st.session_state.teachers_dict_list
 
         hist_for_counts = st.session_state.history
-        st.metric("Toplam öğretmen sayısı", len(mevcut_liste))
+        st.markdown(
+            f"<div class='teacher-count-card'><span>Toplam öğretmen sayısı</span>"
+            f"<strong>{len(mevcut_liste)}</strong><small>öğretmen kayıtlı</small></div>",
+            unsafe_allow_html=True,
+        )
         total_duty_counts = {}
         double_duty_counts = {}
         if not hist_for_counts.empty and "Öğretmen" in hist_for_counts.columns:
