@@ -54,6 +54,19 @@
       "Excel Bölümü": "SINIF VE KORİDORLAR"
     },
     {
+      "Nöbet Yeri / Bölüm": "3.KAT",
+      "Gerekli Öğretmen Sayısı": 1,
+      "Aktif Günler": [
+        "PAZARTESİ",
+        "SALI",
+        "ÇARŞAMBA",
+        "PERŞEMBE",
+        "CUMA"
+      ],
+      "Excel'de Yer Başlığını Göster": true,
+      "Excel Bölümü": "SINIF VE KORİDORLAR"
+    },
+    {
       "Nöbet Yeri / Bölüm": "ANASINIFI KAPI",
       "Gerekli Öğretmen Sayısı": 2,
       "Aktif Günler": [
@@ -91,19 +104,6 @@
       ],
       "Excel'de Yer Başlığını Göster": true,
       "Excel Bölümü": "EK BİNA"
-    },
-    {
-      "Nöbet Yeri / Bölüm": "3.KAT",
-      "Gerekli Öğretmen Sayısı": 1,
-      "Aktif Günler": [
-        "PAZARTESİ",
-        "SALI",
-        "ÇARŞAMBA",
-        "PERŞEMBE",
-        "CUMA"
-      ],
-      "Excel'de Yer Başlığını Göster": true,
-      "Excel Bölümü": "SINIF VE KORİDORLAR"
     }
   ],
   "excel_sections": [
