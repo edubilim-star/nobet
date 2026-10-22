@@ -1433,6 +1433,10 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         node_budget = 1500000
         visited_nodes = [0]
 
+        def same_week_repeat_allowed(place):
+            normalized_place = search_normalize(place)
+            return "anasinifi" in normalized_place or "ana sinif" in normalized_place
+
         def try_solve(allow_mandatory_previous_place, enforce_unique_week_place=True):
             counts.clear()
             counts.update({name: 0 for name in teacher_names})
@@ -1467,7 +1471,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                         for other_idx, assigned_name in enumerate(assignments)
                         if assigned_name is not None
                     )
-                    if enforce_unique_week_place and already_on_same_place:
+                    if already_on_same_place and not same_week_repeat_allowed(slot_place):
                         continue
                     has_adjacent_day = any(
                         assigned_name == name
@@ -1518,7 +1522,9 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                         other_day_index = active_day_order.get(slots[other_idx][0], -1)
                         if assigned_name == name and slots[other_idx][0] == day:
                             return False
-                        if enforce_unique_week_place and assigned_name == name and slots[other_idx][1].strip().casefold() == place.strip().casefold():
+                        if (assigned_name == name
+                                and slots[other_idx][1].strip().casefold() == place.strip().casefold()
+                                and not same_week_repeat_allowed(place)):
                             return False
                         if assigned_name == name and abs(other_day_index - day_index) == 1:
                             return False
@@ -1574,35 +1580,18 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             if solved_without_repeat:
                 break
         repeated_place_fallback = False
-        same_week_place_fallback = False
+        repeated_previous_place_teachers = []
         fallback_solved = False
         if not solved_without_repeat:
-            # Keep previous-week place rotation intact, but permit a same-week
-            # place repeat only if that is the sole way to complete every slot.
-            fallback_solved = try_solve(allow_mandatory_previous_place=False, enforce_unique_week_place=False)
-        if not solved_without_repeat and not fallback_solved:
+            # Keep same-week uniqueness in every path. Only mandatory fixed-place
+            # assignments may reuse the previous week's place.
             fallback_solved = try_solve(allow_mandatory_previous_place=True, enforce_unique_week_place=True)
-            repeated_place_fallback = fallback_solved and any(
-                place.casefold() in previous_places.get(name, set())
-                for (day, place), name in zip(slots, assignments)
-            )
-        if not solved_without_repeat and not fallback_solved:
-            fallback_solved = try_solve(allow_mandatory_previous_place=True, enforce_unique_week_place=False)
-            repeated_place_fallback = fallback_solved and any(
-                place.casefold() in previous_places.get(name, set())
-                for (day, place), name in zip(slots, assignments)
-            )
-            same_week_place_fallback = fallback_solved
-
-        if fallback_solved and not solved_without_repeat:
-            seen_teacher_places = set()
-            same_week_place_fallback = False
-            for (_, place), name in zip(slots, assignments):
-                teacher_place = (name, place.strip().casefold())
-                if teacher_place in seen_teacher_places:
-                    same_week_place_fallback = True
-                    break
-                seen_teacher_places.add(teacher_place)
+            if fallback_solved:
+                repeated_previous_place_teachers = sorted({
+                    str(name) for (_, place), name in zip(slots, assignments)
+                    if place.strip().casefold() in previous_places.get(name, set())
+                }, key=str.casefold)
+                repeated_place_fallback = bool(repeated_previous_place_teachers)
 
         if not solved_without_repeat and not fallback_solved:
             impossible = []
@@ -1663,9 +1652,10 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         save_app_data()
         st.success(f"✨ '{hafta_adi}' dönemi çizelgesi başarıyla oluşturuldu!")
         if repeated_place_fallback:
-            st.warning("Öğretmen sayısı ve diğer kurallar nedeniyle bazı öğretmenlere geçen haftaki nöbet yeri yeniden verildi.")
-        if same_week_place_fallback:
-            st.warning("Diğer kurallarla tüm görevler doldurulamadığı için bazı öğretmenlere aynı hafta içinde aynı yerde ikinci görev verildi.")
+            st.warning(
+                "Diğer kurallara uymak için geçen haftaki nöbet yeri şu öğretmenlere yeniden verildi: "
+                + ", ".join(repeated_previous_place_teachers)
+            )
         unassigned_eligible = [
             name for name in teacher_names
             if any(name in candidates for candidates in slot_candidates) and counts.get(name, 0) == 0
