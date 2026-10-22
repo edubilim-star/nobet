@@ -434,7 +434,9 @@
     {
       "Ad Soyad": "KÜBRA CEMİLE YILDIRIM",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [],
+      "Hariç Tutulan Bölümler": [
+        "ANASINIFI KAPI"
+      ],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
