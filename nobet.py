@@ -1375,6 +1375,13 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if not previous_rows.empty:
             for _, row in previous_rows.iterrows():
                 previous_places.setdefault(row["Öğretmen"], set()).add(str(row["Bölüm/Yer"]).strip().casefold())
+        previous_week_double_names = set()
+        if not previous_rows.empty and "Öğretmen" in previous_rows.columns:
+            previous_week_counts = previous_rows.groupby("Öğretmen").size()
+            previous_week_double_names = {
+                str(name).casefold()
+                for name in previous_week_counts[previous_week_counts > 1].index
+            }
         prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
         historic_double_weeks = prior_weekly_counts[prior_weekly_counts > 1].reset_index().groupby("Öğretmen").size().to_dict() if not prior_weekly_counts.empty else {}
         all_place_counts = {}
@@ -1445,6 +1452,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 for name in slot_candidates[slot_idx]:
                     if counts[name] >= max_weekly[name]:
                         continue
+                    if counts[name] == 1 and str(name).casefold() in previous_week_double_names:
+                        continue
                     already_on_same_day = any(
                         assigned_name == name and slots[other_idx][0] == slot_gun
                         for other_idx, assigned_name in enumerate(assignments)
@@ -1478,12 +1487,12 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 random.shuffle(candidates)
                 candidates.sort(key=lambda name: (
                     counts[name],
+                    historic_double_weeks.get(name, 0) if counts[name] == 1 else 0,
                     place_rotation_distance(name, slot_place),
                     (0 if teacher_by_name[name]["Haftada 2 Nöbet İstiyor"] else 1)
                     if any_double_preference and counts[name] == 1 else 0,
                     all_place_counts.get((name, slot_place), 0),
                     last_place_dates.get((name, slot_place), 0),
-                    historic_double_weeks.get(name, 0) if counts[name] > 0 else 0,
                 ))
                 for name in candidates:
                     counts[name] += 1
