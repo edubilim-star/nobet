@@ -197,30 +197,39 @@ def read_github_app_data(settings):
     return json.loads(base64.b64decode(content).decode("utf-8"))
 
 def write_github_app_data(settings, data):
-    try:
-        current = github_contents_request(settings)
-    except RuntimeError as exc:
-        if "HTTP 404" not in str(exc):
-            raise
-        current = {}
     content = json.dumps(data, ensure_ascii=False, indent=2)
-    current_content = current.get("content", "")
-    if current_content and current.get("encoding") == "base64":
+    encoded_content = base64.b64encode(content.encode("utf-8")).decode("ascii")
+    for attempt in range(3):
         try:
-            existing = base64.b64decode(current_content).decode("utf-8")
-            if json.loads(existing) == data:
-                return False
-        except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
-            pass
-    payload = {
-        "message": "Nöbet uygulaması verilerini güncelle",
-        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
-        "branch": settings["branch"],
-    }
-    if current.get("sha"):
-        payload["sha"] = current["sha"]
-    github_contents_request(settings, method="PUT", payload=payload)
-    return True
+            current = github_contents_request(settings)
+        except RuntimeError as exc:
+            if "HTTP 404" not in str(exc):
+                raise
+            current = {}
+
+        current_content = current.get("content", "")
+        if current_content and current.get("encoding") == "base64":
+            try:
+                existing = base64.b64decode(current_content).decode("utf-8")
+                if json.loads(existing) == data:
+                    return False
+            except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
+                pass
+
+        payload = {
+            "message": "Nöbet uygulaması verilerini güncelle",
+            "content": encoded_content,
+            "branch": settings["branch"],
+        }
+        if current.get("sha"):
+            payload["sha"] = current["sha"]
+        try:
+            github_contents_request(settings, method="PUT", payload=payload)
+            return True
+        except RuntimeError as exc:
+            if "HTTP 409" not in str(exc) or attempt == 2:
+                raise
+    return False
 
 def _records_for_json(frame):
     if frame is None or frame.empty:
