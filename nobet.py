@@ -1563,7 +1563,16 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                                     break
             return solved
 
-        solved_without_repeat = try_solve(allow_mandatory_previous_place=False, enforce_unique_week_place=True)
+        # Retry the strict no-repeat search with fresh tie ordering before
+        # considering the fallback that permits a same-week place repeat.
+        solved_without_repeat = False
+        for _strict_attempt in range(3):
+            solved_without_repeat = try_solve(
+                allow_mandatory_previous_place=False,
+                enforce_unique_week_place=True,
+            )
+            if solved_without_repeat:
+                break
         repeated_place_fallback = False
         same_week_place_fallback = False
         fallback_solved = False
