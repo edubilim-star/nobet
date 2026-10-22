@@ -1379,6 +1379,14 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         historic_double_weeks = prior_weekly_counts[prior_weekly_counts > 1].reset_index().groupby("Öğretmen").size().to_dict() if not prior_weekly_counts.empty else {}
         all_place_counts = {}
         last_place_dates = {}
+        rotation_place_order = list(dict.fromkeys(
+            str(place).strip() for place in locs_df["Nöbet Yeri / Bölüm"].dropna()
+            if str(place).strip()
+        ))
+        rotation_place_index = {
+            place.casefold(): index for index, place in enumerate(rotation_place_order)
+        }
+        last_place_by_teacher = {}
         if not prior_history.empty and {"Öğretmen", "Bölüm/Yer"}.issubset(prior_history.columns):
             known_place_history = prior_history[prior_history["Bölüm/Yer"].isin(locs_df["Nöbet Yeri / Bölüm"].astype(str))]
             all_place_counts = known_place_history.groupby(["Öğretmen", "Bölüm/Yer"]).size().to_dict()
@@ -1390,8 +1398,28 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     (str(name), str(place)): max(day.toordinal() for day in days)
                     for (name, place), days in dated_places.groupby(["Öğretmen", "Bölüm/Yer"])["_rotation_date"]
                 }
+                earlier_places = dated_places[dated_places["_rotation_date"] < baslangic_tarihi]
+                for _, history_row in earlier_places.sort_values("_rotation_date", kind="stable").iterrows():
+                    last_place_by_teacher[str(history_row["Öğretmen"]).casefold()] = str(history_row["Bölüm/Yer"]).strip()
         any_double_preference = any(bool(info["Haftada 2 Nöbet İstiyor"]) for info in teacher_by_name.values())
         active_day_order = {day: index for index, day in enumerate(active_gunler)}
+
+        def place_rotation_distance(name, place):
+            if not rotation_place_order:
+                return 0
+            current_duties = [
+                (active_day_order.get(slots[index][0], -1), index, slots[index][1])
+                for index, assigned_name in enumerate(assignments)
+                if assigned_name == name
+            ]
+            if current_duties:
+                last_place = max(current_duties, key=lambda duty: (duty[0], duty[1]))[2]
+            else:
+                last_place = last_place_by_teacher.get(str(name).casefold())
+            last_index = rotation_place_index.get(str(last_place).strip().casefold(), -1)
+            next_index = (last_index + 1) % len(rotation_place_order)
+            place_index = rotation_place_index.get(str(place).strip().casefold(), next_index)
+            return (place_index - next_index) % len(rotation_place_order)
 
         node_budget = 1500000
         visited_nodes = [0]
@@ -1448,10 +1476,11 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 random.shuffle(candidates)
                 candidates.sort(key=lambda name: (
                     counts[name],
-                    all_place_counts.get((name, slot_place), 0),
-                    last_place_dates.get((name, slot_place), 0),
+                    place_rotation_distance(name, slot_place),
                     (0 if teacher_by_name[name]["Haftada 2 Nöbet İstiyor"] else 1)
                     if any_double_preference and counts[name] == 1 else 0,
+                    all_place_counts.get((name, slot_place), 0),
+                    last_place_dates.get((name, slot_place), 0),
                     historic_double_weeks.get(name, 0) if counts[name] > 0 else 0,
                 ))
                 for name in candidates:
