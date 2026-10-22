@@ -1392,13 +1392,15 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             all_place_counts = known_place_history.groupby(["Öğretmen", "Bölüm/Yer"]).size().to_dict()
             if "Tarih" in known_place_history.columns:
                 dated_places = known_place_history.assign(
-                    _rotation_date=pd.to_datetime(known_place_history["Tarih"], errors="coerce").dt.date
+                    _rotation_date=pd.to_datetime(known_place_history["Tarih"], errors="coerce").dt.normalize()
                 ).dropna(subset=["_rotation_date"])
                 last_place_dates = {
                     (str(name), str(place)): max(day.toordinal() for day in days)
                     for (name, place), days in dated_places.groupby(["Öğretmen", "Bölüm/Yer"])["_rotation_date"]
                 }
-                earlier_places = dated_places[dated_places["_rotation_date"] < baslangic_tarihi]
+                earlier_places = dated_places[
+                    dated_places["_rotation_date"] < pd.Timestamp(baslangic_tarihi).normalize()
+                ]
                 for _, history_row in earlier_places.sort_values("_rotation_date", kind="stable").iterrows():
                     last_place_by_teacher[str(history_row["Öğretmen"]).casefold()] = str(history_row["Bölüm/Yer"]).strip()
         any_double_preference = any(bool(info["Haftada 2 Nöbet İstiyor"]) for info in teacher_by_name.values())
