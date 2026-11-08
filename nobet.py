@@ -2052,7 +2052,37 @@ elif main_menu == "👥 Öğretmen Yönetimi":
 
 
 
-        with st.expander("⚡ Toplu Kısıtlama Uygulama Paneli (Tüm Öğretmenler İçin)", expanded=True):
+# Bu kısım öğretmen yönetimi panelinin içinde, ana sekmenizin altında yer almalıdır
+        with st.expander("⚡ Toplu Kısıtlama Uygulama Paneli", expanded=True):
+            st.markdown("Aşağıdan bir bölüm seçerek belirli bir gruba veya tüm öğretmenlere tek tıkla hariç tutma kısıtı ekleyebilirsiniz.")
+            
+            col_t1, col_t2 = st.columns(2)
+            with col_t1:
+                toplu_secilen_bolge = st.selectbox("Kısıtlama Eklenmek İstenecek Bölüm", tum_bolgeler, key="toplu_bolge_secim_input")
+            with col_t2:
+                toplu_hedef_okul_bolumu = st.selectbox("Hangi Bölümdeki Öğretmenlere Uygulansın?", ["Tüm Öğretmenler"] + tum_bolgeler, key="toplu_hedef_bolum")
+
+            b_col1, b_col2 = st.columns(2)
+            with b_col1:
+                if st.button("➕ Seçilen Gruba Kısıtlama Ekle", key="btn_toplu_grup_ekle", use_container_width=True):
+                    eklenen = 0
+                    for t in st.session_state.teachers_dict_list:
+                        if toplu_hedef_okul_bolumu == "Tüm Öğretmenler" or t.get("Okul Bölümü") == toplu_hedef_okul_bolumu:
+                            haric = list(t.get("Hariç Tutulan Bölümler", []))
+                            if toplu_secilen_bolge not in haric:
+                                haric.append(toplu_secilen_bolge)
+                                t["Hariç Tutulan Bölümler"] = haric
+                                eklenen += 1
+                    save_app_data()
+                    st.success(f"✅ {eklenen} öğretmenin kısıtlarına '{toplu_secilen_bolge}' eklendi.")
+                    st.rerun()
+            with b_col2:
+                if st.button("🧹 Tüm Kısıtları Temizle", key="btn_toplu_temizle_yeni", use_container_width=True):
+                    for t in st.session_state.teachers_dict_list:
+                        t["Hariç Tutulan Bölümler"] = []
+                    save_app_data()
+                    st.success("✅ Tüm öğretmenlerin hariç tutulan bölümleri temizlendi!")
+                    st.rerun()
             st.markdown("Aşağıdan bir bölüm seçerek **tüm öğretmenlere tek tıkla** hariç tutma kısıtı ekleyebilir veya kaldırabilirsiniz.")
 
             select_left, select_center, select_right = st.columns([1, 2, 1])
