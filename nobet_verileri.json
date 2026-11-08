@@ -135,7 +135,8 @@
         "2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "EK BİNA 2.KAT"
     },
     {
       "Ad Soyad": "MELİSA GÜVENÇ",
@@ -147,7 +148,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "3.KAT"
     },
     {
       "Ad Soyad": "MERVE GÜLER",
@@ -167,7 +169,8 @@
         "PERŞEMBE",
         "CUMA"
       ],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "Yok"
     },
     {
       "Ad Soyad": "MELİKE ÖDEN",
@@ -179,7 +182,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "Yok"
     },
     {
       "Ad Soyad": "EMEL KAYABAŞI",
@@ -190,7 +194,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "1.KAT"
     },
     {
       "Ad Soyad": "AYSEL GÜL",
@@ -201,21 +206,24 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "1.KAT"
     },
     {
       "Ad Soyad": "RABİA ŞAHİN BAKRAKTAR",
       "Sabit Yer": "ANASINIFI KAPI",
       "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "ANASINIFI KAPI"
     },
     {
       "Ad Soyad": "EBRU BAĞCI",
       "Sabit Yer": "ANASINIFI KAPI",
       "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "ANASINIFI KAPI"
     },
     {
       "Ad Soyad": "İBRAHİM KILIÇ",
@@ -229,7 +237,8 @@
       "İzinli Günler": [
         "CUMA"
       ],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "YUNUS KARACA",
@@ -243,7 +252,8 @@
       "İzinli Günler": [
         "CUMA"
       ],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "EK BİNA 1.KAT"
     },
     {
       "Ad Soyad": "SEHER TAŞ",
@@ -254,7 +264,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "1.KAT"
     },
     {
       "Ad Soyad": "ALEV AYÇA AÇIKEL",
@@ -265,7 +276,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "1.KAT"
     },
     {
       "Ad Soyad": "ŞULE YÜKSELAY",
@@ -276,7 +288,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "1.KAT"
     },
     {
       "Ad Soyad": "MERVE AYDEMİR KESİKBAŞ",
@@ -288,21 +301,24 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "3.KAT"
     },
     {
       "Ad Soyad": "MERVE ÜLKER KÖKEN",
       "Sabit Yer": "ANASINIFI KAPI",
       "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "ANASINIFI KAPI"
     },
     {
       "Ad Soyad": "AYŞEGÜL SEVİM BOZĞOLU",
       "Sabit Yer": "ANASINIFI KAPI",
       "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "ANASINIFI KAPI"
     },
     {
       "Ad Soyad": "ESMANUR SEZER",
@@ -314,7 +330,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "ÖZGÜR ESER",
@@ -326,7 +343,8 @@
         "2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "EK BİNA 2.KAT"
     },
     {
       "Ad Soyad": "DİLARA SAVAŞKAN",
@@ -338,7 +356,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "MÜNEVER ALICI",
@@ -350,7 +369,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "HATİCE BİRER OKAY",
@@ -362,7 +382,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "Yok"
     },
     {
       "Ad Soyad": "FATMA ÖZMEN",
@@ -374,7 +395,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "AYŞE ZORKOL",
@@ -386,7 +408,8 @@
         "2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "EK BİNA 1.KAT"
     },
     {
       "Ad Soyad": "ÖZGE KEPENEK",
@@ -398,7 +421,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "3.KAT"
     },
     {
       "Ad Soyad": "BEYZA NUR ÇAĞLAR SEZGİN",
@@ -410,7 +434,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "3.KAT"
     },
     {
       "Ad Soyad": "AYŞEGÜL SÜER",
@@ -422,7 +447,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "3.KAT"
     },
     {
       "Ad Soyad": "BERNA ÜLKER",
@@ -434,7 +460,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "FERİDE ÖZDEMİR",
@@ -446,7 +473,8 @@
         "2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "EK BİNA 1.KAT"
     },
     {
       "Ad Soyad": "KÜBRA EVREN",
@@ -458,7 +486,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "2.KAT"
     },
     {
       "Ad Soyad": "HATİCE BETÜL TURAN",
@@ -469,7 +498,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "1.KAT"
     },
     {
       "Ad Soyad": "NİHAL GÖKSU",
@@ -481,7 +511,8 @@
         "2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "EK BİNA 1.KAT"
     },
     {
       "Ad Soyad": "KÜBRA CEMİLE YILDIRIM",
@@ -493,7 +524,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "3.KAT"
     },
     {
       "Ad Soyad": "FATMA GENÇ",
@@ -505,7 +537,8 @@
         "EK BİNA 2.KAT"
       ],
       "İzinli Günler": [],
-      "Haftada 2 Nöbet İstiyor": false
+      "Haftada 2 Nöbet İstiyor": false,
+      "Okul Bölümü": "Yok"
     }
   ],
   "holidays": [],
