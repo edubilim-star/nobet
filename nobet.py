@@ -2083,53 +2083,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                     save_app_data()
                     st.success("✅ Tüm öğretmenlerin hariç tutulan bölümleri temizlendi!")
                     st.rerun()
-            st.markdown("Aşağıdan bir bölüm seçerek **tüm öğretmenlere tek tıkla** hariç tutma kısıtı ekleyebilir veya kaldırabilirsiniz.")
-
-            select_left, select_center, select_right = st.columns([1, 2, 1])
-            with select_center:
-                toplu_secilen_bolge = st.selectbox(
-                    "",
-                    tum_bolgeler,
-                    key="toplu_bolge_secim_input",
-                    label_visibility="collapsed"
-                )
-            button_left, button_add, button_clear, button_right = st.columns([1, 2, 2, 1])
-            with button_add:
-                if st.button("➕ Tüm Öğretmenlerin Hariç Tutulanlarına Ekle",
-                             key="btn_toplu_ekle",
-                             type="secondary",
-                             use_container_width=True):
-                    yeni_liste = []
-                    eklenen_sayi = 0
-                    for idx, t in enumerate(st.session_state.teachers_dict_list):
-                        yeni_t = dict(t)
-                        haric = list(yeni_t.get("Hariç Tutulan Bölümler", []))
-                        haric = [h for h in haric if h in tum_bolgeler]
-                        if toplu_secilen_bolge not in haric:
-                            haric.append(toplu_secilen_bolge)
-                            eklenen_sayi += 1
-                        yeni_t["Hariç Tutulan Bölümler"] = haric
-                        yeni_liste.append(yeni_t)
-                        st.session_state[f"haric_{t['Ad Soyad']}"] = haric
-                    st.session_state.teachers_dict_list = yeni_liste
-                    st.session_state["_tab2_mesaj"] = f"✅ '{toplu_secilen_bolge}' {len(yeni_liste)} öğretmene uygulandı ({eklenen_sayi} yeni kısıt eklendi)."
-                    save_app_data()
-                    st.rerun()
-
-            with button_clear:
-                if st.button("🧹 Tüm Öğretmenlerin Hariç Tutulanlarını Temizle",
-                             key="btn_toplu_temizle",
-                             use_container_width=True):
-                    yeni_liste = []
-                    for idx, t in enumerate(st.session_state.teachers_dict_list):
-                        yeni_t = dict(t)
-                        yeni_t["Hariç Tutulan Bölümler"] = []
-                        yeni_liste.append(yeni_t)
-                        st.session_state[f"haric_{t['Ad Soyad']}"] = []
-                    st.session_state.teachers_dict_list = yeni_liste
-                    st.session_state["_tab2_mesaj"] = "✅ Tüm öğretmenlerin hariç tutulan bölümleri temizlendi!"
-                    save_app_data()
-                    st.rerun()
 
         st.markdown("---")
 
