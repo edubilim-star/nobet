@@ -2124,7 +2124,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         mevcut_liste = st.session_state.teachers_dict_list
 
         hist_for_counts = st.session_state.history
-count_col, btn_col = st.columns([3, 2], vertical_alignment="center")
+        count_col, btn_col = st.columns([3, 2], vertical_alignment="center")
         with count_col:
             st.markdown(
                 f"<div class='teacher-count-card'><span>Toplam öğretmen sayısı</span>"
