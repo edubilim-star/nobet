@@ -2203,7 +2203,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         with ex_col1:
             excel_by_name = generate_teacher_restrictions_excel(mevcut_liste, tum_bolgeler, group_by_section=False)
             st.download_button("📊 Ada Göre Excel Listesi İndir", data=excel_by_name, file_name="Ogretmen_Kisit_Listesi_AdaGore.xlsx", use_container_width=True)
-         with ex_col2:
+        with ex_col2:
             excel_by_section = generate_teacher_restrictions_excel(mevcut_liste, tum_bolgeler, group_by_section=True)
             st.download_button("📂 Bölüme Göre Gruplu Excel İndir", data=excel_by_section, file_name="Ogretmen_Kisit_Listesi_BolumGore.xlsx", use_container_width=True)
         total_duty_counts = {}
