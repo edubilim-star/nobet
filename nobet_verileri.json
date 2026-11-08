@@ -238,7 +238,9 @@
         "3.KAT",
         "2.KAT"
       ],
-      "İzinli Günler": [],
+      "İzinli Günler": [
+        "CUMA"
+      ],
       "Haftada 2 Nöbet İstiyor": false
     },
     {
