@@ -2199,17 +2199,13 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 f"<strong>{len(mevcut_liste)}</strong><small>öğretmen kayıtlı</small></div>",
                 unsafe_allow_html=True,
             )
-        with btn_col:
-            teacher_excel_data = generate_teacher_restrictions_excel(mevcut_liste, tum_bolgeler)
-            st.download_button(
-                label="📊 Öğretmen Kısıt Listesini İndir (Excel)",
-                data=teacher_excel_data,
-                file_name="Ogretmen_Kisit_Listesi.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                type="primary",
-                use_container_width=True,
-                key="btn_download_teacher_restrictions"
-            )
+        ex_col1, ex_col2 = st.columns(2)
+        with ex_col1:
+            excel_by_name = generate_teacher_restrictions_excel(mevcut_liste, tum_bolgeler, group_by_section=False)
+            st.download_button("📊 Ada Göre Excel Listesi İndir", data=excel_by_name, file_name="Ogretmen_Kisit_Listesi_AdaGore.xlsx", use_container_width=True)
+         with ex_col2:
+            excel_by_section = generate_teacher_restrictions_excel(mevcut_liste, tum_bolgeler, group_by_section=True)
+            st.download_button("📂 Bölüme Göre Gruplu Excel İndir", data=excel_by_section, file_name="Ogretmen_Kisit_Listesi_BolumGore.xlsx", use_container_width=True)
         total_duty_counts = {}
         double_duty_counts = {}
         if not hist_for_counts.empty and "Öğretmen" in hist_for_counts.columns:
