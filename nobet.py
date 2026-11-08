@@ -2221,9 +2221,10 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             t_data.setdefault("İzinli Günler", [])
             t_data.setdefault("Haftada 2 Nöbet İstiyor", False)
             teacher_name = t_data["Ad Soyad"]
+            okul_bolumu = t_data.get("Okul Bölümü", "Yok")
             total_duties = total_duty_counts.get(teacher_name, 0)
             double_weeks_count = double_duty_counts.get(teacher_name, 0)
-            with st.expander(f"{teacher_name}  ·  Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
+            with st.expander(f"{teacher_name}  · Sınıfının Olduğu Kat: {okul_bolumu}  · Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
                 st.caption("Bir haftadaki çift nöbet, sayaçta bir hafta olarak sayılır.")
 # === YENİ EKLENECEK KISIM: Okul Bölümü / Kat Seçimi ===
                 t_data.setdefault("Okul Bölümü", "Yok")
@@ -2233,7 +2234,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 bolum_idx = bolum_secenekleri.index(curr_bolum) if curr_bolum in bolum_secenekleri else 0
                 
                 yeni_okul_bolumu = st.selectbox(
-                    "Okul Bölümü / Kat", 
+                    "Sınıfın Bulunduğu Okul Bölümü / Kat", 
                     bolum_secenekleri, 
                     index=bolum_idx,
                     key=f"okul_bolumu_{teacher_name}"
