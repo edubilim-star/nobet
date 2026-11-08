@@ -2198,15 +2198,25 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 double_duty_counts = double_weeks[double_weeks > 1].reset_index().groupby("Öğretmen").size().to_dict()
 
         indexed_teachers = list(enumerate(mevcut_liste))
+        
+        # Eski kayıtlarda "Okul Bölümü" eksikse çökmemesi için varsayılan değer atıyoruz
+        for idx, t_data in indexed_teachers:
+            t_data.setdefault("Okul Bölümü", "Yok")
+
         if sort_mode == "Toplam nöbet sayısına göre (çoktan aza)":
             indexed_teachers.sort(key=lambda pair: (-total_duty_counts.get(pair[1]["Ad Soyad"], 0), pair[1]["Ad Soyad"].casefold()))
         elif sort_mode == "Çift nöbet sayısına göre (çoktan aza)":
             indexed_teachers.sort(key=lambda pair: (-double_duty_counts.get(pair[1]["Ad Soyad"], 0), pair[1]["Ad Soyad"].casefold()))
+        elif sort_mode == "Bölüme (Kat) göre grupla ve sırala (A-Z)":
+            # Önce okul bölümüne (kata), sonra ada göre sıralar
+            indexed_teachers.sort(key=lambda pair: (str(pair[1].get("Okul Bölümü", "Yok")).casefold(), pair[1]["Ad Soyad"].casefold()))
         else:
+            # "Ada göre (A-Z)" seçildiğinde çalışır
             indexed_teachers.sort(key=lambda pair: pair[1]["Ad Soyad"].casefold())
 
         for idx, t_data in indexed_teachers:
             t_data.setdefault("Sabit Yer", "Yok")
+            t_data.setdefault("Okul Bölümü", "Yok")
             t_data.setdefault("Hariç Tutulan Bölümler", [])
             t_data.setdefault("İzinli Günler", [])
             t_data.setdefault("Haftada 2 Nöbet İstiyor", False)
