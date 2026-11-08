@@ -205,16 +205,7 @@
     {
       "Ad Soyad": "ALEV AYÇA AÇIKEL",
       "Sabit Yer": "Yok",
-      "Hariç Tutulan Bölümler": [
-        "BAHÇE",
-        "GİRİŞ",
-        "1.KAT",
-        "2.KAT",
-        "3.KAT",
-        "ANASINIFI KAPI",
-        "EK BİNA 1.KAT",
-        "EK BİNA 2.KAT"
-      ],
+      "Hariç Tutulan Bölümler": [],
       "İzinli Günler": [],
       "Haftada 2 Nöbet İstiyor": false
     },
