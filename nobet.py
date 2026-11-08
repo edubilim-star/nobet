@@ -765,7 +765,7 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list):
 
     days = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
     
-    # İstenen sıralama: Sabit Yer -> Hariç Tutulanlar -> İzinli Günler (+ Çift Nöbet)
+    # Sıralama: Sabit Yer -> Hariç Tutulanlar -> İzinli Günler -> Çift Nöbet
     headers = ["No", "Ad Soyad", "Sabit Yer"] + [f"Hariç: {loc}" for loc in locations_list] + [f"İzin: {day}" for day in days] + ["Çift Nöbet İstiyor mu"]
 
     header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
@@ -775,24 +775,24 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list):
         top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
     )
     
-    # Başlıklar için hizalama: No, Ad Soyad, Sabit Yer yatay; diğerleri dikey (textRotation=90)
     center_align = Alignment(horizontal="center", vertical="center")
     left_align = Alignment(horizontal="left", vertical="center")
-    vertical_header_align = Alignment(horizontal="center", vertical="center", text_rotation=90, wrap_text=True)
+    
+    # Okunabilirliği artırmak için text_rotation 45 dereceye ayarlandı
+    slanted_header_align = Alignment(horizontal="center", vertical="center", text_rotation=45, wrap_text=True)
 
     ws.append(headers)
-    ws.row_dimensions[1].height = 110  # Dikey yazılar sığması için başlık satırı yüksekliği artırıldı
+    ws.row_dimensions[1].height = 80  # 45 derece açı için uygun başlık yüksekliği
 
     for col_num in range(1, len(headers) + 1):
         cell = ws.cell(row=1, column=col_num)
         cell.fill = header_fill
         cell.font = header_font
         cell.border = thin_border
-        # No, Ad Soyad ve Sabit Yer normal (yatay), diğerleri dikey yazılır
         if col_num in [1, 2, 3]:
             cell.alignment = center_align if col_num != 2 else left_align
         else:
-            cell.alignment = vertical_header_align
+            cell.alignment = slanted_header_align
 
     sorted_teachers = sorted(teachers_list, key=lambda t: t.get("Ad Soyad", "").casefold())
 
@@ -818,7 +818,6 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list):
             cell.font = Font(name="Calibri", size=10)
             cell.alignment = left_align if col_num == 2 else center_align
 
-    # Sütun genişlikleri dikeyler için dar, Ad Soyad ve Sabit Yer için uygun boyutta ayarlanır
     for col in ws.columns:
         col_letter = openpyxl.utils.get_column_letter(col[0].column)
         if col[0].column in [1]:
@@ -828,7 +827,7 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list):
         elif col[0].column in [3]:
             ws.column_dimensions[col_letter].width = 16
         else:
-            ws.column_dimensions[col_letter].width = 5  # Dikey sütunlar daraltıldı
+            ws.column_dimensions[col_letter].width = 7  # 45 derece açı için ideal hafif geniş sütun
 
     output = io.BytesIO()
     wb.save(output)
