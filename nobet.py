@@ -753,7 +753,8 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
-def generate_teacher_restrictions_excel(teachers_list, locations_list):
+# ================= ÖĞRETMEN KISIT LİSTESİ EXCEL ÜRETİCİSİ =================
+def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_section=False):
     import io
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -764,71 +765,111 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list):
     ws.views.sheetView[0].showGridLines = True
 
     days = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
-    
-    # İstenen sıralama: Sabit Yer -> Hariç Tutulanlar -> İzinli Günler (+ Çift Nöbet)
-    headers = ["No", "Ad Soyad", "Sabit Yer"] + [f"Hariç: {loc}" for loc in locations_list] + [f"İzin: {day}" for day in days] + ["Çift Nöbet İstiyor mu"]
-
     header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
-    header_font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
+    section_fill = PatternFill(start_color="DCE6F1", end_color="DCE6F1", fill_type="solid")
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    section_font = Font(name="Calibri", size=11, bold=True, color="1F497D")
     thin_border = Border(
         left=Side(style="thin", color="000000"), right=Side(style="thin", color="000000"),
         top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
     )
     
-    # Başlıklar için hizalama: No, Ad Soyad, Sabit Yer yatay; diğerleri dikey (textRotation=90)
     center_align = Alignment(horizontal="center", vertical="center")
     left_align = Alignment(horizontal="left", vertical="center")
     vertical_header_align = Alignment(horizontal="center", vertical="center", text_rotation=90, wrap_text=True)
 
-    ws.append(headers)
-    ws.row_dimensions[1].height = 110  # Dikey yazılar sığması için başlık satırı yüksekliği artırıldı
+    headers = ["No", "Ad Soyad", "Okul Bölümü", "Sabit Yer"] + [f"Hariç: {loc}" for loc in locations_list] + [f"İzin: {day}" for day in days] + ["Çift Nöbet"]
 
-    for col_num in range(1, len(headers) + 1):
-        cell = ws.cell(row=1, column=col_num)
-        cell.fill = header_fill
-        cell.font = header_font
-        cell.border = thin_border
-        # No, Ad Soyad ve Sabit Yer normal (yatay), diğerleri dikey yazılır
-        if col_num in [1, 2, 3]:
-            cell.alignment = center_align if col_num != 2 else left_align
-        else:
-            cell.alignment = vertical_header_align
-
-    sorted_teachers = sorted(teachers_list, key=lambda t: t.get("Ad Soyad", "").casefold())
-
-    for idx, t in enumerate(sorted_teachers, start=1):
-        name = t.get("Ad Soyad", "")
-        sabit = t.get("Sabit Yer", "Yok")
-        cift = "EVET" if t.get("Haftada 2 Nöbet İstiyor", False) else "HAYIR"
-        izinli_gunler = set(t.get("İzinli Günler", []))
-        haric_bolgeler = set(t.get("Hariç Tutulan Bölümler", []))
-
-        row_data = [idx, name, sabit]
-        row_data.extend(["X" if loc in haric_bolgeler else "" for loc in locations_list])
-        row_data.extend(["X" if day in izinli_gunler else "" for day in days])
-        row_data.append(cift)
-
-        ws.append(row_data)
-        current_row = idx + 1
-        ws.row_dimensions[current_row].height = 22
-        
+    if not group_by_section:
+        ws.append(headers)
+        ws.row_dimensions[1].height = 100
         for col_num in range(1, len(headers) + 1):
-            cell = ws.cell(row=current_row, column=col_num)
+            cell = ws.cell(row=1, column=col_num)
+            cell.fill = header_fill
+            cell.font = header_font
             cell.border = thin_border
-            cell.font = Font(name="Calibri", size=10)
-            cell.alignment = left_align if col_num == 2 else center_align
+            cell.alignment = left_align if col_num in [2] else (center_align if col_num in [1,3,4] else vertical_header_align)
 
-    # Sütun genişlikleri dikeyler için dar, Ad Soyad ve Sabit Yer için uygun boyutta ayarlanır
-    for col in ws.columns:
-        col_letter = openpyxl.utils.get_column_letter(col[0].column)
-        if col[0].column in [1]:
-            ws.column_dimensions[col_letter].width = 6
-        elif col[0].column in [2]:
-            ws.column_dimensions[col_letter].width = 25
-        elif col[0].column in [3]:
-            ws.column_dimensions[col_letter].width = 16
-        else:
-            ws.column_dimensions[col_letter].width = 5  # Dikey sütunlar daraltıldı
+        sorted_teachers = sorted(teachers_list, key=lambda t: t.get("Ad Soyad", "").casefold())
+        for idx, t in enumerate(sorted_teachers, start=1):
+            name = t.get("Ad Soyad", "")
+            bolum = t.get("Okul Bölümü", "Yok")
+            sabit = t.get("Sabit Yer", "Yok")
+            cift = "EVET" if t.get("Haftada 2 Nöbet İstiyor", False) else "HAYIR"
+            haricler = set(t.get("Hariç Tutulan Bölümler", []))
+            izinler = set(t.get("İzinli Günler", []))
+
+            row_data = [idx, name, bolum, sabit]
+            row_data.extend(["X" if loc in haricler else "" for loc in locations_list])
+            row_data.extend(["X" if day in izinler else "" for day in days])
+            row_data.append(cift)
+
+            ws.append(row_data)
+            r_idx = idx + 1
+            ws.row_dimensions[r_idx].height = 20
+            for col_num in range(1, len(headers) + 1):
+                c = ws.cell(row=r_idx, column=col_num)
+                c.border = thin_border
+                c.font = Font(name="Calibri", size=10)
+                c.alignment = left_align if col_num == 2 else center_align
+    else:
+        # Bölüme göre gruplayarak listeleme
+        grouped = {}
+        for t in teachers_list:
+            b = t.get("Okul Bölümü", "Bölüm Atanmamış")
+            grouped.setdefault(b, []).append(t)
+
+        current_row = 1
+        for section, t_list in sorted(grouped.items()):
+            ws.merge_cells(start_row=current_row, start_column=1, end_row=current_row, end_column=len(headers))
+            sec_cell = ws.cell(row=current_row, column=1, value=f"📍 {section.upper()} (Toplam: {len(t_list)} Öğretmen)")
+            sec_cell.font = section_font
+            sec_cell.fill = section_fill
+            sec_cell.alignment = left_align
+            ws.row_dimensions[current_row].height = 25
+            current_row += 1
+
+            ws.append(headers)
+            ws.row_dimensions[current_row].height = 100
+            for col_num in range(1, len(headers) + 1):
+                cell = ws.cell(row=current_row, column=col_num)
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.border = thin_border
+                cell.alignment = left_align if col_num in [2] else (center_align if col_num in [1,3,4] else vertical_header_align)
+            current_row += 1
+
+            sorted_group = sorted(t_list, key=lambda x: x.get("Ad Soyad", "").casefold())
+            for idx, t in enumerate(sorted_group, start=1):
+                name = t.get("Ad Soyad", "")
+                bolum = t.get("Okul Bölümü", "Yok")
+                sabit = t.get("Sabit Yer", "Yok")
+                cift = "EVET" if t.get("Haftada 2 Nöbet İstiyor", False) else "HAYIR"
+                haricler = set(t.get("Hariç Tutulan Bölümler", []))
+                izinler = set(t.get("İzinli Günler", []))
+
+                row_data = [idx, name, bolum, sabit]
+                row_data.extend(["X" if loc in haricler else "" for loc in locations_list])
+                row_data.extend(["X" if day in izinler else "" for day in days])
+                row_data.append(cift)
+
+                ws.append(row_data)
+                ws.row_dimensions[current_row].height = 20
+                for col_num in range(1, len(headers) + 1):
+                    c = ws.cell(row=current_row, column=col_num)
+                    c.border = thin_border
+                    c.font = Font(name="Calibri", size=10)
+                    c.alignment = left_align if col_num == 2 else center_align
+                current_row += 1
+            current_row += 1 # Gruplar arası boşluk
+
+    # Genişlik ayarları
+    ws.column_dimensions["A"].width = 5
+    ws.column_dimensions["B"].width = 25
+    ws.column_dimensions["C"].width = 16
+    ws.column_dimensions["D"].width = 16
+    for c_idx in range(5, len(headers) + 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(c_idx)].width = 5
 
     output = io.BytesIO()
     wb.save(output)
@@ -2005,6 +2046,12 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         if "_tab2_mesaj" in st.session_state:
             st.success(st.session_state.pop("_tab2_mesaj"))
 
+
+
+
+
+
+
         with st.expander("⚡ Toplu Kısıtlama Uygulama Paneli (Tüm Öğretmenler İçin)", expanded=True):
             st.markdown("Aşağıdan bir bölüm seçerek **tüm öğretmenlere tek tıkla** hariç tutma kısıtı ekleyebilir veya kaldırabilirsiniz.")
 
@@ -2135,7 +2182,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
 
         sort_mode = st.selectbox(
             "Öğretmenleri sırala",
-            ["Ada göre (A-Z)", "Toplam nöbet sayısına göre (çoktan aza)", "Çift nöbet sayısına göre (çoktan aza)"],
+            ["Ada göre (A-Z)", "Bölüme (Kat) göre grupla ve sırala (A-Z)","Toplam nöbet sayısına göre (çoktan aza)", "Çift nöbet sayısına göre (çoktan aza)"],
             key="teacher_sort_mode"
         )
 
