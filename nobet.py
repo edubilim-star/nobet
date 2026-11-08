@@ -2215,12 +2215,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             double_weeks_count = double_duty_counts.get(teacher_name, 0)
             with st.expander(f"{teacher_name}  ·  Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
                 st.caption("Bir haftadaki çift nöbet, sayaçta bir hafta olarak sayılır.")
-
-# ÖRNEK: Öğretmen expander bloğunun içi
-            with st.expander(f"{teacher_name}  ·  Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
-                st.caption("Bir haftadaki çift nöbet, sayaçta bir hafta olarak sayılır.")
-
-                # === YENİ EKLENECEK KISIM: Okul Bölümü / Kat Seçimi ===
+# === YENİ EKLENECEK KISIM: Okul Bölümü / Kat Seçimi ===
                 t_data.setdefault("Okul Bölümü", "Yok")
                 curr_bolum = t_data["Okul Bölümü"]
                 # yer_listesi içinde "Yok" ve tum_bolgeler olduğunu varsayıyoruz
@@ -2238,15 +2233,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                     degisiklik_var = True
                 # ====================================================
 
-                curr_sabit = t_data["Sabit Yer"]
-                sabit_idx = yer_listesi.index(curr_sabit) if curr_sabit in yer_listesi else 0
-                yeni_sabit = st.selectbox(
-                    "Sabit nöbet yeri", yer_listesi, index=sabit_idx,
-                    key=f"sabit_{teacher_name}"
-                )
-                if yeni_sabit != t_data["Sabit Yer"]:
-                    t_data["Sabit Yer"] = yeni_sabit
-                    degisiklik_var = True
 
 
                 curr_sabit = t_data["Sabit Yer"]
