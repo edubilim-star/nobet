@@ -753,7 +753,66 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
+def generate_teacher_restrictions_excel(teachers_list, locations_list):
+    import io
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Öğretmen Kısıt Listesi"
+    ws.views.sheetView[0].showGridLines = True
+
+    days = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
+    headers = ["No", "Ad Soyad", "Sabit Yer", "Çift Nöbet İstiyor mu"] + [f"İzin: {day}" for day in days] + [f"Hariç: {loc}" for loc in locations_list]
+
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+    header_font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
+    thin_border = Border(
+        left=Side(style="thin", color="000000"), right=Side(style="thin", color="000000"),
+        top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
+    )
+    center_align = Alignment(horizontal="center", vertical="center")
+    left_align = Alignment(horizontal="left", vertical="center")
+
+    ws.append(headers)
+    for col_num in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = center_align
+        cell.border = thin_border
+
+    sorted_teachers = sorted(teachers_list, key=lambda t: t.get("Ad Soyad", "").casefold())
+
+    for idx, t in enumerate(sorted_teachers, start=1):
+        name = t.get("Ad Soyad", "")
+        sabit = t.get("Sabit Yer", "Yok")
+        cift = "EVET" if t.get("Haftada 2 Nöbet İstiyor", False) else "HAYIR"
+        izinli_gunler = set(t.get("İzinli Günler", []))
+        haric_bolgeler = set(t.get("Hariç Tutulan Bölümler", []))
+
+        row_data = [idx, name, sabit, cift]
+        row_data.extend(["X" if day in izinli_gunler else "" for day in days])
+        row_data.extend(["X" if loc in haric_bolgeler else "" for loc in locations_list])
+
+        ws.append(row_data)
+        current_row = idx + 1
+        for col_num in range(1, len(headers) + 1):
+            cell = ws.cell(row=current_row, column=col_num)
+            cell.border = thin_border
+            cell.font = Font(name="Calibri", size=10)
+            cell.alignment = left_align if col_num == 2 else center_align
+
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or "")) for cell in col)
+        col_letter = openpyxl.utils.get_column_letter(col[0].column)
+        ws.column_dimensions[col_letter].width = max(max_len + 3, 10)
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    return output
 # ================= PDF ÜRETME FONKSİYONU =================
 def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_text, start_date, holidays_df, locations_df=None):
     pdf_buffer = io.BytesIO()
@@ -2065,11 +2124,24 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         mevcut_liste = st.session_state.teachers_dict_list
 
         hist_for_counts = st.session_state.history
-        st.markdown(
-            f"<div class='teacher-count-card'><span>Toplam öğretmen sayısı</span>"
-            f"<strong>{len(mevcut_liste)}</strong><small>öğretmen kayıtlı</small></div>",
-            unsafe_allow_html=True,
-        )
+count_col, btn_col = st.columns([3, 2], vertical_alignment="center")
+        with count_col:
+            st.markdown(
+                f"<div class='teacher-count-card'><span>Toplam öğretmen sayısı</span>"
+                f"<strong>{len(mevcut_liste)}</strong><small>öğretmen kayıtlı</small></div>",
+                unsafe_allow_html=True,
+            )
+        with btn_col:
+            teacher_excel_data = generate_teacher_restrictions_excel(mevcut_liste, tum_bolgeler)
+            st.download_button(
+                label="📊 Öğretmen Kısıt Listesini İndir (Excel)",
+                data=teacher_excel_data,
+                file_name="Ogretmen_Kisit_Listesi.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                type="primary",
+                use_container_width=True,
+                key="btn_download_teacher_restrictions"
+            )
         total_duty_counts = {}
         double_duty_counts = {}
         if not hist_for_counts.empty and "Öğretmen" in hist_for_counts.columns:
