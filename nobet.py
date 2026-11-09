@@ -1578,7 +1578,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             normalized_place = search_normalize(place)
             return "anasinifi" in normalized_place or "ana sinif" in normalized_place
 
-        def try_solve(allow_mandatory_previous_place, enforce_unique_week_place=True, ignore_previous_place=False):
+        def try_solve(allow_mandatory_previous_place, enforce_unique_week_place=True, ignore_previous_place=False,
+                      ignore_previous_double_cap=False, allow_adjacent_days=False):
             counts.clear()
             counts.update({name: 0 for name in teacher_names})
             assignments[:] = [None] * len(slots)
@@ -1597,7 +1598,9 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 for name in slot_candidates[slot_idx]:
                     if counts[name] >= max_weekly[name]:
                         continue
-                    if counts[name] == 1 and str(name).casefold() in previous_week_double_names:
+                    if (not ignore_previous_double_cap
+                            and counts[name] == 1
+                            and str(name).casefold() in previous_week_double_names):
                         continue
                     already_on_same_day = any(
                         assigned_name == name and slots[other_idx][0] == slot_gun
@@ -1620,7 +1623,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                         for other_idx, assigned_name in enumerate(assignments)
                         if assigned_name is not None
                     )
-                    if has_adjacent_day:
+                    if has_adjacent_day and not allow_adjacent_days:
                         continue
                     repeats_previous_place = (
                         not ignore_previous_place
@@ -1670,7 +1673,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                                 and slots[other_idx][1].strip().casefold() == place.strip().casefold()
                                 and not same_week_repeat_allowed(place)):
                             return False
-                        if assigned_name == name and abs(other_day_index - day_index) == 1:
+                        if (assigned_name == name and abs(other_day_index - day_index) == 1
+                                and not allow_adjacent_days):
                             return False
                     if (not ignore_previous_place
                             and place.casefold() in previous_places.get(name, set())
@@ -1715,6 +1719,55 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
 
         # Retry the strict no-repeat search with fresh tie ordering before
         # considering the fallback that permits a same-week place repeat.
+        def find_hard_blockers():
+            """Gevşetilemeyen kurallar (izin, hariç tutma, sabit yer, aynı gün tek görev,
+            aynı hafta aynı yere tek görev) tek başına imkânsızlık doğuruyorsa nedenini döndürür."""
+            notes = []
+            # 1) Yer bazlı: aynı hafta aynı yere ikinci kez yazılamaz (ANASINIFI hariç).
+            for place in dict.fromkeys(bolge for _, bolge in slots):
+                place_slots = [i for i, sl in enumerate(slots) if sl[1] == place]
+                if same_week_repeat_allowed(place):
+                    continue
+                pool = {n for i in place_slots for n in slot_candidates[i]}
+                if len(pool) < len(place_slots):
+                    notes.append(
+                        f"{place}: haftada {len(place_slots)} farklı öğretmen gerekiyor ama bu yere "
+                        f"uygun yalnızca {len(pool)} öğretmen var (hariç tutma, sabit yer veya izin nedeniyle)."
+                    )
+            # 2) Gün bazlı: bir öğretmen aynı gün tek görev alabilir.
+            for gun in active_gunler:
+                day_slots = [i for i, sl in enumerate(slots) if sl[0] == gun]
+                pool = {n for i in day_slots for n in slot_candidates[i]}
+                if len(pool) < len(day_slots):
+                    notes.append(
+                        f"{gun}: {len(day_slots)} nöbet görevi var ama o gün görev alabilecek "
+                        f"yalnızca {len(pool)} öğretmen var (izin/sabit yer/hariç tutma)."
+                    )
+            # 3) Toplam kapasite: her öğretmenin alabileceği en fazla görev (en gevşek hâliyle).
+            total_capacity = 0
+            for name in teacher_names:
+                my_idx = [i for i, cands in enumerate(slot_candidates) if name in cands]
+                my_days = {slots[i][0] for i in my_idx}
+                my_places = {slots[i][1] for i in my_idx}
+                place_bound = sum(len(my_days) if same_week_repeat_allowed(pl) else 1 for pl in my_places)
+                total_capacity += min(len(my_days), place_bound)
+            if total_capacity < len(slots):
+                notes.append(
+                    f"Toplam kapasite yetersiz: {len(slots)} görev var, öğretmenlerin izin/sabit yer/hariç tutma "
+                    f"ayarlarıyla alabileceği en fazla görev {total_capacity}."
+                )
+            return notes
+
+        hard_blockers = find_hard_blockers()
+        if hard_blockers:
+            st.error(
+                "Nöbet çizelgesi oluşturulamadı. Bu ayarlarla bazı görevler hiçbir şekilde doldurulamıyor:\n\n"
+                + "\n".join(f"- {note}" for note in hard_blockers)
+                + "\n\nİlgili öğretmenlerin hariç tutma/izin/sabit yer ayarlarını gevşetin, "
+                  "kontenjanı azaltın veya öğretmen ekleyin."
+            )
+            st.stop()
+
         solved_without_repeat = False
         for _strict_attempt in range(3):
             solved_without_repeat = try_solve(
@@ -1723,6 +1776,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             )
             if solved_without_repeat:
                 break
+        relaxed_rules = []
         repeated_place_fallback = False
         repeated_previous_place_teachers = []
         previous_place_ignored = False
@@ -1741,6 +1795,25 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     enforce_unique_week_place=True,
                     ignore_previous_place=True,
                 )
+            if not fallback_solved and previous_week_double_names:
+                # Geçen hafta çift nöbet tutanların bu hafta tek nöbetle sınırlanması
+                # (adalet kuralı) kapasiteyi aşırı daraltabilir; son çare olarak kaldır.
+                fallback_solved = try_solve(
+                    allow_mandatory_previous_place=True,
+                    ignore_previous_place=True,
+                    ignore_previous_double_cap=True,
+                )
+                if fallback_solved:
+                    relaxed_rules.append("geçen hafta çift nöbet tutanlara bu hafta da çift nöbet verilmesi")
+            if not fallback_solved:
+                fallback_solved = try_solve(
+                    allow_mandatory_previous_place=True,
+                    ignore_previous_place=True,
+                    ignore_previous_double_cap=True,
+                    allow_adjacent_days=True,
+                )
+                if fallback_solved:
+                    relaxed_rules.append("aynı öğretmene ardışık günlerde nöbet verilmesi")
             if fallback_solved:
                 repeated_previous_place_teachers = sorted({
                     str(name) for (_, place), name in zip(slots, assignments)
@@ -1762,9 +1835,17 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 detail = "; ".join(dict.fromkeys(impossible))
                 st.error(f"Kurallara göre doldurulamayan görevler: {detail}. Hariç tutma, izin ve sabit yer ayarlarını gözden geçirin.")
             elif visited_nodes[0] > node_budget:
-                st.error("Öğretmen, gün ve yer kurallarıyla uygun çizelge bulunamadı. Kısıtlar veya kontenjanlar mevcut öğretmen sayısına göre çok sıkı olabilir.")
+                st.error(
+                    "Arama süre sınırına takıldı; kısıtlar mevcut öğretmen sayısına göre çok sıkı. "
+                    "Tekrar 'Oluştur'a basmak (rastgele sıralama değişir) veya hariç tutma/izin ayarlarını "
+                    "gevşetmek genellikle çözer."
+                )
             else:
-                st.error("Tüm nöbet yerlerini mevcut öğretmen ve haftalık nöbet sınırlarıyla doldurmak mümkün değil. İzin, sabit yer, hariç tutma veya kontenjanları gözden geçirin.")
+                st.error(
+                    "Tüm kurallar (aynı gün tek görev, ardışık gün yok, aynı hafta aynı yer yok, izin, "
+                    "sabit yer, hariç tutma) gevşetilse bile çizelge bulunamadı. Gün bazında uygun öğretmen "
+                    "sayısı ile kontenjanları karşılaştırın; özellikle aynı güne denk gelen izinleri kontrol edin."
+                )
             st.stop()
 
         deputy_assignments, _deputy_adjacent_fallback = distribute_deputies(
@@ -1811,6 +1892,11 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         st.session_state.saved_schedules[hafta_adi] = sched_df.copy()
         save_app_data()
         st.success(f"✨ '{hafta_adi}' dönemi çizelgesi başarıyla oluşturuldu!")
+        if relaxed_rules:
+            st.warning(
+                "Kurallarla tam uyumlu çizelge bulunamadığı için bu hafta şu kural esnetildi: "
+                + "; ".join(relaxed_rules) + ". Dilerseniz izin/hariç tutma ayarlarını gevşetip yeniden oluşturabilirsiniz."
+            )
         if repeated_place_fallback:
             st.warning(
                 "Diğer kurallara uymak için geçen haftaki nöbet yeri şu öğretmenlere yeniden verildi: "
