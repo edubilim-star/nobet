@@ -4790,7 +4790,7 @@
       "Tarih": "2026-12-01T00:00:00.000",
       "Gün": "SALI",
       "Bölüm/Yer": "2.KAT",
-      "Öğretmen": "ESMANUR SEZER",
+      "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -4844,7 +4844,7 @@
       "Tarih": "2026-12-02T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "NİHAL GÖKSU",
+      "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -4853,7 +4853,7 @@
       "Tarih": "2026-12-02T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "ALEV AYÇA AÇIKEL",
+      "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -5033,8 +5033,8 @@
       "Tarih": "2026-12-04T00:00:00.000",
       "Gün": "CUMA",
       "Bölüm/Yer": "2.KAT",
-      "Öğretmen": "ÖZGE KEPENEK",
-      "Çift Nöbetçi mi": false,
+      "Öğretmen": "ESMANUR SEZER",
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -5070,7 +5070,7 @@
       "Gün": "CUMA",
       "Bölüm/Yer": "EK BİNA 1.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
-      "Çift Nöbetçi mi": true,
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -5206,7 +5206,7 @@
       "Tarih": "2026-12-01T00:00:00.000",
       "Gün": "SALI",
       "Bölüm/Yer": "2.KAT",
-      "Öğretmen": "ESMANUR SEZER",
+      "Öğretmen": "ÖZGE KEPENEK",
       "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
@@ -5260,7 +5260,7 @@
       "Tarih": "2026-12-02T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "NİHAL GÖKSU",
+      "Öğretmen": "ESMANUR SEZER",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -5269,7 +5269,7 @@
       "Tarih": "2026-12-02T00:00:00.000",
       "Gün": "ÇARŞAMBA",
       "Bölüm/Yer": "BAHÇE",
-      "Öğretmen": "ALEV AYÇA AÇIKEL",
+      "Öğretmen": "NİHAL GÖKSU",
       "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
@@ -5449,8 +5449,8 @@
       "Tarih": "2026-12-04T00:00:00.000",
       "Gün": "CUMA",
       "Bölüm/Yer": "2.KAT",
-      "Öğretmen": "ÖZGE KEPENEK",
-      "Çift Nöbetçi mi": false,
+      "Öğretmen": "ESMANUR SEZER",
+      "Çift Nöbetçi mi": true,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -5486,7 +5486,7 @@
       "Gün": "CUMA",
       "Bölüm/Yer": "EK BİNA 1.KAT",
       "Öğretmen": "ALEV AYÇA AÇIKEL",
-      "Çift Nöbetçi mi": true,
+      "Çift Nöbetçi mi": false,
       "Kaynak": "Oluşturulan"
     },
     {
@@ -6039,7 +6039,7 @@
         "Tarih": "2026-12-01T00:00:00.000",
         "Gün": "SALI",
         "Bölüm/Yer": "2.KAT",
-        "Öğretmen": "ESMANUR SEZER",
+        "Öğretmen": "ÖZGE KEPENEK",
         "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
@@ -6093,7 +6093,7 @@
         "Tarih": "2026-12-02T00:00:00.000",
         "Gün": "ÇARŞAMBA",
         "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "NİHAL GÖKSU",
+        "Öğretmen": "ESMANUR SEZER",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -6102,7 +6102,7 @@
         "Tarih": "2026-12-02T00:00:00.000",
         "Gün": "ÇARŞAMBA",
         "Bölüm/Yer": "BAHÇE",
-        "Öğretmen": "ALEV AYÇA AÇIKEL",
+        "Öğretmen": "NİHAL GÖKSU",
         "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
@@ -6282,8 +6282,8 @@
         "Tarih": "2026-12-04T00:00:00.000",
         "Gün": "CUMA",
         "Bölüm/Yer": "2.KAT",
-        "Öğretmen": "ÖZGE KEPENEK",
-        "Çift Nöbetçi mi": false,
+        "Öğretmen": "ESMANUR SEZER",
+        "Çift Nöbetçi mi": true,
         "Kaynak": "Oluşturulan"
       },
       {
@@ -6319,7 +6319,7 @@
         "Gün": "CUMA",
         "Bölüm/Yer": "EK BİNA 1.KAT",
         "Öğretmen": "ALEV AYÇA AÇIKEL",
-        "Çift Nöbetçi mi": true,
+        "Çift Nöbetçi mi": false,
         "Kaynak": "Oluşturulan"
       },
       {
