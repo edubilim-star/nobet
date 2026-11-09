@@ -20,7 +20,6 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -98,7 +97,6 @@ if "holidays" not in st.session_state:
     st.session_state.holidays = pd.DataFrame(columns=["Tarih", "Tatil Açıklaması"])
 
 def normalized_holidays(frame):
-    """Return holiday rows with date objects, valid descriptions, and no duplicates."""
     if frame is None or frame.empty:
         return pd.DataFrame(columns=["Tarih", "Tatil Açıklaması"])
     result = frame.reindex(columns=["Tarih", "Tatil Açıklaması"]).copy()
@@ -140,7 +138,6 @@ if "processed_uploads" not in st.session_state:
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nobet_verileri.json")
 
 def github_storage_settings():
-    """Read optional GitHub persistence settings from Streamlit secrets."""
     try:
         secrets = st.secrets
         token = str(secrets.get("GITHUB_TOKEN", "")).strip()
@@ -156,7 +153,6 @@ def github_storage_settings():
     return {"token": token, "repository": repository, "branch": branch, "path": data_path}
 
 def github_contents_request(settings, method="GET", payload=None):
-    """Call GitHub's Contents API for the persistent JSON file."""
     encoded_path = urllib.parse.quote(settings["path"].strip("/"), safe="/")
     url = f"https://api.github.com/repos/{settings['repository']}/contents/{encoded_path}"
     if method == "GET":
@@ -267,7 +263,6 @@ def save_app_data():
             st.session_state["_github_storage_error"] = str(exc)
 
 def commit_location_editor_changes():
-    """Commit data-editor deltas before navigation or another widget can rerun the app."""
     widget_state = st.session_state.get("location_editor", {})
     if not isinstance(widget_state, dict):
         return
@@ -379,7 +374,6 @@ if not st.session_state.get("_persistence_loaded", False):
     st.session_state["_persistence_loaded"] = True
 
 def canonical_location_name(value):
-    """Use one canonical label for main-building floors across settings and archives."""
     name = str(value).strip()
     normalized = search_normalize(name)
     aliases = {
@@ -388,8 +382,6 @@ def canonical_location_name(value):
     }
     return aliases.get(normalized, name)
 
-# Normalize previously saved location names so the same main-building floor is not
-# kept as two separate places in assignment lists, history, or imported schedules.
 if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
     st.session_state.locations["Nöbet Yeri / Bölüm"] = st.session_state.locations["Nöbet Yeri / Bölüm"].apply(canonical_location_name)
     merged_rows = []
@@ -406,9 +398,6 @@ if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
                 for days in group["Aktif Günler"]
             ]
             if search_normalize(place_name) == "giris" and len(day_selections) > 1:
-                # Older app versions accidentally appended a full-week GİRİŞ row
-                # on every rerun. Intersect duplicates so a deliberate narrow
-                # selection (such as Monday only) is retained while collapsing them.
                 active_days = [day for day in WEEKDAYS if all(day in selection for selection in day_selections)]
             else:
                 active_days = [day for day in WEEKDAYS if any(day in selection for selection in day_selections)]
@@ -493,21 +482,16 @@ else:
         axis=1
     )
 
-# CSS GÜNCELLEMESİ: Üst kısım ve indirme butonları hizalaması
 st.markdown("""
 <style>
-/* Üst menü butonlarının tam görünmesi için üst padding artırıldı */
 div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 4.5rem !important;
 }
-
-/* İndirme butonlarının sağa yaslanması için */
 .download-btn-container {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
 .app-footer { 
   margin-top: 1.5rem; 
   padding: 0.75rem 0 0.3rem; 
@@ -518,7 +502,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
   letter-spacing: 0.04em; 
   text-align: left; 
 }
-
 .app-title {
   width: fit-content;
   max-width: 100%;
@@ -532,7 +515,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
   letter-spacing: 0.01em;
   text-align: center;
 }
-
 .teacher-count-card {
   display: flex;
   width: fit-content;
@@ -549,7 +531,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 .teacher-count-card span { font-size: 0.9rem; font-weight: 600; }
 .teacher-count-card strong { color: #1d4e89; font-size: 1.45rem; line-height: 1; }
 .teacher-count-card small { color: #64748b; font-size: 0.78rem; }
-
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 4.5rem !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
@@ -557,7 +538,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 </style>
 """, unsafe_allow_html=True)
 
-# --- UYGULAMA GEZİNME MENÜSÜ ---
 def turkish_title_case(value):
     lowered = str(value or "Okul").strip().lower().replace("i\u0307", "i")
     words = lowered.split()
@@ -600,7 +580,6 @@ for row_start in range(0, len(MENU_OPTIONS), 3):
 
 main_menu = st.session_state.main_navigation
 
-# ================= EXCEL ÜRETME FONKSİYONU =================
 def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df, headings):
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -711,7 +690,6 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
             cell.alignment = Alignment(horizontal="center" if col in [1, deputy_col] else "left", vertical="center", wrap_text=True)
             cell.font = Font(name="Calibri", size=10, bold=(col==1))
 
-    # Merge holiday cells only after all cell values and styles are prepared.
     for holiday_row in holiday_excel_rows:
         ws.merge_cells(start_row=holiday_row, start_column=2, end_row=holiday_row, end_column=last_col)
         ws.cell(row=holiday_row, column=2).alignment = Alignment(
@@ -753,7 +731,6 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
-# ================= ÖĞRETMEN KISIT LİSTESİ EXCEL ÜRETİCİSİ =================
 def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_section=False):
     import io
     import openpyxl
@@ -813,7 +790,6 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
                 c.font = Font(name="Calibri", size=10)
                 c.alignment = left_align if col_num == 2 else center_align
     else:
-        # Bölüme göre gruplayarak listeleme
         grouped = {}
         for t in teachers_list:
             b = t.get("Okul Bölümü", "Bölüm Atanmamış")
@@ -861,9 +837,8 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
                     c.font = Font(name="Calibri", size=10)
                     c.alignment = left_align if col_num == 2 else center_align
                 current_row += 1
-            current_row += 1 # Gruplar arası boşluk
+            current_row += 1
 
-    # Genişlik ayarları
     ws.column_dimensions["A"].width = 5
     ws.column_dimensions["B"].width = 25
     ws.column_dimensions["C"].width = 16
@@ -875,7 +850,7 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
     wb.save(output)
     output.seek(0)
     return output
-# ================= PDF ÜRETME FONKSİYONU =================
+
 def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_text, start_date, holidays_df, locations_df=None):
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=landscape(letter), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
@@ -1191,9 +1166,8 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
     output.seek(0)
     return output
 
-
 # ================= 1. SEKME: NÖBET LİSTESİ OLUŞTUR =================
-if main_menu == "📅 Nöbet Listesi Oluştur":
+elif main_menu == "📅 Nöbet Listesi Oluştur":
     with st.container(border=True):
         st.header("Haftalık Nöbet Çizelgesi ve Dağıtım Sihirbazı")
 
@@ -1239,7 +1213,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     pointer = (pointer + max(requested, 1)) % len(names)
             return assignments, consecutive_fallback
     
-        # Eski veya oluşturulmuş kayıtları aynı ekrandan yeniden görüntüleyebilme.
         archive_frames = {}
         archive_frames.update({
             str(name): frame.copy() if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
@@ -1471,8 +1444,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         double_day_rank = {
             day: index for index, day in enumerate(double_day_priority)
         } if prioritize_double_days else {}
-        # Önce daha az seçeneği olan görevleri çöz; eşitlikte çift isteyenlere
-        # uygun daha geniş görevleri erken ele al ki sıfır sayılılar dışarıda kalmasın.
+        
         slot_order = sorted(
             range(len(slots)),
             key=lambda i: (
@@ -1488,30 +1460,24 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if "Tarih" in prior_history.columns:
             prior_dates = pd.to_datetime(prior_history["Tarih"], errors="coerce").dt.date
             prior_history = prior_history.loc[~prior_dates.isin(week_dates)]
-        previous_start = baslangic_tarihi - datetime.timedelta(days=7)
-        previous_end = previous_start + datetime.timedelta(days=4)
-        if "Tarih" in history.columns:
-            history["_date"] = pd.to_datetime(history["Tarih"], errors="coerce").dt.date
-            previous_rows = history[
-                history["_date"].apply(
-                    lambda d: pd.notna(d)
-                    and isinstance(d, datetime.date)
-                    and previous_start <= d <= previous_end
-                )
-            ]
-        else:
-            previous_rows = pd.DataFrame()
+
+        # --- GÜNCELLENEN KISIM: Veri girilmiş SON HAFTAYI bulma mantığı ---
         previous_places = {}
-        if not previous_rows.empty:
-            for _, row in previous_rows.iterrows():
-                previous_places.setdefault(row["Öğretmen"], set()).add(str(row["Bölüm/Yer"]).strip().casefold())
+        if "Tarih" in history.columns and not history.empty:
+            valid_hist = history.dropna(subset=["Tarih"]).copy()
+            valid_hist["_date"] = pd.to_datetime(valid_hist["Tarih"], errors="coerce").dt.date
+            # Sadece yeni oluşturulan haftadan ÖNCEKİ tarihlere bakıyoruz
+            past_rows = valid_hist[valid_hist["_date"] < baslangic_tarihi]
+            if not past_rows.empty:
+                # Arşivdeki en büyük (en yakın) tarihi buluyoruz
+                latest_date = past_rows["_date"].max()
+                # O en yakın tarihe ait haftanın verilerini süzüyoruz (1 hafta öncesi değil, veri olan son hafta)
+                last_active_rows = past_rows[past_rows["_date"] == latest_date]
+                for _, row in last_active_rows.iterrows():
+                    previous_places.setdefault(row["Öğretmen"], set()).add(str(row["Bölüm/Yer"]).strip().casefold())
+        # -----------------------------------------------------------------
+
         previous_week_double_names = set()
-        if not previous_rows.empty and "Öğretmen" in previous_rows.columns:
-            previous_week_counts = previous_rows.groupby("Öğretmen").size()
-            previous_week_double_names = {
-                str(name).casefold()
-                for name in previous_week_counts[previous_week_counts > 1].index
-            }
         prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
         historic_double_weeks = prior_weekly_counts[prior_weekly_counts > 1].reset_index().groupby("Öğretmen").size().to_dict() if not prior_weekly_counts.empty else {}
         all_place_counts = {}
@@ -1638,9 +1604,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 return False
             solved = solve(0)
             if solved:
-                # First use surplus duties to cover any eligible teacher left at zero.
-                # Only after first-duty coverage is exhausted should double-duty
-                # preference affect the ordering among teachers with one assignment.
                 def can_take(name, slot_idx, replacing_name=None):
                     if name not in slot_candidates[slot_idx]:
                         return False
@@ -1670,7 +1633,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 ]
                 for target in eligible_teacher_names:
                     if counts[target] == 0:
-                        # Prefer a free slot (reducing another teacher from 2 to 1).
                         for slot_idx, assigned_name in enumerate(assignments):
                             if assigned_name is None:
                                 continue
@@ -1681,8 +1643,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                                 counts[target] += 1
                                 break
                         if counts[target] == 0:
-                            # Move one duty from a teacher with two, then give target
-                            # an adjacent compatible slot from a single-duty teacher.
                             for target_slot, target_donor in enumerate(assignments):
                                 if target_donor is None or counts[target_donor] <= 1 or not can_take(target, target_slot, target_donor):
                                     continue
@@ -1699,8 +1659,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                                     break
             return solved
 
-        # Retry the strict no-repeat search with fresh tie ordering before
-        # considering the fallback that permits a same-week place repeat.
         solved_without_repeat = False
         for _strict_attempt in range(3):
             solved_without_repeat = try_solve(
@@ -1713,8 +1671,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         repeated_previous_place_teachers = []
         fallback_solved = False
         if not solved_without_repeat:
-            # Keep same-week uniqueness in every path. Only mandatory fixed-place
-            # assignments may reuse the previous week's place.
             fallback_solved = try_solve(allow_mandatory_previous_place=True, enforce_unique_week_place=True)
             if fallback_solved:
                 repeated_previous_place_teachers = sorted({
@@ -1783,7 +1739,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         st.success(f"✨ '{hafta_adi}' dönemi çizelgesi başarıyla oluşturuldu!")
         if repeated_place_fallback:
             st.warning(
-                "Diğer kurallara uymak için geçen haftaki nöbet yeri şu öğretmenlere yeniden verildi: "
+                "Diğer kurallara uymak için son kayıtlı haftadaki nöbet yeri şu öğretmenlere yeniden verildi: "
                 + ", ".join(repeated_previous_place_teachers)
             )
         unassigned_eligible = [
@@ -1810,7 +1766,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     first_date = preview_dates.min().date()
                     schedule_start_for_export = first_date - datetime.timedelta(days=first_date.weekday())
             current_deputy_assignments = st.session_state.mudur_yardimcisi_gecmisi.get(schedule_name_for_export, {}).get("assignments", {})
-            # 3 BUTON YAN YANA SAĞA YASLI HİZALAMA
             col_spacer, col_excel, col_pdf, col_img = st.columns([3, 1, 1, 1], gap="small")
         
             with col_excel:
@@ -2026,9 +1981,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     st.success("Öğretmen adı değişiklikleri onaylandı ve nöbet sayıları güncellendi.")
                     st.rerun()
 
-
-
-
 # ================= 2. SEKME: ÖĞRETMEN YÖNETİMİ =================
 elif main_menu == "👥 Öğretmen Yönetimi":
     with st.container(border=True):
@@ -2046,13 +1998,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         if "_tab2_mesaj" in st.session_state:
             st.success(st.session_state.pop("_tab2_mesaj"))
 
-
-
-
-
-
-
-# Bu kısım öğretmen yönetimi panelinin içinde, ana sekmenizin altında yer almalıdır
         with st.expander("⚡ Toplu Kısıtlama Uygulama Paneli", expanded=True):
             st.markdown("Aşağıdan bir bölüm seçerek belirli bir gruba veya tüm öğretmenlere tek tıkla hariç tutma kısıtı ekleyebilirsiniz.")
             
@@ -2199,7 +2144,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
 
         indexed_teachers = list(enumerate(mevcut_liste))
         
-        # Eski kayıtlarda "Okul Bölümü" eksikse çökmemesi için varsayılan değer atıyoruz
         for idx, t_data in indexed_teachers:
             t_data.setdefault("Okul Bölümü", "Yok")
 
@@ -2208,10 +2152,8 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         elif sort_mode == "Çift nöbet sayısına göre (çoktan aza)":
             indexed_teachers.sort(key=lambda pair: (-double_duty_counts.get(pair[1]["Ad Soyad"], 0), pair[1]["Ad Soyad"].casefold()))
         elif sort_mode == "Bölüme (Kat) göre grupla ve sırala (A-Z)":
-            # Önce okul bölümüne (kata), sonra ada göre sıralar
             indexed_teachers.sort(key=lambda pair: (str(pair[1].get("Okul Bölümü", "Yok")).casefold(), pair[1]["Ad Soyad"].casefold()))
         else:
-            # "Ada göre (A-Z)" seçildiğinde çalışır
             indexed_teachers.sort(key=lambda pair: pair[1]["Ad Soyad"].casefold())
 
         for idx, t_data in indexed_teachers:
@@ -2226,10 +2168,8 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             double_weeks_count = double_duty_counts.get(teacher_name, 0)
             with st.expander(f"{teacher_name}  · Sınıfının Olduğu Kat: {okul_bolumu}  · Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
                 st.caption("Bir haftadaki çift nöbet, sayaçta bir hafta olarak sayılır.")
-# === YENİ EKLENECEK KISIM: Okul Bölümü / Kat Seçimi ===
                 t_data.setdefault("Okul Bölümü", "Yok")
                 curr_bolum = t_data["Okul Bölümü"]
-                # yer_listesi içinde "Yok" ve tum_bolgeler olduğunu varsayıyoruz
                 bolum_secenekleri = ["Yok"] + tum_bolgeler 
                 bolum_idx = bolum_secenekleri.index(curr_bolum) if curr_bolum in bolum_secenekleri else 0
                 
@@ -2242,9 +2182,6 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 if yeni_okul_bolumu != t_data["Okul Bölümü"]:
                     t_data["Okul Bölümü"] = yeni_okul_bolumu
                     degisiklik_var = True
-                # ====================================================
-
-
 
                 curr_sabit = t_data["Sabit Yer"]
                 sabit_idx = yer_listesi.index(curr_sabit) if curr_sabit in yer_listesi else 0
@@ -2336,8 +2273,6 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
         edited_locs["_section_order"] = edited_locs["Excel Bölümü"].astype(str).map(section_order_map).fillna(len(section_order_map))
         edited_locs = edited_locs.sort_values("_section_order", kind="stable").drop(columns="_section_order")
         st.session_state.locations = edited_locs.reset_index(drop=True)
-        # Persist on every editor rerun. A later st.stop() in schedule generation
-        # must not be able to discard the last location-day selection.
         save_app_data()
         st.caption("Aynı Excel başlığı altındaki yerleri seçip yukarı/aşağı taşıyarak sıralayın. Yer adını gizlerseniz Excel'de yalnızca öğretmen adları görünür.")
         order_section = st.selectbox("Sıralanacak Excel başlığı", excel_headers, key="location_order_section")
@@ -2515,7 +2450,6 @@ elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
                     key=f"deputy_count_{day}"
                 )
 
-
 # ================= 5. SEKME: ESKİ LİSTELER & ARŞİV =================
 elif main_menu == "📂 Eski Listeler & Arşiv":
     with st.container(border=True):
@@ -2612,7 +2546,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                             rows = [[cell.text.strip() for cell in row.cells] for row in table.rows]
                             if len(rows) < 3:
                                 continue
-                            # Word templates often use merged cells; repeated cell text is deduplicated below.
                             headers = rows[1]
                             for row in rows[2:7]:
                                 day_value = next((day_in_text(cell) for cell in row[:2] if day_in_text(cell)), None)
@@ -2633,7 +2566,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                         entrance_match = re.search(r"(?i)(?:^|[|\n])\s*giri[sş]\s*:?\s*([^|\n]*)", cell_text)
                                         if entrance_match:
                                             add_word_teachers(entrance_match.group(1), day_value, "GİRİŞ")
-                                        # Each floor label scopes only the names that follow it.
                                         for match in re.finditer(r"(?i)(?:^|[|\n])\s*([123])\s*\.\s*kat\s*:?\s*([^|\n]*)", cell_text):
                                             floor_no, names_text = match.groups()
                                             class_place = floor_names[floor_no][0]
@@ -2928,7 +2860,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
             archive_display = st.session_state.history.rename(columns={"Çift Nöbetçi mi": "Çift Nöbet mi"})
             st.dataframe(archive_display, use_container_width=True)
 
-
 # ================= 6. SEKME: İSTATİSTİKLER =================
 elif main_menu == "📊 İstatistikler":
     with st.container(border=True):
@@ -2989,7 +2920,6 @@ elif main_menu == "📊 İstatistikler":
                     if column not in {"No", "Öğretmen", priority_column}
                 ]
                 final_stats = final_stats[reordered_columns]
-            # Her ekran genişliğinde ilk iki tanımlayıcı sütunu görünür tut.
             stats_column_config = {
                 "No": st.column_config.NumberColumn("No", width=36, pinned=True, alignment="center"),
                 "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
