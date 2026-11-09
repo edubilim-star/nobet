@@ -1167,7 +1167,7 @@ def create_schedule_image(df, hafta_baslik, my_listesi, start_date, school_name,
     return output
 
 # ================= 1. SEKME: NÖBET LİSTESİ OLUŞTUR =================
-elif main_menu == "📅 Nöbet Listesi Oluştur":
+if main_menu == "📅 Nöbet Listesi Oluştur":
     with st.container(border=True):
         st.header("Haftalık Nöbet Çizelgesi ve Dağıtım Sihirbazı")
 
