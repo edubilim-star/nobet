@@ -1508,10 +1508,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                         str(name).casefold()
                         for name in previous_week_counts[previous_week_counts > 1].index
                     }
-            else:
-                previous_rows = pd.DataFrame()
-        else:
-            previous_rows = pd.DataFrame()        prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
+        prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
         historic_double_weeks = prior_weekly_counts[prior_weekly_counts > 1].reset_index().groupby("Öğretmen").size().to_dict() if not prior_weekly_counts.empty else {}
         all_place_counts = {}
         last_place_dates = {}
