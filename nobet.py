@@ -1488,17 +1488,28 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if "Tarih" in prior_history.columns:
             prior_dates = pd.to_datetime(prior_history["Tarih"], errors="coerce").dt.date
             prior_history = prior_history.loc[~prior_dates.isin(week_dates)]
-        previous_start = baslangic_tarihi - datetime.timedelta(days=7)
-        previous_end = previous_start + datetime.timedelta(days=4)
+        # Takvimde "geçen hafta" yerine, arşivde bu haftadan önceki EN SON
+        # kayıtlı haftayı bul. Böylece araya tatil girse bile bir önceki
+        # dolu haftaya göre kıyaslama yapılır.
         if "Tarih" in history.columns:
             history["_date"] = pd.to_datetime(history["Tarih"], errors="coerce").dt.date
-            previous_rows = history[
-                history["_date"].apply(
-                    lambda d: pd.notna(d)
-                    and isinstance(d, datetime.date)
-                    and previous_start <= d <= previous_end
+            prior_mask = (
+                history["_date"].notna()
+                & ~history["_date"].isin(week_dates)
+                & (history["_date"] < baslangic_tarihi)
+                & (history["Tarih/Hafta"].astype(str) != hafta_adi)
+            )
+            prior_dated = history[prior_mask]
+            if not prior_dated.empty:
+                last_week_start = prior_dated["_date"].max() - datetime.timedelta(
+                    days=prior_dated["_date"].max().weekday()
                 )
-            ]
+                last_week_end = last_week_start + datetime.timedelta(days=4)
+                previous_rows = prior_dated[
+                    prior_dated["_date"].between(last_week_start, last_week_end)
+                ]
+            else:
+                previous_rows = pd.DataFrame()
         else:
             previous_rows = pd.DataFrame()
         previous_places = {}
