@@ -1725,6 +1725,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 break
         repeated_place_fallback = False
         repeated_previous_place_teachers = []
+        previous_place_ignored = False
         fallback_solved = False
         if not solved_without_repeat:
             # Keep same-week uniqueness in every path. Only mandatory fixed-place
