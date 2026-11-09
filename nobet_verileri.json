@@ -385,7 +385,9 @@
         "EK BİNA 1.KAT",
         "EK BİNA 2.KAT"
       ],
-      "İzinli Günler": [],
+      "İzinli Günler": [
+        "PAZARTESİ"
+      ],
       "Haftada 2 Nöbet İstiyor": false,
       "Okul Bölümü": "Yok"
     },
