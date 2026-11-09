@@ -1488,17 +1488,28 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if "Tarih" in prior_history.columns:
             prior_dates = pd.to_datetime(prior_history["Tarih"], errors="coerce").dt.date
             prior_history = prior_history.loc[~prior_dates.isin(week_dates)]
-        previous_start = baslangic_tarihi - datetime.timedelta(days=7)
-        previous_end = previous_start + datetime.timedelta(days=4)
+        # Takvimde "geçen hafta" yerine, arşivde bu haftadan önceki EN SON
+        # kayıtlı haftayı bul. Böylece araya tatil girse bile bir önceki
+        # dolu haftaya göre kıyaslama yapılır.
         if "Tarih" in history.columns:
             history["_date"] = pd.to_datetime(history["Tarih"], errors="coerce").dt.date
-            previous_rows = history[
-                history["_date"].apply(
-                    lambda d: pd.notna(d)
-                    and isinstance(d, datetime.date)
-                    and previous_start <= d <= previous_end
+            prior_mask = (
+                history["_date"].notna()
+                & ~history["_date"].isin(week_dates)
+                & (history["_date"] < baslangic_tarihi)
+                & (history["Tarih/Hafta"].astype(str) != hafta_adi)
+            )
+            prior_dated = history[prior_mask]
+            if not prior_dated.empty:
+                last_week_start = prior_dated["_date"].max() - datetime.timedelta(
+                    days=prior_dated["_date"].max().weekday()
                 )
-            ]
+                last_week_end = last_week_start + datetime.timedelta(days=4)
+                previous_rows = prior_dated[
+                    prior_dated["_date"].between(last_week_start, last_week_end)
+                ]
+            else:
+                previous_rows = pd.DataFrame()
         else:
             previous_rows = pd.DataFrame()
         previous_places = {}
@@ -1567,7 +1578,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             normalized_place = search_normalize(place)
             return "anasinifi" in normalized_place or "ana sinif" in normalized_place
 
-        def try_solve(allow_mandatory_previous_place, enforce_unique_week_place=True):
+        def try_solve(allow_mandatory_previous_place, enforce_unique_week_place=True, ignore_previous_place=False):
             counts.clear()
             counts.update({name: 0 for name in teacher_names})
             assignments[:] = [None] * len(slots)
@@ -1611,7 +1622,10 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     )
                     if has_adjacent_day:
                         continue
-                    repeats_previous_place = slot_place.casefold() in previous_places.get(name, set())
+                    repeats_previous_place = (
+                        not ignore_previous_place
+                        and slot_place.casefold() in previous_places.get(name, set())
+                    )
                     if repeats_previous_place and not (
                         allow_mandatory_previous_place
                         and teacher_by_name[name]["Sabit Yer"] == slot_place
@@ -1658,9 +1672,9 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                             return False
                         if assigned_name == name and abs(other_day_index - day_index) == 1:
                             return False
-                    if place.casefold() in previous_places.get(name, set()) and not (
-                        allow_mandatory_previous_place and teacher_by_name[name]["Sabit Yer"] == place
-                    ):
+                    if (not ignore_previous_place
+                            and place.casefold() in previous_places.get(name, set())
+                            and not (allow_mandatory_previous_place and teacher_by_name[name]["Sabit Yer"] == place)):
                         return False
                     return True
 
@@ -1711,17 +1725,33 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 break
         repeated_place_fallback = False
         repeated_previous_place_teachers = []
+        previous_place_ignored = False
         fallback_solved = False
         if not solved_without_repeat:
             # Keep same-week uniqueness in every path. Only mandatory fixed-place
             # assignments may reuse the previous week's place.
             fallback_solved = try_solve(allow_mandatory_previous_place=True, enforce_unique_week_place=True)
+            if not fallback_solved:
+                # Son çare: geçen hafta yer yasağını tamamen kaldır. Yer tekrarı
+                # yine de aynı hafta içinde engellenir; sadece önceki haftaya
+                # göre kıyaslama esnetilir. Tatil sonrası uzun boşluklarda
+                # solver'ın çıkmaza girmesini önler.
+                fallback_solved = try_solve(
+                    allow_mandatory_previous_place=True,
+                    enforce_unique_week_place=True,
+                    ignore_previous_place=True,
+                )
             if fallback_solved:
                 repeated_previous_place_teachers = sorted({
                     str(name) for (_, place), name in zip(slots, assignments)
                     if place.strip().casefold() in previous_places.get(name, set())
                 }, key=str.casefold)
                 repeated_place_fallback = bool(repeated_previous_place_teachers)
+                previous_place_ignored = (
+                    not solved_without_repeat
+                    and fallback_solved
+                    and not repeated_previous_place_teachers
+                )
 
         if not solved_without_repeat and not fallback_solved:
             impossible = []
@@ -1785,6 +1815,12 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             st.warning(
                 "Diğer kurallara uymak için geçen haftaki nöbet yeri şu öğretmenlere yeniden verildi: "
                 + ", ".join(repeated_previous_place_teachers)
+            )
+        elif previous_place_ignored:
+            st.info(
+                "Tatil veya boş hafta sonrası 'geçen haftaki yer tekrarı' kısıtı bu hafta için esnetildi; "
+                "aynı hafta içinde yer tekrarı yapılmadı. Diğer tüm kurallar (aynı gün çakışma, "
+                "ardışık gün, sabit yer, izin, hariç tutma) uygulandı."
             )
         unassigned_eligible = [
             name for name in teacher_names
