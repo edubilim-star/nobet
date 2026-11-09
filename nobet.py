@@ -884,11 +884,13 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
             break
     if not unicode_font_found:
         raise RuntimeError("Türkçe karakter destekli yazı tipi bulunamadı. Uygulamayla birlikte fonts/NotoSans-Regular.ttf ve fonts/NotoSans-Bold.ttf dosyalarını yükleyin.")
-    title_style = ParagraphStyle('TitleStyle', parent=styles['Heading1'], fontName=bold_font, fontSize=14, alignment=1)
-    cell_style = ParagraphStyle('CellStyle', parent=styles['Normal'], fontName=regular_font, fontSize=9)
-    holiday_style = ParagraphStyle('HolidayStyle', parent=cell_style, fontName=bold_font, alignment=1)
-    right_style = ParagraphStyle('RightStyle', parent=cell_style, alignment=2)
-    header_style = ParagraphStyle('HeaderStyle', parent=styles['Normal'], fontName=bold_font, fontSize=10, textColor=colors.whitesmoke, alignment=1)
+    
+    # Çakışmaları önlemek için özel ve benzersiz stil isimleri kullanıyoruz:
+    title_style = ParagraphStyle('SchoolTitleStyle', parent=styles['Normal'], fontName=bold_font, fontSize=14, alignment=1)
+    cell_style = ParagraphStyle('SchoolCellStyle', parent=styles['Normal'], fontName=regular_font, fontSize=9)
+    holiday_style = ParagraphStyle('SchoolHolidayStyle', parent=cell_style, fontName=bold_font, alignment=1)
+    right_style = ParagraphStyle('SchoolRightStyle', parent=cell_style, alignment=2)
+    header_style = ParagraphStyle('SchoolHeaderStyle', parent=styles['Normal'], fontName=bold_font, fontSize=10, textColor=colors.whitesmoke, alignment=1)
 
     def safe_text(txt):
         return html.escape(str(txt), quote=False).replace("\n", "<br/>")
@@ -896,6 +898,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
     elements.append(Paragraph(safe_text(school_name), title_style))
     elements.append(Paragraph(safe_text(f"{hafta_baslik} NÖBET ÇİZELGESİ"), title_style))
     elements.append(Spacer(1, 10))
+    # (Devamındaki tablo oluşturma kodları aynı kalabilir)
 
     table_data = [[
         Paragraph("NÖBET GÜNÜ", header_style),
