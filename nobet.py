@@ -1488,31 +1488,30 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if "Tarih" in prior_history.columns:
             prior_dates = pd.to_datetime(prior_history["Tarih"], errors="coerce").dt.date
             prior_history = prior_history.loc[~prior_dates.isin(week_dates)]
-        previous_start = baslangic_tarihi - datetime.timedelta(days=7)
-        previous_end = previous_start + datetime.timedelta(days=4)
-        if "Tarih" in history.columns:
-            history["_date"] = pd.to_datetime(history["Tarih"], errors="coerce").dt.date
-            previous_rows = history[
-                history["_date"].apply(
-                    lambda d: pd.notna(d)
-                    and isinstance(d, datetime.date)
-                    and previous_start <= d <= previous_end
-                )
-            ]
-        else:
-            previous_rows = pd.DataFrame()
         previous_places = {}
-        if not previous_rows.empty:
-            for _, row in previous_rows.iterrows():
-                previous_places.setdefault(row["Öğretmen"], set()).add(str(row["Bölüm/Yer"]).strip().casefold())
         previous_week_double_names = set()
-        if not previous_rows.empty and "Öğretmen" in previous_rows.columns:
-            previous_week_counts = previous_rows.groupby("Öğretmen").size()
-            previous_week_double_names = {
-                str(name).casefold()
-                for name in previous_week_counts[previous_week_counts > 1].index
-            }
-        prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
+        if "Tarih" in history.columns and not history.empty:
+            valid_hist = history.dropna(subset=["Tarih"]).copy()
+            valid_hist["_date"] = pd.to_datetime(valid_hist["_date"], errors="coerce").dt.date
+            # Sadece seçilen haftanın başlangıç tarihinden ÖNCEKİ geçmiş tarihlere bakıyoruz
+            past_rows = valid_hist[valid_hist["_date"] < baslangic_tarihi]
+            if not past_rows.empty:
+                # Geçmiş tarihlerdeki en büyük (en yakın) tarihi buluyoruz
+                latest_date = past_rows["_date"].max()
+                # O tarihe ait haftanın satırlarını filtreliyoruz (Veri girilmiş son hafta)
+                previous_rows = past_rows[past_rows["_date"] == latest_date]
+                for _, row in previous_rows.iterrows():
+                    previous_places.setdefault(row["Öğretmen"], set()).add(str(row["Bölüm/Yer"]).strip().casefold())
+                if "Öğretmen" in previous_rows.columns:
+                    previous_week_counts = previous_rows.groupby("Öğretmen").size()
+                    previous_week_double_names = {
+                        str(name).casefold()
+                        for name in previous_week_counts[previous_week_counts > 1].index
+                    }
+            else:
+                previous_rows = pd.DataFrame()
+        else:
+            previous_rows = pd.DataFrame()        prior_weekly_counts = prior_history.groupby(["Tarih/Hafta", "Öğretmen"]).size() if {"Tarih/Hafta", "Öğretmen"}.issubset(prior_history.columns) else pd.Series(dtype=int)
         historic_double_weeks = prior_weekly_counts[prior_weekly_counts > 1].reset_index().groupby("Öğretmen").size().to_dict() if not prior_weekly_counts.empty else {}
         all_place_counts = {}
         last_place_dates = {}
