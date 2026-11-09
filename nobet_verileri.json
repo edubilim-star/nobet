@@ -481,7 +481,9 @@
         "BAHÇE",
         "1.KAT"
       ],
-      "İzinli Günler": [],
+      "İzinli Günler": [
+        "CUMA"
+      ],
       "Haftada 2 Nöbet İstiyor": false,
       "Okul Bölümü": "EK BİNA 1.KAT"
     },
