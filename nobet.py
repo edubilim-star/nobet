@@ -394,6 +394,11 @@ if not st.session_state.get("_persistence_loaded", False):
 # BIG yerine doğru üst sınır, kindergarten_only tanımı düzeltildi,
 # ana sınıfı kapasitesi düzeltildi, active_t sızıntısı giderildi.
 # ============================================================================
+# ============================================================================
+# DÜZELTME: solve_duty_schedule — closure'a güvenmek yerine parametre geçişi,
+# BIG yerine doğru üst sınır, kindergarten_only tanımı düzeltildi,
+# ana sınıfı kapasitesi düzeltildi, active_t sızıntısı giderildi.
+# ============================================================================
 def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
     fixed_place, wants_double, previous_places, previous_double,
@@ -1022,7 +1027,6 @@ def solve_duty_schedule(
         "ok": True, "assignments": assignments, "counts": counts,
         "relaxed": relaxed, "notes": notes, "blockers": [],
     }
-
 
 def canonical_location_name(value):
     """Use one canonical label for main-building floors across settings and archives."""
