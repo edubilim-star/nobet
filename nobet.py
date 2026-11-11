@@ -389,6 +389,11 @@ if not st.session_state.get("_persistence_loaded", False):
 # BIG yerine doğru üst sınır, kindergarten_only tanımı düzeltildi,
 # ana sınıfı kapasitesi düzeltildi, active_t sızıntısı giderildi.
 # ============================================================================
+# ============================================================================
+# DÜZELTME: solve_duty_schedule — closure'a güvenmek yerine parametre geçişi,
+# BIG yerine doğru üst sınır, kindergarten_only tanımı düzeltildi,
+# ana sınıfı kapasitesi düzeltildi, active_t sızıntısı giderildi.
+# ============================================================================
 def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
     fixed_place, wants_double, previous_places, previous_double,
@@ -546,13 +551,10 @@ def solve_duty_schedule(
 
     def make_plan(noise):
         """Pay görev sayılarını ayrı ayrı planla."""
-        # DÜZELTME: active_t temizleniyor (erken return'lerde sızıntı yok).
         active_t.clear()
         for t in range(nt):
             quota[t] = 0
 
-        # DÜZELTME: ana sınıfı yuvalarına yalnızca-ana-sınıfı öğretmenleri önce yerleştir;
-        # kalan ana sınıfı yuvalarını karma havuza bırak.
         kindergarten_slots = sum(slot_repeat_ok)
         only_kind = sorted(
             [t for t in eligible_t if t in kindergarten_only],
@@ -566,11 +568,9 @@ def solve_duty_schedule(
             if quota[t]:
                 assigned_to_kind += 1
         remaining_kind = kindergarten_slots - assigned_to_kind
-        # Karma öğretmenler: ana sınıfı + normal yuvalar
         mixed_pool = [t for t in eligible_t if t not in kindergarten_only]
         normal_slots = S - kindergarten_slots
 
-        # Karma havuz ilk turda 1'er görev alır
         mixed_order = sorted(mixed_pool, key=lambda t: (total_hist[t], rng.random()))
         for t in mixed_order[:min(remaining_kind + normal_slots, len(mixed_pool))]:
             quota[t] = 1
@@ -612,7 +612,6 @@ def solve_duty_schedule(
             cost += 2 * double_day_rank.get(slots[s][0], day_rank_default)
         return cost
 
-    # DÜZELTME: avoid_* closure yerine açık parametreler.
     def set_cost(t, sset, ex1, ex2, avoid_prev_place):
         enforce_s1, enforce_s2 = t not in ex1, t not in ex2
         days = sorted(slot_day[s] for s in sset)
@@ -652,7 +651,6 @@ def solve_duty_schedule(
     class _Limit(Exception):
         pass
 
-    # DÜZELTME: search, avoid parametrelerini açıkça alıyor.
     def search(ex1, ex2, node_limit, avoid_prev_place, avoid_cons_double):
         valid = [0] * nt
         sv = [0] * S
@@ -709,7 +707,6 @@ def solve_duty_schedule(
                 t = low.bit_length() - 1
                 mm ^= low
                 assigned_so_far = max_quota[t] - q[t]
-                # DÜZELTME: ana sınıfı kontrolü yuva bazlı (kindergarten_only değil).
                 if (
                     avoid_cons_double
                     and prevdouble[t]
@@ -778,7 +775,6 @@ def solve_duty_schedule(
             return None, False
         return (assign if ok else None), True
 
-    # DÜZELTME: improve, avoid_prev_place parametresi alıyor.
     def improve(assign, ex1, ex2, avoid_prev_place):
         by_t = {}
         for s, t in enumerate(assign):
@@ -976,7 +972,7 @@ def solve_duty_schedule(
             "blockers": [],
             "notes": [],
             "relaxed": {},
-            "reason": "Arama süresi içinde kesin kurallara uyan bir dağılım bulunamadı. Bu, ayarların kesin olarak imkânsız olduğunu göstermez.",
+            "reason": "Arama süresi içinde kesin kurallara uyan bir dağılım bulunamadı.",
             "quota": {teacher_names[t]: quota[t] for t in eligible_t},
         }
 
@@ -992,7 +988,6 @@ def solve_duty_schedule(
         by_t.setdefault(t, []).append(s)
     for t, sl in by_t.items():
         name = teacher_names[t]
-        # DÜZELTME: ana sınıfı kontrolü yuva bazlı.
         if len(sl) >= 2 and prevdouble[t] and any(not slot_repeat_ok[s] for s in sl):
             relaxed["prev_double"].append(name)
         if len(sl) >= 3 and t not in kindergarten_only:
