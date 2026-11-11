@@ -382,7 +382,7 @@ def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
     fixed_place, wants_double, previous_places, previous_double,
     place_counts, double_history, last_place_by_teacher, place_order,
-    double_day_rank, repeat_allowed, time_limit=30.0, rng=None,
+    double_day_rank, repeat_allowed, time_limit=300.0, rng=None,
 ):
     """Haftalık nöbet çizelgesi üretir.
 
