@@ -36,7 +36,7 @@ st.set_option("client.toolbarMode", "auto")
 if "school_info" not in st.session_state:
     st.session_state.school_info = {
         "okul_adi": "MEHMET AKİF ERSOY İLKOKULU",
-        "mudur_adi": "HAMDİ ALTINTAŞ",
+        "mudur_adi": "HAMİ ALTINTAŞ",
         "not_metni": (
             "Nöbetçi öğretmenler dersler başlamadan 15 dakika önce nöbet defterini imzalayıp görev yerlerinde olacaklar, "
             "en son dersten 15 dakika sonra (öğrencilerin okuldan güvenli şekilde ayrılmaları için gerekli tedbirleri alarak "
@@ -47,13 +47,14 @@ if "school_info" not in st.session_state:
 if "locations" not in st.session_state:
     st.session_state.locations = pd.DataFrame({
         "Nöbet Yeri / Bölüm": [
-            "BAHÇE", "GİRİŞ", "1.KAT", "2.KAT", "3.KAT", 
+            "BAHÇE", "GİRİŞ", "1.KAT", "2.KAT", "3.KAT",
             "ANASINIFI KAPI", "EK BİNA 1.KAT", "EK BİNA 2.KAT"
         ],
         "Gerekli Öğretmen Sayısı": [2, 1, 1, 1, 1, 2, 1, 1]
     })
 
 WEEKDAYS = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
+
 def search_normalize(value):
     text = str(value).casefold().replace("ı", "i")
     text = unicodedata.normalize("NFKD", text)
@@ -136,6 +137,9 @@ if "excel_headings" not in st.session_state:
     st.session_state.excel_headings = {"Gün Başlığı": "NÖBET GÜNÜ", "Müdür Yardımcısı Başlığı": "MÜDÜR YRD"}
 if "processed_uploads" not in st.session_state:
     st.session_state.processed_uploads = set()
+# DÜZELTME: dirty flag — koşulsuz kayıt yerine yalnızca değişiklikte kayıt
+if "_dirty" not in st.session_state:
+    st.session_state["_dirty"] = False
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nobet_verileri.json")
 
@@ -240,7 +244,7 @@ def save_app_data():
     data = {
         "school_info": st.session_state.school_info,
         "locations": _records_for_json(st.session_state.locations),
-        "excel_sections": _records_for_json(st.session_state.excel_sections),
+        "excel_sections": _records_for_json(st.session_state.get("excel_sections", pd.DataFrame(DEFAULT_EXCEL_SECTIONS))),
         "excel_headings": st.session_state.excel_headings,
         "teachers_dict_list": st.session_state.teachers_dict_list,
         "holidays": _records_for_json(st.session_state.holidays),
@@ -265,6 +269,7 @@ def save_app_data():
             st.session_state["_github_storage_error"] = None
         except Exception as exc:
             st.session_state["_github_storage_error"] = str(exc)
+    st.session_state["_dirty"] = False
 
 def commit_location_editor_changes():
     """Commit data-editor deltas before navigation or another widget can rerun the app."""
@@ -378,6 +383,12 @@ if not st.session_state.get("_persistence_loaded", False):
     ]
     st.session_state["_persistence_loaded"] = True
 
+
+# ============================================================================
+# DÜZELTME: solve_duty_schedule — closure'a güvenmek yerine parametre geçişi,
+# BIG yerine doğru üst sınır, kindergarten_only tanımı düzeltildi,
+# ana sınıfı kapasitesi düzeltildi, active_t sızıntısı giderildi.
+# ============================================================================
 def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
     fixed_place, wants_double, previous_places, previous_double,
@@ -389,10 +400,9 @@ def solve_duty_schedule(
     Kesin kurallar (hiçbir zaman esnetilmez): izin, hariç tutma, sabit yer,
     aynı gün tek görev, ardışık günlerde görev yok.
     Esnetilebilir kurallar (yalnızca gerekirse, en az kişi için):
-      1) Geçen haftaki günün tekrar verilmemesi (başka gün seçeneği yoksa)
-      2) Geçen hafta çift nöbet tutana bu hafta çift nöbet verilmemesi (ana sınıfı hariç)
-      3) Geçen haftaki yerin tekrar verilmemesi
-      4) Aynı hafta aynı yere ikinci kez nöbet verilmemesi (ANASINIFI hariç)
+      1) Aynı hafta aynı yere ikinci kez nöbet verilmemesi (ANASINIFI hariç)
+      2) Geçen haftaki yerin tekrar verilmemesi
+      3) Geçen hafta çift nöbet tutana bu hafta çift nöbet verilmemesi (ana sınıfı hariç)
     Dönüş: dict(ok, assignments, counts, relaxed, notes, blockers)
     """
     import time as _time
@@ -405,8 +415,7 @@ def solve_duty_schedule(
     def norm(value):
         return str(value).strip().casefold()
 
-    PEN1, PEN2 = 60, 40          # esnetilen kural cezaları (tercih sırasından büyük)
-    BIG = 99
+    PEN1, PEN2 = 60, 40
 
     slot_day = [active_day_order.get(gun, -1) for gun, _ in slots]
     slot_place = [norm(place) for _, place in slots]
@@ -418,9 +427,16 @@ def solve_duty_schedule(
         for name in cands:
             cand_sets[tindex[name]].add(si)
     eligible_t = [t for t in range(nt) if cand_sets[t]]
+
+    # DÜZELTME: kindergarten_only = YALNIZCA ana sınıfı yuvalarına aday olanlar.
     kindergarten_only = {
         t for t in eligible_t
-        if all(slot_repeat_ok[s] for s in cand_sets[t])
+        if cand_sets[t] and all(slot_repeat_ok[s] for s in cand_sets[t])
+    }
+    # DÜZELTME: ana sınıfına gidebilen tüm öğretmenler (yalnızca-ana-sınıfı + karma)
+    kindergarten_capable = {
+        t for t in eligible_t
+        if any(slot_repeat_ok[s] for s in cand_sets[t])
     }
 
     fixed_norm = [
@@ -439,7 +455,7 @@ def solve_duty_schedule(
         sum(counts_norm.get((name, p), 0) for p in distinct_places) for name in teacher_names
     ]
 
-    # ---- Kesin engeller (esnetilemeyen kurallar tek başına imkânsızsa) ----
+    # ---- Kesin engeller ----
     def indep_days(days):
         picked, last = 0, -99
         for d in sorted(set(days)):
@@ -472,7 +488,7 @@ def solve_duty_schedule(
     if blockers:
         return {"ok": False, "blockers": blockers, "notes": [], "relaxed": {}}
 
-    # ---- Her öğretmenin kişisel yer sırası: önce az tuttuğu yer, eşitlikte döngü sırası ----
+    # ---- Her öğretmenin kişisel yer sırası ----
     place_order_norm = [norm(p) for p in place_order]
     pidx = {p: i for i, p in enumerate(place_order_norm)}
     n_places = max(len(place_order_norm), 1)
@@ -482,7 +498,7 @@ def solve_duty_schedule(
         if last is not None and norm(last) in pidx:
             start = (pidx[norm(last)] + 1) % n_places
         else:
-            start = t % n_places      # geçmişi olmayanları döngüde dağıt
+            start = t % n_places
         my_places = {slot_place[s] for s in cand_sets[t]}
         allowed = [p for p in my_places if not (p in prev_norm[t] and fixed_norm[t] != p)]
         allowed.sort(key=lambda p: (counts_norm.get((name, p), 0), (pidx.get(p, start) - start) % n_places))
@@ -491,31 +507,33 @@ def solve_duty_schedule(
             ranks.setdefault(p, len(allowed))
         rank.append(ranks)
 
-    # ---- Aşama 1: kim kaç nöbet tutacak (istatistiğe göre azdan çoğa) ----
+    # DÜZELTME: BIG yerine yer başına doğru üst sınır.
+    def _place_bound(t, usable_slots):
+        bound = 0
+        places = {slot_place[s] for s in usable_slots}
+        for p in places:
+            p_slots = [s for s in usable_slots if slot_place[s] == p]
+            if any(slot_repeat_ok[s] for s in p_slots):
+                bound += indep_days(slot_day[s] for s in p_slots)
+            else:
+                bound += 1
+        return bound
+
     def strict_max(t):
         usable = [
             s for s in cand_sets[t]
             if not (slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s])
         ]
-        places = {slot_place[s] for s in usable}
-        bound = sum(BIG if any(slot_repeat_ok[s] for s in usable if slot_place[s] == p) else 1 for p in places)
-        return min(indep_days(slot_day[s] for s in usable), bound)
+        return min(indep_days(slot_day[s] for s in usable), _place_bound(t, usable))
 
     maxd_strict = {t: strict_max(t) for t in eligible_t}
 
     def s1_only_max(t):
-        # Geçen haftaki yer kuralı esnetilmiş, aynı hafta yer kuralı duruyor.
-        places = {slot_place[s] for s in cand_sets[t]}
-        bound = sum(
-            BIG if any(slot_repeat_ok[s] for s in cand_sets[t] if slot_place[s] == p) else 1
-            for p in places
-        )
-        return min(indep_days(slot_day[s] for s in cand_sets[t]), bound)
+        return min(indep_days(slot_day[s] for s in cand_sets[t]), _place_bound(t, cand_sets[t]))
 
     maxd_s1 = {t: s1_only_max(t) for t in eligible_t}
 
     def s2_only_max(t):
-        # Aynı hafta yer kuralı esnetilmiş, geçen haftaki yer kuralı duruyor.
         usable = [
             s for s in cand_sets[t]
             if not (slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s])
@@ -527,20 +545,46 @@ def solve_duty_schedule(
     active_t = []
 
     def make_plan(noise):
-        """Kim kaç nöbet tutacak. noise>0 ise çift nöbet sırası biraz karıştırılır (takılırsa yeniden planlamak için)."""
+        """Pay görev sayılarını ayrı ayrı planla."""
+        # DÜZELTME: active_t temizleniyor (erken return'lerde sızıntı yok).
+        active_t.clear()
         for t in range(nt):
             quota[t] = 0
-        first_order = sorted(eligible_t, key=lambda t: (total_hist[t], rng.random()))
-        for t in first_order[:S]:
+
+        # DÜZELTME: ana sınıfı yuvalarına yalnızca-ana-sınıfı öğretmenleri önce yerleştir;
+        # kalan ana sınıfı yuvalarını karma havuza bırak.
+        kindergarten_slots = sum(slot_repeat_ok)
+        only_kind = sorted(
+            [t for t in eligible_t if t in kindergarten_only],
+            key=lambda t: (total_hist[t], rng.random()),
+        )
+        assigned_to_kind = 0
+        for t in only_kind:
+            if assigned_to_kind >= kindergarten_slots:
+                break
+            quota[t] = min(1, maxd_relaxed.get(t, 0))
+            if quota[t]:
+                assigned_to_kind += 1
+        remaining_kind = kindergarten_slots - assigned_to_kind
+        # Karma öğretmenler: ana sınıfı + normal yuvalar
+        mixed_pool = [t for t in eligible_t if t not in kindergarten_only]
+        normal_slots = S - kindergarten_slots
+
+        # Karma havuz ilk turda 1'er görev alır
+        mixed_order = sorted(mixed_pool, key=lambda t: (total_hist[t], rng.random()))
+        for t in mixed_order[:min(remaining_kind + normal_slots, len(mixed_pool))]:
             quota[t] = 1
-        remaining = S - sum(quota)
+        remaining_total = (remaining_kind + normal_slots) - sum(quota[t] for t in mixed_pool)
         level = 2
-        while remaining > 0:
-            pool = [t for t in eligible_t if quota[t] == level - 1 and maxd_relaxed[t] >= level]
+        while remaining_total > 0:
+            pool = [
+                t for t in mixed_pool
+                if quota[t] == level - 1 and maxd_relaxed[t] >= level
+            ]
             if not pool:
                 return False
             pool.sort(key=lambda t: (
-                1 if (level == 2 and prevdouble[t] and t not in kindergarten_only) else 0,
+                1 if (level == 2 and t not in kindergarten_only and prevdouble[t]) else 0,
                 0 if maxd_strict[t] >= level else 1,
                 double_history.get(teacher_names[t], 0) + (rng.random() * noise if noise else 0),
                 0 if wants_double.get(teacher_names[t]) else 1,
@@ -548,18 +592,18 @@ def solve_duty_schedule(
                 rng.random(),
             ))
             for t in pool:
-                if remaining == 0:
+                if remaining_total == 0:
                     break
                 quota[t] += 1
-                remaining -= 1
+                remaining_total -= 1
             level += 1
+
         active_t[:] = [t for t in eligible_t if quota[t] > 0]
         return True
 
     if not make_plan(0):
         return {"ok": False, "blockers": ["Görevler öğretmenlere paylaştırılamadı."], "notes": [], "relaxed": {}}
 
-    # ---- Maliyet ve kural kontrolleri ----
     day_rank_default = len(double_day_rank)
 
     def base_cost(t, s):
@@ -568,7 +612,8 @@ def solve_duty_schedule(
             cost += 2 * double_day_rank.get(slots[s][0], day_rank_default)
         return cost
 
-    def set_cost(t, sset, ex1, ex2):
+    # DÜZELTME: avoid_* closure yerine açık parametreler.
+    def set_cost(t, sset, ex1, ex2, avoid_prev_place):
         enforce_s1, enforce_s2 = t not in ex1, t not in ex2
         days = sorted(slot_day[s] for s in sset)
         for a, b in zip(days, days[1:]):
@@ -581,7 +626,7 @@ def solve_duty_schedule(
             p = slot_place[s]
             total += base_cost(t, s)
             if p in prev_norm[t] and fixed_norm[t] != p:
-                if enforce_s2:
+                if enforce_s2 or avoid_prev_place:
                     return None
                 total += PEN2
             if not slot_repeat_ok[s]:
@@ -604,22 +649,17 @@ def solve_duty_schedule(
     def popcount(x):
         return bin(x).count("1")
 
-    def mask_indep(mask):
-        days = [d for d, dm in daymask.items() if mask & dm]
-        return indep_days(days)
-
     class _Limit(Exception):
         pass
 
-    avoid_consecutive_double = True
-
-    def search(ex1, ex2, node_limit):
+    # DÜZELTME: search, avoid parametrelerini açıkça alıyor.
+    def search(ex1, ex2, node_limit, avoid_prev_place, avoid_cons_double):
         valid = [0] * nt
         sv = [0] * S
         for t in active_t:
             m = 0
             for s in cand_sets[t]:
-                if t not in ex2 and slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
+                if avoid_prev_place and slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
                     continue
                 m |= 1 << s
             valid[t] = m
@@ -640,7 +680,6 @@ def solve_duty_schedule(
                 raise _Limit()
             if unfilled == 0:
                 return True
-            # Gün bazlı Hall kontrolü: bir günün boş görev sayısı kadar farklı öğretmen kalmalı.
             for d, dm in daymask.items():
                 need = popcount(unfilled & dm)
                 if need:
@@ -670,12 +709,18 @@ def solve_duty_schedule(
                 t = low.bit_length() - 1
                 mm ^= low
                 assigned_so_far = max_quota[t] - q[t]
+                # DÜZELTME: ana sınıfı kontrolü yuva bazlı (kindergarten_only değil).
                 if (
-                    avoid_consecutive_double
+                    avoid_cons_double
                     and prevdouble[t]
-                    and t not in kindergarten_only
+                    and not slot_repeat_ok[s]
                     and assigned_so_far >= 1
                 ):
+                    continue
+                repeats_previous_place = (
+                    slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]
+                )
+                if avoid_prev_place and repeats_previous_place:
                     continue
                 cost = base_cost(t, s)
                 if slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
@@ -683,15 +728,16 @@ def solve_duty_schedule(
                 if not slot_repeat_ok[s] and used_places[t].get(slot_place[s]):
                     cost += PEN1
                 previous_double_penalty = int(
-                    prevdouble[t] and t not in kindergarten_only
+                    prevdouble[t] and not slot_repeat_ok[s]
                 )
+                previous_place_penalty = int(repeats_previous_place)
                 slack = popcount(valid[t]) - q[t]
-                cands.append((assigned_so_far, previous_double_penalty, cost, slack, rng.random(), t))
+                cands.append((previous_place_penalty, previous_double_penalty, assigned_so_far, cost, slack, rng.random(), t))
             if not cands:
                 return False
             cands.sort()
             sb = 1 << s
-            for _, _, _, _, _, t in cands:
+            for _, _, _, _, _, _, t in cands:
                 tb = 1 << t
                 v2, sv2, q2 = valid[:], sv[:], q[:]
                 mm = sv[s]
@@ -729,10 +775,11 @@ def solve_duty_schedule(
         try:
             ok = dfs(valid, sv, quota[:], (1 << S) - 1)
         except _Limit:
-            return None, False        # süre/düğüm sınırı: kanıtlanmış imkânsızlık değil
+            return None, False
         return (assign if ok else None), True
 
-    def improve(assign, ex1, ex2):
+    # DÜZELTME: improve, avoid_prev_place parametresi alıyor.
+    def improve(assign, ex1, ex2, avoid_prev_place):
         by_t = {}
         for s, t in enumerate(assign):
             by_t.setdefault(t, set()).add(s)
@@ -745,12 +792,12 @@ def solve_duty_schedule(
                         continue
                     na = (by_t[a] - {i}) | {j}
                     nb = (by_t[b] - {j}) | {i}
-                    ca = set_cost(a, na, ex1, ex2)
-                    cb = set_cost(b, nb, ex1, ex2)
+                    ca = set_cost(a, na, ex1, ex2, avoid_prev_place)
+                    cb = set_cost(b, nb, ex1, ex2, avoid_prev_place)
                     if ca is None or cb is None:
                         continue
-                    old = set_cost(a, by_t[a], ex1, ex2)
-                    oldb = set_cost(b, by_t[b], ex1, ex2)
+                    old = set_cost(a, by_t[a], ex1, ex2, avoid_prev_place)
+                    oldb = set_cost(b, by_t[b], ex1, ex2, avoid_prev_place)
                     if ca + cb < old + oldb:
                         by_t[a], by_t[b] = na, nb
                         assign[i], assign[j] = b, a
@@ -759,7 +806,6 @@ def solve_duty_schedule(
                 break
         return assign
 
-    # ---- Kişi bazlı esnetme: yalnızca kotasını başka türlü alamayanlar muaf tutulur ----
     def compute_init():
         i1, i2 = set(), set()
         for t in active_t:
@@ -794,12 +840,14 @@ def solve_duty_schedule(
                     total += c_ - 1
         return v1, v2, total
 
-    def attempt(ex1, ex2, deadline):
-        """(sonuç, kanıtlanmış_imkânsız) döndürür. Kısa yeniden başlatmalarla ağır kuyruk sorunu azaltılır."""
+    def attempt(ex1, ex2, deadline, avoid_prev_place, avoid_cons_double):
         n = 0
         while True:
             n += 1
-            result, complete = search(ex1, ex2, node_limit=min(600 + 150 * n, 3000))
+            result, complete = search(
+                ex1, ex2, node_limit=min(600 + 150 * n, 3000),
+                avoid_prev_place=avoid_prev_place, avoid_cons_double=avoid_cons_double,
+            )
             if result is not None:
                 return result, False
             if complete:
@@ -811,46 +859,113 @@ def solve_duty_schedule(
     init1, init2 = compute_init()
     plan_deadline = started + time_limit * 0.6
     plan_try, proven = 0, 0
+    avoid_prev_place = True
+    avoid_cons_double = True
     while found is None and _time.time() < plan_deadline:
         if plan_try > 0:
             if not make_plan(min(0.4 * plan_try, 3.0)):
                 break
             init1, init2 = compute_init()
         plan_try += 1
-        found, was_proven = attempt(init1, init2, min(plan_deadline, _time.time() + max(0.8, time_limit * 0.1)))
+        found, was_proven = attempt(
+            init1, init2,
+            min(plan_deadline, _time.time() + max(0.8, time_limit * 0.1)),
+            avoid_prev_place, avoid_cons_double,
+        )
         if found is None and was_proven:
             proven += 1
-            if proven >= 3:
+            if proven >= 50:
                 break
     ex1, ex2 = set(init1), set(init2)
     if found is None:
         everyone = set(active_t)
-        found, _ = attempt(everyone, everyone, started + time_limit * 0.25)
+        found, _ = attempt(
+            everyone, everyone, started + time_limit * 0.2,
+            avoid_prev_place, avoid_cons_double,
+        )
         if found is None:
-            # Kotaları önceden sabitlemek bazı haftalarda bütün olası çizelgeleri
-            # dışarıda bırakabiliyor. Son aşamada kişi başı üst sınırla doğrudan ata.
-            max_per_teacher = 3
-            for t in range(nt):
-                quota[t] = min(maxd_relaxed.get(t, 0), max_per_teacher)
-            active_t[:] = [t for t in eligible_t if quota[t] > 0]
-            dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.7))
-            found, _ = attempt(set(active_t), set(active_t), dynamic_deadline)
+            avoid_prev_place = False
+            balanced_deadline = min(started + time_limit * 0.8, _time.time() + max(20.0, time_limit * 0.5))
+            quota_attempts = 0
+            while found is None and quota_attempts < 50 and _time.time() < balanced_deadline:
+                if not make_plan(min(0.4 * (plan_try + quota_attempts + 1), 3.0)):
+                    break
+                quota_attempts += 1
+                found, _ = attempt(
+                    everyone, everyone,
+                    min(balanced_deadline, _time.time() + max(0.8, time_limit * 0.03)),
+                    avoid_prev_place, avoid_cons_double,
+                )
             if found is None:
-                avoid_consecutive_double = False
-                relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.25))
-                found, _ = attempt(set(active_t), set(active_t), relaxed_deadline)
+                avoid_cons_double = False
+                quota_attempts = 0
+                while found is None and quota_attempts < 50 and _time.time() < balanced_deadline:
+                    if not make_plan(min(0.4 * (plan_try + quota_attempts + 1), 3.0)):
+                        break
+                    quota_attempts += 1
+                    found, _ = attempt(
+                        everyone, everyone,
+                        min(balanced_deadline, _time.time() + max(0.8, time_limit * 0.03)),
+                        avoid_prev_place, avoid_cons_double,
+                    )
+            if found is None:
+                for t in range(nt):
+                    limit = 3 if t in kindergarten_only else 2
+                    quota[t] = min(maxd_relaxed.get(t, 0), limit)
+                active_t[:] = [t for t in eligible_t if quota[t] > 0]
+                dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
+                found, _ = attempt(
+                    set(active_t), set(active_t), dynamic_deadline,
+                    avoid_prev_place, avoid_cons_double,
+                )
+                if found is None:
+                    avoid_cons_double = False
+                    relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
+                    found, _ = attempt(
+                        set(active_t), set(active_t), relaxed_deadline,
+                        avoid_prev_place, avoid_cons_double,
+                    )
+                if found is None:
+                    for t in range(nt):
+                        quota[t] = min(maxd_relaxed.get(t, 0), 3)
+                    active_t[:] = [t for t in eligible_t if quota[t] > 0]
+                    relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
+                    found, _ = attempt(
+                        set(active_t), set(active_t), relaxed_deadline,
+                        avoid_prev_place, avoid_cons_double,
+                    )
         if found is not None:
-            # Gereksiz esnetmeleri azalt: yalnızca ihlal edenleri muaf tutup yeniden dene.
             v1, v2, total = violators(found)
             for _ in range(8):
-                if _time.time() > started + time_limit:
-                    break
-                cand1, cand2 = v1 | init1, v2 | init2
-                trial, _p = attempt(cand1, cand2, min(started + time_limit, _time.time() + time_limit * 0.1))
+                improved = False
+                for teacher in sorted(v2, key=lambda t: str(teacher_names[t]).casefold()):
+                    if _time.time() > started + time_limit:
+                        break
+                    cand1 = v1 | init1
+                    cand2 = (v2 | init2) - {teacher}
+                    trial, _p = attempt(
+                        cand1, cand2,
+                        min(started + time_limit, _time.time() + max(0.8, time_limit * 0.01)),
+                        avoid_prev_place, avoid_cons_double,
+                    )
+                    if trial is None:
+                        continue
+                    tv1, tv2, ttotal = violators(trial)
+                    if len(tv2) < len(v2) or (len(tv2) == len(v2) and ttotal < total):
+                        found, v1, v2, total = trial, tv1, tv2, ttotal
+                        improved = True
+                        break
+                if improved:
+                    continue
+                trial, _p = attempt(
+                    init1, v2 | init2,
+                    min(started + time_limit, _time.time() + max(0.8, time_limit * 0.01)),
+                    avoid_prev_place, avoid_cons_double,
+                )
                 if trial is None:
                     break
                 tv1, tv2, ttotal = violators(trial)
-                if ttotal < total:
+                if len(tv2) <= len(v2) and ttotal < total:
                     found, v1, v2, total = trial, tv1, tv2, ttotal
                 else:
                     break
@@ -865,20 +980,20 @@ def solve_duty_schedule(
             "quota": {teacher_names[t]: quota[t] for t in eligible_t},
         }
 
-    found = improve(list(found), ex1, ex2)
+    found = improve(list(found), ex1, ex2, avoid_prev_place)
     assignments = [teacher_names[t] for t in found]
     counts = {name: 0 for name in teacher_names}
     for name in assignments:
         counts[name] += 1
 
-    # ---- Esnetilen kuralların raporu ----
     relaxed = {"prev_double": [], "prev_place": [], "same_week_place": [], "triple": [], "no_duty": []}
     by_t = {}
     for s, t in enumerate(found):
         by_t.setdefault(t, []).append(s)
     for t, sl in by_t.items():
         name = teacher_names[t]
-        if len(sl) >= 2 and prevdouble[t] and t not in kindergarten_only:
+        # DÜZELTME: ana sınıfı kontrolü yuva bazlı.
+        if len(sl) >= 2 and prevdouble[t] and any(not slot_repeat_ok[s] for s in sl):
             relaxed["prev_double"].append(name)
         if len(sl) >= 3 and t not in kindergarten_only:
             relaxed["triple"].append(name)
@@ -924,8 +1039,7 @@ def canonical_location_name(value):
     }
     return aliases.get(normalized, name)
 
-# Normalize previously saved location names so the same main-building floor is not
-# kept as two separate places in assignment lists, history, or imported schedules.
+# Normalize previously saved location names...
 if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
     st.session_state.locations["Nöbet Yeri / Bölüm"] = st.session_state.locations["Nöbet Yeri / Bölüm"].apply(canonical_location_name)
     merged_rows = []
@@ -942,9 +1056,6 @@ if "Nöbet Yeri / Bölüm" in st.session_state.locations.columns:
                 for days in group["Aktif Günler"]
             ]
             if search_normalize(place_name) == "giris" and len(day_selections) > 1:
-                # Older app versions accidentally appended a full-week GİRİŞ row
-                # on every rerun. Intersect duplicates so a deliberate narrow
-                # selection (such as Monday only) is retained while collapsing them.
                 active_days = [day for day in WEEKDAYS if all(day in selection for selection in day_selections)]
             else:
                 active_days = [day for day in WEEKDAYS if any(day in selection for selection in day_selections)]
@@ -1029,32 +1140,27 @@ else:
         axis=1
     )
 
-# CSS GÜNCELLEMESİ: Üst kısım ve indirme butonları hizalaması
+# CSS
 st.markdown("""
 <style>
-/* Üst menü butonlarının tam görünmesi için üst padding artırıldı */
 div[data-testid="stAppViewBlockContainer"], .block-container {
   padding-top: 4.5rem !important;
 }
-
-/* İndirme butonlarının sağa yaslanması için */
 .download-btn-container {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
-.app-footer { 
-  margin-top: 1.5rem; 
-  padding: 0.75rem 0 0.3rem; 
-  border-top: 1px solid rgba(128, 128, 128, 0.25); 
-  color: #64748b; 
-  font-size: 0.85rem; 
-  font-weight: 600; 
-  letter-spacing: 0.04em; 
-  text-align: left; 
+.app-footer {
+  margin-top: 1.5rem;
+  padding: 0.75rem 0 0.3rem;
+  border-top: 1px solid rgba(128, 128, 128, 0.25);
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: left;
 }
-
 .app-title {
   width: fit-content;
   max-width: 100%;
@@ -1068,7 +1174,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
   letter-spacing: 0.01em;
   text-align: center;
 }
-
 .teacher-count-card {
   display: flex;
   width: fit-content;
@@ -1085,7 +1190,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 .teacher-count-card span { font-size: 0.9rem; font-weight: 600; }
 .teacher-count-card strong { color: #1d4e89; font-size: 1.45rem; line-height: 1; }
 .teacher-count-card small { color: #64748b; font-size: 0.78rem; }
-
 @media (max-width: 700px) {
   .block-container { padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 4.5rem !important; }
   [data-testid="stDataFrame"] { max-width: 100%; overflow-x: auto; }
@@ -1093,7 +1197,6 @@ div[data-testid="stAppViewBlockContainer"], .block-container {
 </style>
 """, unsafe_allow_html=True)
 
-# --- UYGULAMA GEZİNME MENÜSÜ ---
 def turkish_title_case(value):
     lowered = str(value or "Okul").strip().lower().replace("i\u0307", "i")
     words = lowered.split()
@@ -1135,6 +1238,7 @@ for row_start in range(0, len(MENU_OPTIONS), 3):
                 st.rerun()
 
 main_menu = st.session_state.main_navigation
+
 
 # ================= EXCEL ÜRETME FONKSİYONU =================
 def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, principal_name, note_text, holidays_df, locations_df, sections_df, headings):
@@ -1197,7 +1301,7 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
         row = start_row + idx
         gun_tarihi = start_date + datetime.timedelta(days=idx)
         tarih_str = gun_tarihi.strftime("%d.%m.%Y")
-        
+
         tatil_aciklama = ""
         if not holidays_df.empty and "Tarih" in holidays_df.columns:
             match_tatil = is_holiday(holidays_df, gun_tarihi)
@@ -1238,16 +1342,15 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
         assistants = my_listesi.get(gun, []) if isinstance(my_listesi, dict) else my_listesi
         if not tatil_aciklama:
             ws.cell(row=row, column=deputy_col, value="\n".join(assistants))
-        
+
         ws.row_dimensions[row].height = 70
-        
+
         for col in range(1, last_col + 1):
             cell = ws.cell(row=row, column=col)
             cell.border = thin_border
             cell.alignment = Alignment(horizontal="center" if col in [1, deputy_col] else "left", vertical="center", wrap_text=True)
-            cell.font = Font(name="Calibri", size=10, bold=(col==1))
+            cell.font = Font(name="Calibri", size=10, bold=(col == 1))
 
-    # Merge holiday cells only after all cell values and styles are prepared.
     for holiday_row in holiday_excel_rows:
         ws.merge_cells(start_row=holiday_row, start_column=2, end_row=holiday_row, end_column=last_col)
         ws.cell(row=holiday_row, column=2).alignment = Alignment(
@@ -1289,12 +1392,9 @@ def create_custom_excel(df, hafta_baslik, my_listesi, start_date, school_name, p
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
+
 # ================= ÖĞRETMEN KISIT LİSTESİ EXCEL ÜRETİCİSİ =================
 def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_section=False):
-    import io
-    import openpyxl
-    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Öğretmen Kısıt Listesi"
@@ -1309,7 +1409,7 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
         left=Side(style="thin", color="000000"), right=Side(style="thin", color="000000"),
         top=Side(style="thin", color="000000"), bottom=Side(style="thin", color="000000")
     )
-    
+
     center_align = Alignment(horizontal="center", vertical="center")
     left_align = Alignment(horizontal="left", vertical="center")
     vertical_header_align = Alignment(horizontal="center", vertical="center", text_rotation=90, wrap_text=True)
@@ -1349,7 +1449,6 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
                 c.font = Font(name="Calibri", size=10)
                 c.alignment = left_align if col_num == 2 else center_align
     else:
-        # Bölüme göre gruplayarak listeleme
         grouped = {}
         for t in teachers_list:
             b = t.get("Okul Bölümü", "Bölüm Atanmamış")
@@ -1397,9 +1496,8 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
                     c.font = Font(name="Calibri", size=10)
                     c.alignment = left_align if col_num == 2 else center_align
                 current_row += 1
-            current_row += 1 # Gruplar arası boşluk
+            current_row += 1
 
-    # Genişlik ayarları
     ws.column_dimensions["A"].width = 5
     ws.column_dimensions["B"].width = 25
     ws.column_dimensions["C"].width = 16
@@ -1411,12 +1509,14 @@ def generate_teacher_restrictions_excel(teachers_list, locations_list, group_by_
     wb.save(output)
     output.seek(0)
     return output
+
+
 # ================= PDF ÜRETME FONKSİYONU =================
 def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_text, start_date, holidays_df, locations_df=None):
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=landscape(letter), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
     elements = []
-    
+
     styles = getSampleStyleSheet()
     bundled_fonts = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
     font_candidates = [
@@ -1496,6 +1596,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
                 if not names:
                     continue
                 show_title = location_row.get("Excel'de Yer Başlığını Göster", True)
+                # DÜZELTME: NaN kontrolü eklendi.
                 if pd.isna(show_title):
                     show_title = True
                 if bool(show_title):
@@ -1541,7 +1642,7 @@ def create_pdf(df, hafta_baslik, my_listesi, school_name, principal_name, note_t
             ('ALIGN', (1, row_index), (-1, row_index), 'CENTER'),
             ('VALIGN', (1, row_index), (-1, row_index), 'MIDDLE'),
         ]))
-    
+
     elements.append(t)
     elements.append(Spacer(1, 15))
     elements.append(Paragraph(safe_text(note_text), cell_style))
@@ -1771,11 +1872,11 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     chosen.extend(name for name in rotated if name not in chosen and len(chosen) < requested)
                 assignments[day] = chosen
                 previous_day = set(chosen)
-                if names:
-                    pointer = (pointer + max(requested, 1)) % len(names)
+                # DÜZELTME: requested=0 ise pointer ilerlemesin.
+                if names and requested > 0:
+                    pointer = (pointer + requested) % len(names)
             return assignments, consecutive_fallback
-    
-        # Eski veya oluşturulmuş kayıtları aynı ekrandan yeniden görüntüleyebilme.
+
         archive_frames = {}
         archive_frames.update({
             str(name): frame.copy() if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
@@ -1881,7 +1982,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 with st.expander("Önceki çizelgeyi görüntüle", expanded=False):
                     archive_choice = st.selectbox(
                         "Kayıtlı çizelgeler (en yeni tarih üstte)", [""] + archive_options,
-                        index=( [""] + archive_options).index(current_label) if current_label else 0,
+                        index=([""] + archive_options).index(current_label) if current_label else 0,
                         key="schedule_archive_selection",
                         format_func=lambda value: "Bir eski çizelge seçin" if value == "" else value,
                     )
@@ -1934,15 +2035,16 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 st.session_state.overwrite_week = ""
                 st.rerun()
 
-    if ((generate_clicked and not archive_preview_selected and not existing_weeks) or overwrite_confirmed):
+    # DÜZELTME: generate_clicked true ise archive_preview_selected'ı yok say.
+    if (generate_clicked and not existing_weeks) or overwrite_confirmed:
         st.session_state.overwrite_pending = False
         st.session_state.overwrite_week = ""
         teachers_list = st.session_state.teachers_dict_list
         locs_df = st.session_state.locations
         holidays_df = st.session_state.holidays
-        
+
         gunler = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"]
-        
+
         holidays_df = normalized_holidays(holidays_df)
         tatil_gunleri = []
         for idx, g in enumerate(gunler):
@@ -1952,7 +2054,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
 
         schedule_records = []
         active_gunler = [g for g in gunler if g not in tatil_gunleri]
-        
+
         if not teachers_list:
             st.error("Nöbet dağıtımı yapılamadı: öğretmen listesi boş.")
             st.stop()
@@ -1985,7 +2087,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 if gun in active_days:
                     slots.extend((gun, bolge) for _ in range(capacity))
 
-        teacher_by_name = {t["Ad Soyad"]: t for t in teachers_list}
+        teacher_by_name = {t["Ad Soyun"]: t for t in teachers_list} if False else {t["Ad Soyad"]: t for t in teachers_list}
         teacher_names = list(teacher_by_name)
 
         def eligible(name, slot):
@@ -2013,9 +2115,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if "Tarih" in prior_history.columns:
             prior_dates = pd.to_datetime(prior_history["Tarih"], errors="coerce").dt.date
             prior_history = prior_history.loc[~prior_dates.isin(week_dates)]
-        # Takvimde "geçen hafta" yerine, arşivde bu haftadan önceki EN SON
-        # kayıtlı haftayı bul. Böylece araya tatil girse bile bir önceki
-        # dolu haftaya göre kıyaslama yapılır.
         if "Tarih" in history.columns:
             history["_date"] = pd.to_datetime(history["Tarih"], errors="coerce").dt.date
             prior_mask = (
@@ -2052,8 +2151,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 si for si, (day, _) in enumerate(slots)
                 if day.casefold() not in prior_days and teacher_name in original_candidates[si]
             ]
-            # A teacher with only one possible weekday (for example the Monday entrance post)
-            # keeps that assignment; all other teachers rotate away from last week's weekdays.
             if allowed_slots:
                 for si, (day, _) in enumerate(slots):
                     if day.casefold() in prior_days and teacher_name in slot_candidates[si]:
@@ -2171,10 +2268,10 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 "Çift Nöbetçi mi": counts[secilen_ogretmen] > 1,
                 "Kaynak": "Oluşturulan"
             })
-        
+
         sched_df = pd.DataFrame(schedule_records)
         st.session_state.current_schedule = sched_df
-        
+
         if not st.session_state.history.empty:
             history_dates = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce").dt.date
             replace_rows = st.session_state.history["Tarih/Hafta"].astype(str).isin(existing_weeks | {hafta_adi})
@@ -2184,7 +2281,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
             if old_name != hafta_adi:
                 st.session_state.saved_schedules.pop(old_name, None)
                 st.session_state.mudur_yardimcisi_gecmisi.pop(old_name, None)
-        
+
         st.session_state.history = pd.concat([st.session_state.history, sched_df], ignore_index=True)
         st.session_state.saved_schedules[hafta_adi] = sched_df.copy()
         save_app_data()
@@ -2248,7 +2345,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
     if st.session_state.current_schedule is not None:
         with st.container(border=True):
             st.subheader("Çizelge Önizlemesi")
-        
+
             preview_df = st.session_state.current_schedule.copy()
             schedule_name_for_export = str(preview_df["Tarih/Hafta"].dropna().iloc[0]) if "Tarih/Hafta" in preview_df and not preview_df["Tarih/Hafta"].dropna().empty else hafta_adi
             schedule_start_for_export = baslangic_tarihi
@@ -2259,9 +2356,8 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     first_date = preview_dates.min().date()
                     schedule_start_for_export = first_date - datetime.timedelta(days=first_date.weekday())
             current_deputy_assignments = st.session_state.mudur_yardimcisi_gecmisi.get(schedule_name_for_export, {}).get("assignments", {})
-            # 3 BUTON YAN YANA SAĞA YASLI HİZALAMA
             col_spacer, col_excel, col_pdf, col_img = st.columns([3, 1, 1, 1], gap="small")
-        
+
             with col_excel:
                 xlsx_data = create_custom_excel(
                     st.session_state.current_schedule, schedule_name_for_export,
@@ -2296,7 +2392,7 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     type="secondary",
                     use_container_width=True
                 )
-            
+
             with col_img:
                 image_data = create_schedule_image(
                     st.session_state.current_schedule, schedule_name_for_export,
@@ -2313,7 +2409,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     type="secondary",
                     use_container_width=True
                 )
-
 
             hist_df = st.session_state.history.copy()
             original_teacher_names = preview_df["Öğretmen"].fillna("").astype(str).tolist()
@@ -2476,8 +2571,6 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                     st.rerun()
 
 
-
-
 # ================= 2. SEKME: ÖĞRETMEN YÖNETİMİ =================
 elif main_menu == "👥 Öğretmen Yönetimi":
     with st.container(border=True):
@@ -2495,16 +2588,9 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         if "_tab2_mesaj" in st.session_state:
             st.success(st.session_state.pop("_tab2_mesaj"))
 
-
-
-
-
-
-
-# Bu kısım öğretmen yönetimi panelinin içinde, ana sekmenizin altında yer almalıdır
         with st.expander("⚡ Toplu Kısıtlama Uygulama Paneli", expanded=True):
             st.markdown("Aşağıdan bir bölüm seçerek belirli bir gruba veya tüm öğretmenlere tek tıkla hariç tutma kısıtı ekleyebilirsiniz.")
-            
+
             col_t1, col_t2 = st.columns(2)
             with col_t1:
                 toplu_secilen_bolge = st.selectbox("Kısıtlama Eklenmek İstenecek Bölüm", tum_bolgeler, key="toplu_bolge_secim_input")
@@ -2614,7 +2700,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
 
         sort_mode = st.selectbox(
             "Öğretmenleri sırala",
-            ["Ada göre (A-Z)", "Bölüme (Kat) göre grupla ve sırala (A-Z)","Toplam nöbet sayısına göre (çoktan aza)", "Çift nöbet sayısına göre (çoktan aza)"],
+            ["Ada göre (A-Z)", "Bölüme (Kat) göre grupla ve sırala (A-Z)", "Toplam nöbet sayısına göre (çoktan aza)", "Çift nöbet sayısına göre (çoktan aza)"],
             key="teacher_sort_mode"
         )
 
@@ -2647,8 +2733,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
                 double_duty_counts = double_weeks[double_weeks > 1].reset_index().groupby("Öğretmen").size().to_dict()
 
         indexed_teachers = list(enumerate(mevcut_liste))
-        
-        # Eski kayıtlarda "Okul Bölümü" eksikse çökmemesi için varsayılan değer atıyoruz
+
         for idx, t_data in indexed_teachers:
             t_data.setdefault("Okul Bölümü", "Yok")
 
@@ -2657,10 +2742,8 @@ elif main_menu == "👥 Öğretmen Yönetimi":
         elif sort_mode == "Çift nöbet sayısına göre (çoktan aza)":
             indexed_teachers.sort(key=lambda pair: (-double_duty_counts.get(pair[1]["Ad Soyad"], 0), pair[1]["Ad Soyad"].casefold()))
         elif sort_mode == "Bölüme (Kat) göre grupla ve sırala (A-Z)":
-            # Önce okul bölümüne (kata), sonra ada göre sıralar
             indexed_teachers.sort(key=lambda pair: (str(pair[1].get("Okul Bölümü", "Yok")).casefold(), pair[1]["Ad Soyad"].casefold()))
         else:
-            # "Ada göre (A-Z)" seçildiğinde çalışır
             indexed_teachers.sort(key=lambda pair: pair[1]["Ad Soyad"].casefold())
 
         for idx, t_data in indexed_teachers:
@@ -2675,25 +2758,18 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             double_weeks_count = double_duty_counts.get(teacher_name, 0)
             with st.expander(f"{teacher_name}  · Sınıfının Olduğu Kat: {okul_bolumu}  · Toplam nöbet: {total_duties}  ·  Çift nöbet haftası: {double_weeks_count}"):
                 st.caption("Bir haftadaki çift nöbet, sayaçta bir hafta olarak sayılır.")
-# === YENİ EKLENECEK KISIM: Okul Bölümü / Kat Seçimi ===
-                t_data.setdefault("Okul Bölümü", "Yok")
-                curr_bolum = t_data["Okul Bölümü"]
-                # yer_listesi içinde "Yok" ve tum_bolgeler olduğunu varsayıyoruz
-                bolum_secenekleri = ["Yok"] + tum_bolgeler 
-                bolum_idx = bolum_secenekleri.index(curr_bolum) if curr_bolum in bolum_secenekleri else 0
-                
+                bolum_secenekleri = ["Yok"] + tum_bolgeler
+                bolum_idx = bolum_secenekleri.index(okul_bolumu) if okul_bolumu in bolum_secenekleri else 0
+
                 yeni_okul_bolumu = st.selectbox(
-                    "Sınıfın Bulunduğu Okul Bölümü / Kat", 
-                    bolum_secenekleri, 
+                    "Sınıfın Bulunduğu Okul Bölümü / Kat",
+                    bolum_secenekleri,
                     index=bolum_idx,
                     key=f"okul_bolumu_{teacher_name}"
                 )
                 if yeni_okul_bolumu != t_data["Okul Bölümü"]:
                     t_data["Okul Bölümü"] = yeni_okul_bolumu
                     degisiklik_var = True
-                # ====================================================
-
-
 
                 curr_sabit = t_data["Sabit Yer"]
                 sabit_idx = yer_listesi.index(curr_sabit) if curr_sabit in yer_listesi else 0
@@ -2750,6 +2826,7 @@ elif main_menu == "👥 Öğretmen Yönetimi":
             st.session_state.teachers_dict_list = list(st.session_state.teachers_dict_list)
             save_app_data()
 
+
 # ================= 3. SEKME: NÖBET YERLERİ VE KONTENJAN =================
 elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
     with st.container(border=True):
@@ -2785,8 +2862,6 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
         edited_locs["_section_order"] = edited_locs["Excel Bölümü"].astype(str).map(section_order_map).fillna(len(section_order_map))
         edited_locs = edited_locs.sort_values("_section_order", kind="stable").drop(columns="_section_order")
         st.session_state.locations = edited_locs.reset_index(drop=True)
-        # Persist on every editor rerun. A later st.stop() in schedule generation
-        # must not be able to discard the last location-day selection.
         save_app_data()
         st.caption("Aynı Excel başlığı altındaki yerleri seçip yukarı/aşağı taşıyarak sıralayın. Yer adını gizlerseniz Excel'de yalnızca öğretmen adları görünür.")
         order_section = st.selectbox("Sıralanacak Excel başlığı", excel_headers, key="location_order_section")
@@ -2868,6 +2943,7 @@ elif main_menu == "📍 Nöbet Yerleri ve Kontenjan":
                 key="excel_deputy_heading"
             )
 
+
 # ================= 4. SEKME: OKUL, TATİL VE AYARLAR =================
 elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
     with st.container(border=True):
@@ -2875,7 +2951,7 @@ elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
         okul_adi_input = st.text_input("Okul Adı", value=st.session_state.school_info["okul_adi"])
         mudur_adi_input = st.text_input("Okul Müdürü Ad Soyad", value=st.session_state.school_info["mudur_adi"])
         not_metni_input = st.text_area("Çizelge Altı Notu (Açıklama Metni)", value=st.session_state.school_info["not_metni"], height=100)
-    
+
         if st.button("Bilgileri Kaydet"):
             st.session_state.school_info["okul_adi"] = okul_adi_input
             st.session_state.school_info["mudur_adi"] = mudur_adi_input
@@ -2885,7 +2961,7 @@ elif main_menu == "⚙️ Okul, Tatil ve Ayarlar":
 
         st.markdown("---")
         st.subheader("📅 Okulun Tatil Olduğu Günler (Takvimden Seçim)")
-    
+
         holiday_date = st.date_input("Tatil tarihini takvimden seçin", value=None, key="holiday_date_picker")
         holiday_note = st.text_input("Tatil açıklaması (isteğe bağlı)", key="holiday_note_input", placeholder="Örn. Resmî tatil")
         if st.button("📅 Seçili tarihi tatil olarak kaydet", key="holiday_add", type="primary"):
@@ -2970,12 +3046,12 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
     with st.container(border=True):
         st.header("Eski Listeler ve Nöbet Arşivi")
         st.markdown("Geçmiş Word veya bu uygulamanın oluşturduğu Excel çizelgelerini yükleyin. Excel aktarımı tarih, gün ve nöbet yerlerini arşive işler.")
-    
+
         uploaded_files = st.file_uploader("Eski nöbet listelerini seçin (Word veya oluşturulan Excel)", type=["docx", "xlsx"], accept_multiple_files=True)
         if uploaded_files and st.button("🔄 Seçili dosyaları yeniden tara", key="rescan_archives"):
             for file in uploaded_files:
                 st.session_state.processed_uploads.discard(hashlib.sha256(file.getvalue()).hexdigest())
-    
+
         if uploaded_files:
             known_names = [t["Ad Soyad"].strip().upper() for t in st.session_state.teachers_dict_list if t.get("Ad Soyad")]
             if "Öğretmen" in st.session_state.history.columns:
@@ -2986,7 +3062,7 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                 search_normalize(str(name)): str(name)
                 for name in st.session_state.locations["Nöbet Yeri / Bölüm"].dropna().tolist()
             }
-        
+
             for uploaded_file in uploaded_files:
                 try:
                     upload_signature = hashlib.sha256(uploaded_file.getvalue()).hexdigest()
@@ -3061,7 +3137,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                             rows = [[cell.text.strip() for cell in row.cells] for row in table.rows]
                             if len(rows) < 3:
                                 continue
-                            # Word templates often use merged cells; repeated cell text is deduplicated below.
                             headers = rows[1]
                             for row in rows[2:7]:
                                 day_value = next((day_in_text(cell) for cell in row[:2] if day_in_text(cell)), None)
@@ -3082,7 +3157,6 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                                         entrance_match = re.search(r"(?i)(?:^|[|\n])\s*giri[sş]\s*:?\s*([^|\n]*)", cell_text)
                                         if entrance_match:
                                             add_word_teachers(entrance_match.group(1), day_value, "GİRİŞ")
-                                        # Each floor label scopes only the names that follow it.
                                         for match in re.finditer(r"(?i)(?:^|[|\n])\s*([123])\s*\.\s*kat\s*:?\s*([^|\n]*)", cell_text):
                                             floor_no, names_text = match.groups()
                                             class_place = floor_names[floor_no][0]
@@ -3174,7 +3248,7 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                     if not temp.empty:
                         temp["Çift Nöbetçi mi"] = temp["Öğretmen"].map(lambda name: weekly_teacher_counts.get(name, 0) > 1)
                         parsed_records = temp.to_dict("records")
-                
+
                     if parsed_records:
                         temp_df = pd.DataFrame(parsed_records).reindex(columns=["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi"])
                         temp_df["Kaynak"] = "Eski Liste"
@@ -3206,173 +3280,173 @@ elif main_menu == "📂 Eski Listeler & Arşiv":
                 archive_names.update(st.session_state.history["Tarih/Hafta"].dropna().astype(str).unique().tolist())
             archive_names = sorted(archive_names) or [""]
             if archive_names:
-                    with st.expander("↗️ Arşivde öğretmen adlarını düzenle", expanded=False):
-                        edit_archive_name = st.selectbox("Düzenlenecek eski liste", archive_names, key="archive_teacher_edit_period")
-                        edit_rows = st.session_state.history[
-                            st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
-                        ].copy()
-                        if not edit_rows.empty:
-                            editable_archive = edit_rows[[col for col in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if col in edit_rows.columns]].copy()
-                            editable_archive["Tarih"] = pd.to_datetime(editable_archive["Tarih"], errors="coerce").dt.strftime("%d.%m.%Y")
-                            archive_slug = search_normalize(edit_archive_name)
-                            archive_revision_key = f"archive_teacher_revision_{archive_slug}"
-                            archive_signature_columns = [column for column in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if column in edit_rows.columns]
-                            archive_signature = hashlib.sha1(
-                                edit_rows[archive_signature_columns].fillna("").astype(str).to_json(orient="records").encode("utf-8")
-                            ).hexdigest()[:10]
-                            archive_names_key = f"archive_teacher_names_{archive_slug}_{archive_signature}"
-                            if archive_names_key not in st.session_state:
-                                st.session_state[archive_names_key] = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
-                            if archive_revision_key not in st.session_state:
-                                st.session_state[archive_revision_key] = 0
-                            archive_editor_key = f"archive_teacher_editor_{archive_slug}_{st.session_state[archive_revision_key]}"
-                            archive_warning_key = f"archive_teacher_warning_{archive_slug}"
+                with st.expander("↗️ Arşivde öğretmen adlarını düzenle", expanded=False):
+                    edit_archive_name = st.selectbox("Düzenlenecek eski liste", archive_names, key="archive_teacher_edit_period")
+                    edit_rows = st.session_state.history[
+                        st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
+                    ].copy()
+                    if not edit_rows.empty:
+                        editable_archive = edit_rows[[col for col in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if col in edit_rows.columns]].copy()
+                        editable_archive["Tarih"] = pd.to_datetime(editable_archive["Tarih"], errors="coerce").dt.strftime("%d.%m.%Y")
+                        archive_slug = search_normalize(edit_archive_name)
+                        archive_revision_key = f"archive_teacher_revision_{archive_slug}"
+                        archive_signature_columns = [column for column in ["Tarih", "Gün", "Bölüm/Yer", "Öğretmen"] if column in edit_rows.columns]
+                        archive_signature = hashlib.sha1(
+                            edit_rows[archive_signature_columns].fillna("").astype(str).to_json(orient="records").encode("utf-8")
+                        ).hexdigest()[:10]
+                        archive_names_key = f"archive_teacher_names_{archive_slug}_{archive_signature}"
+                        if archive_names_key not in st.session_state:
+                            st.session_state[archive_names_key] = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                        if archive_revision_key not in st.session_state:
+                            st.session_state[archive_revision_key] = 0
+                        archive_editor_key = f"archive_teacher_editor_{archive_slug}_{st.session_state[archive_revision_key]}"
+                        archive_warning_key = f"archive_teacher_warning_{archive_slug}"
 
-                            def persist_archive_teacher_edits():
-                                widget_state = st.session_state.get(archive_editor_key, {})
-                                edited_rows = widget_state.get("edited_rows", {}) if isinstance(widget_state, dict) else {}
-                                stored_names = list(st.session_state.get(archive_names_key, []))
-                                needs_refresh = False
-                                original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
-                                registered = {
-                                    str(teacher.get("Ad Soyad", "")).strip().casefold()
-                                    for teacher in st.session_state.teachers_dict_list
-                                }
-                                rejected = []
-                                for row_index, changes in edited_rows.items():
-                                    if isinstance(changes, dict) and "Öğretmen" in changes:
-                                        row_index = int(row_index)
-                                        if 0 <= row_index < len(stored_names):
-                                            typed_name = str(changes["Öğretmen"] or "").strip()
-                                            upper_name = turkish_upper(typed_name)
-                                            needs_refresh |= typed_name != upper_name
-                                            if (upper_name.casefold() != original_names[row_index].strip().casefold()
-                                                    and upper_name.casefold() not in registered):
-                                                rejected.append(upper_name)
-                                                stored_names[row_index] = original_names[row_index]
-                                                needs_refresh = True
-                                            else:
-                                                stored_names[row_index] = upper_name
-                                st.session_state[archive_names_key] = stored_names
-                                st.session_state[archive_warning_key] = (
-                                    "Kayıtlı olmayan öğretmen adı: " + ", ".join(sorted(set(rejected)))
-                                    + ". Eski öğretmen adı geri yüklendi."
-                                    if rejected else ""
-                                )
-                                if needs_refresh:
-                                    st.session_state[archive_revision_key] += 1
-
-                            editable_archive["Öğretmen"] = st.session_state[archive_names_key]
-                            st.caption("İsim değişince kayıtlı öğretmen listesinde aranır ve büyük harfe çevrilir. Kaydetmek için onaylayın.")
-                            if st.session_state.get(archive_warning_key):
-                                st.warning(st.session_state[archive_warning_key])
-                            edited_archive = st.data_editor(
-                                editable_archive, use_container_width=True, hide_index=True,
-                                disabled=[col for col in editable_archive.columns if col != "Öğretmen"],
-                                key=archive_editor_key,
-                                on_change=persist_archive_teacher_edits,
+                        def persist_archive_teacher_edits():
+                            widget_state = st.session_state.get(archive_editor_key, {})
+                            edited_rows = widget_state.get("edited_rows", {}) if isinstance(widget_state, dict) else {}
+                            stored_names = list(st.session_state.get(archive_names_key, []))
+                            needs_refresh = False
+                            original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                            registered = {
+                                str(teacher.get("Ad Soyad", "")).strip().casefold()
+                                for teacher in st.session_state.teachers_dict_list
+                            }
+                            rejected = []
+                            for row_index, changes in edited_rows.items():
+                                if isinstance(changes, dict) and "Öğretmen" in changes:
+                                    row_index = int(row_index)
+                                    if 0 <= row_index < len(stored_names):
+                                        typed_name = str(changes["Öğretmen"] or "").strip()
+                                        upper_name = turkish_upper(typed_name)
+                                        needs_refresh |= typed_name != upper_name
+                                        if (upper_name.casefold() != original_names[row_index].strip().casefold()
+                                                and upper_name.casefold() not in registered):
+                                            rejected.append(upper_name)
+                                            stored_names[row_index] = original_names[row_index]
+                                            needs_refresh = True
+                                        else:
+                                            stored_names[row_index] = upper_name
+                            st.session_state[archive_names_key] = stored_names
+                            st.session_state[archive_warning_key] = (
+                                "Kayıtlı olmayan öğretmen adı: " + ", ".join(sorted(set(rejected)))
+                                + ". Eski öğretmen adı geri yüklendi."
+                                if rejected else ""
                             )
-                            if st.button("💾 Öğretmen adı değişikliklerini kaydet", key="save_archive_teacher_names"):
-                                edited_names = [turkish_upper(name) for name in edited_archive["Öğretmen"].fillna("").astype(str).tolist()]
-                                original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
-                                registered = {
-                                    str(teacher.get("Ad Soyad", "")).strip().casefold(): str(teacher.get("Ad Soyad", "")).strip()
-                                    for teacher in st.session_state.teachers_dict_list
-                                }
-                                unknown = sorted({
-                                    name for old_name, name in zip(original_names, edited_names)
-                                    if old_name.strip().casefold() != name.casefold() and name.casefold() not in registered
-                                })
-                                if unknown:
-                                    st.session_state[archive_warning_key] = (
-                                        "Kayıtlı olmayan öğretmen adı: " + ", ".join(unknown)
-                                        + ". Eski öğretmen adı geri yüklendi."
-                                    )
-                                    restored_names = list(edited_names)
-                                    for index, (old_name, new_name) in enumerate(zip(original_names, edited_names)):
-                                        if old_name.strip().casefold() != new_name.casefold() and new_name.casefold() not in registered:
-                                            restored_names[index] = old_name
-                                    st.session_state[archive_names_key] = restored_names
-                                    st.session_state[archive_revision_key] += 1
-                                    st.rerun()
-                                edited_names = [registered.get(name.casefold(), name) for name in edited_names]
-                                target_indexes = edit_rows.index.tolist()
-                                for idx, teacher_name in zip(target_indexes, edited_names):
-                                    st.session_state.history.at[idx, "Öğretmen"] = teacher_name
-                                current_week = st.session_state.history[
-                                    st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
-                                ]
-                                weekly_counts = current_week.groupby("Öğretmen").size()
-                                double_names = set(weekly_counts[weekly_counts > 1].index.astype(str))
-                                st.session_state.history.loc[current_week.index, "Çift Nöbetçi mi"] = current_week["Öğretmen"].astype(str).isin(double_names).values
-                                if edit_archive_name in st.session_state.saved_schedules:
-                                    st.session_state.saved_schedules[edit_archive_name] = current_week.copy().reset_index(drop=True)
-                                if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty and "Tarih/Hafta" in st.session_state.current_schedule:
-                                    if (st.session_state.current_schedule["Tarih/Hafta"].astype(str) == edit_archive_name).any():
-                                        st.session_state.current_schedule = current_week.copy().reset_index(drop=True)
-                                save_app_data()
-                                st.success("Öğretmen adları güncellendi.")
-                                st.rerun()
-                    with st.expander("Arşiv kayıtlarını yönet", expanded=False):
-                        backup_payload = {
-                            "backup_version": 1,
-                            "history": _records_for_json(st.session_state.history),
-                            "saved_schedules": {
-                                str(name): _records_for_json(frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame))
-                                for name, frame in st.session_state.saved_schedules.items()
-                            },
-                            "current_schedule": _records_for_json(st.session_state.current_schedule),
-                            "mudur_yardimcisi_gecmisi": st.session_state.mudur_yardimcisi_gecmisi,
-                        }
-                        st.download_button(
-                            "📦 Tüm arşivi yedekle",
-                            data=json.dumps(backup_payload, ensure_ascii=False, indent=2),
-                            file_name=f"nobet_arsiv_yedegi_{datetime.date.today().isoformat()}.json",
-                            mime="application/json", use_container_width=True,
-                            key="download_archive_backup",
+                            if needs_refresh:
+                                st.session_state[archive_revision_key] += 1
+
+                        editable_archive["Öğretmen"] = st.session_state[archive_names_key]
+                        st.caption("İsim değişince kayıtlı öğretmen listesinde aranır ve büyük harfe çevrilir. Kaydetmek için onaylayın.")
+                        if st.session_state.get(archive_warning_key):
+                            st.warning(st.session_state[archive_warning_key])
+                        edited_archive = st.data_editor(
+                            editable_archive, use_container_width=True, hide_index=True,
+                            disabled=[col for col in editable_archive.columns if col != "Öğretmen"],
+                            key=archive_editor_key,
+                            on_change=persist_archive_teacher_edits,
                         )
-                        backup_file = st.file_uploader("Arşiv yedeğini seçin", type=["json"], key="archive_backup_upload")
-                        if st.button("♻️ Yedeği geri yükle", key="restore_archive_backup", disabled=backup_file is None, use_container_width=True):
-                            try:
-                                restored = json.loads(backup_file.getvalue().decode("utf-8-sig"))
-                                if not isinstance(restored, dict) or not all(key in restored for key in ("history", "saved_schedules", "mudur_yardimcisi_gecmisi")):
-                                    raise ValueError("Dosya geçerli bir nöbet arşiv yedeği değil.")
-                                history_columns = ["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"]
-                                st.session_state.history = pd.DataFrame(restored["history"]).reindex(columns=history_columns)
-                                st.session_state.history["Tarih"] = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce")
-                                st.session_state.saved_schedules = {str(name): pd.DataFrame(rows) for name, rows in restored["saved_schedules"].items()}
-                                current_rows = restored.get("current_schedule")
-                                st.session_state.current_schedule = pd.DataFrame(current_rows) if current_rows else None
-                                st.session_state.mudur_yardimcisi_gecmisi = restored["mudur_yardimcisi_gecmisi"]
-                                st.session_state.processed_uploads = set()
-                                save_app_data()
-                                st.success("Arşiv yedeği geri yüklendi.")
+                        if st.button("💾 Öğretmen adı değişikliklerini kaydet", key="save_archive_teacher_names"):
+                            edited_names = [turkish_upper(name) for name in edited_archive["Öğretmen"].fillna("").astype(str).tolist()]
+                            original_names = edit_rows["Öğretmen"].fillna("").astype(str).tolist()
+                            registered = {
+                                str(teacher.get("Ad Soyad", "")).strip().casefold(): str(teacher.get("Ad Soyad", "")).strip()
+                                for teacher in st.session_state.teachers_dict_list
+                            }
+                            unknown = sorted({
+                                name for old_name, name in zip(original_names, edited_names)
+                                if old_name.strip().casefold() != name.casefold() and name.casefold() not in registered
+                            })
+                            if unknown:
+                                st.session_state[archive_warning_key] = (
+                                    "Kayıtlı olmayan öğretmen adı: " + ", ".join(unknown)
+                                    + ". Eski öğretmen adı geri yüklendi."
+                                )
+                                restored_names = list(edited_names)
+                                for index, (old_name, new_name) in enumerate(zip(original_names, edited_names)):
+                                    if old_name.strip().casefold() != new_name.casefold() and new_name.casefold() not in registered:
+                                        restored_names[index] = old_name
+                                st.session_state[archive_names_key] = restored_names
+                                st.session_state[archive_revision_key] += 1
                                 st.rerun()
-                            except Exception as exc:
-                                st.error(f"Yedek geri yüklenemedi: {exc}")
-                        st.markdown("---")
-                        selected_archive = st.selectbox("Silmek istediğiniz liste veya dönemi seçin", archive_names, key="archive_to_delete")
-                        if st.button("🗑️ Seçili listeyi sil", key="delete_archive", type="secondary", use_container_width=True):
-                            st.session_state.history = st.session_state.history[
-                                st.session_state.history["Tarih/Hafta"].astype(str) != selected_archive
-                            ].reset_index(drop=True)
-                            st.session_state.saved_schedules.pop(selected_archive, None)
-                            st.session_state.mudur_yardimcisi_gecmisi.pop(selected_archive, None)
-                            if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty:
-                                if (st.session_state.current_schedule["Tarih/Hafta"].astype(str) == selected_archive).any():
-                                    st.session_state.current_schedule = None
+                            edited_names = [registered.get(name.casefold(), name) for name in edited_names]
+                            target_indexes = edit_rows.index.tolist()
+                            for idx, teacher_name in zip(target_indexes, edited_names):
+                                st.session_state.history.at[idx, "Öğretmen"] = teacher_name
+                            current_week = st.session_state.history[
+                                st.session_state.history["Tarih/Hafta"].astype(str) == edit_archive_name
+                            ]
+                            weekly_counts = current_week.groupby("Öğretmen").size()
+                            double_names = set(weekly_counts[weekly_counts > 1].index.astype(str))
+                            st.session_state.history.loc[current_week.index, "Çift Nöbetçi mi"] = current_week["Öğretmen"].astype(str).isin(double_names).values
+                            if edit_archive_name in st.session_state.saved_schedules:
+                                st.session_state.saved_schedules[edit_archive_name] = current_week.copy().reset_index(drop=True)
+                            if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty and "Tarih/Hafta" in st.session_state.current_schedule:
+                                if (st.session_state.current_schedule["Tarih/Hafta"].astype(str) == edit_archive_name).any():
+                                    st.session_state.current_schedule = current_week.copy().reset_index(drop=True)
                             save_app_data()
-                            st.success(f"'{selected_archive}' silindi; ilgili kayıtlar istatistiklerden kaldırıldı.")
+                            st.success("Öğretmen adları güncellendi.")
                             st.rerun()
-                        if st.button("🧹 Eski listelerin tamamını sil", key="delete_all_archives", use_container_width=True):
-                            st.session_state.history = pd.DataFrame(columns=["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"])
-                            st.session_state.saved_schedules = {}
-                            st.session_state.mudur_yardimcisi_gecmisi = {}
-                            st.session_state.current_schedule = None
+                with st.expander("Arşiv kayıtlarını yönet", expanded=False):
+                    backup_payload = {
+                        "backup_version": 1,
+                        "history": _records_for_json(st.session_state.history),
+                        "saved_schedules": {
+                            str(name): _records_for_json(frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame))
+                            for name, frame in st.session_state.saved_schedules.items()
+                        },
+                        "current_schedule": _records_for_json(st.session_state.current_schedule),
+                        "mudur_yardimcisi_gecmisi": st.session_state.mudur_yardimcisi_gecmisi,
+                    }
+                    st.download_button(
+                        "📦 Tüm arşivi yedekle",
+                        data=json.dumps(backup_payload, ensure_ascii=False, indent=2),
+                        file_name=f"nobet_arsiv_yedegi_{datetime.date.today().isoformat()}.json",
+                        mime="application/json", use_container_width=True,
+                        key="download_archive_backup",
+                    )
+                    backup_file = st.file_uploader("Arşiv yedeğini seçin", type=["json"], key="archive_backup_upload")
+                    if st.button("♻️ Yedeği geri yükle", key="restore_archive_backup", disabled=backup_file is None, use_container_width=True):
+                        try:
+                            restored = json.loads(backup_file.getvalue().decode("utf-8-sig"))
+                            if not isinstance(restored, dict) or not all(key in restored for key in ("history", "saved_schedules", "mudur_yardimcisi_gecmisi")):
+                                raise ValueError("Dosya geçerli bir nöbet arşiv yedeği değil.")
+                            history_columns = ["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"]
+                            st.session_state.history = pd.DataFrame(restored["history"]).reindex(columns=history_columns)
+                            st.session_state.history["Tarih"] = pd.to_datetime(st.session_state.history["Tarih"], errors="coerce")
+                            st.session_state.saved_schedules = {str(name): pd.DataFrame(rows) for name, rows in restored["saved_schedules"].items()}
+                            current_rows = restored.get("current_schedule")
+                            st.session_state.current_schedule = pd.DataFrame(current_rows) if current_rows else None
+                            st.session_state.mudur_yardimcisi_gecmisi = restored["mudur_yardimcisi_gecmisi"]
                             st.session_state.processed_uploads = set()
                             save_app_data()
-                            st.success("Tüm nöbet ve arşiv kayıtları silindi.")
+                            st.success("Arşiv yedeği geri yüklendi.")
                             st.rerun()
+                        except Exception as exc:
+                            st.error(f"Yedek geri yüklenemedi: {exc}")
+                    st.markdown("---")
+                    selected_archive = st.selectbox("Silmek istediğiniz liste veya dönemi seçin", archive_names, key="archive_to_delete")
+                    if st.button("🗑️ Seçili listeyi sil", key="delete_archive", type="secondary", use_container_width=True):
+                        st.session_state.history = st.session_state.history[
+                            st.session_state.history["Tarih/Hafta"].astype(str) != selected_archive
+                        ].reset_index(drop=True)
+                        st.session_state.saved_schedules.pop(selected_archive, None)
+                        st.session_state.mudur_yardimcisi_gecmisi.pop(selected_archive, None)
+                        if st.session_state.current_schedule is not None and not st.session_state.current_schedule.empty:
+                            if (st.session_state.current_schedule["Tarih/Hafta"].astype(str) == selected_archive).any():
+                                st.session_state.current_schedule = None
+                        save_app_data()
+                        st.success(f"'{selected_archive}' silindi; ilgili kayıtlar istatistiklerden kaldırıldı.")
+                        st.rerun()
+                    if st.button("🧹 Eski listelerin tamamını sil", key="delete_all_archives", use_container_width=True):
+                        st.session_state.history = pd.DataFrame(columns=["Tarih/Hafta", "Tarih", "Gün", "Bölüm/Yer", "Öğretmen", "Çift Nöbetçi mi", "Kaynak"])
+                        st.session_state.saved_schedules = {}
+                        st.session_state.mudur_yardimcisi_gecmisi = {}
+                        st.session_state.current_schedule = None
+                        st.session_state.processed_uploads = set()
+                        save_app_data()
+                        st.success("Tüm nöbet ve arşiv kayıtları silindi.")
+                        st.rerun()
 
             archive_display = st.session_state.history.rename(columns={"Çift Nöbetçi mi": "Çift Nöbet mi"})
             st.dataframe(archive_display, use_container_width=True)
@@ -3386,7 +3460,7 @@ elif main_menu == "📊 İstatistikler":
             st.header("Öğretmen Nöbet Dağılımı ve Çift Nöbet İstatistikleri")
         if not st.session_state.history.empty:
             hist = st.session_state.history
-        
+
             toplam_stats = hist.groupby("Öğretmen").size().reset_index(name="Toplam Nöbet Sayısı")
             weekly_counts = hist.groupby(["Tarih/Hafta", "Öğretmen"]).size().rename("Haftalık Nöbet").reset_index()
             cift_df = weekly_counts[weekly_counts["Haftalık Nöbet"] > 1]
@@ -3438,7 +3512,6 @@ elif main_menu == "📊 İstatistikler":
                     if column not in {"No", "Öğretmen", priority_column}
                 ]
                 final_stats = final_stats[reordered_columns]
-            # Her ekran genişliğinde ilk iki tanımlayıcı sütunu görünür tut.
             stats_column_config = {
                 "No": st.column_config.NumberColumn("No", width=36, pinned=True, alignment="center"),
                 "Öğretmen": st.column_config.TextColumn("Öğretmen", width=160, pinned=True),
@@ -3478,7 +3551,9 @@ elif main_menu == "📊 İstatistikler":
         else:
             st.info("Müdür yardımcısı görev geçmişi henüz yok.")
 
-save_app_data()
+# DÜZELTME: Koşulsuz save_app_data() kaldırıldı. Yalnızca dirty flag varsa kaydet.
+if st.session_state.get("_dirty"):
+    save_app_data()
 if st.session_state.get("_github_storage_error"):
     st.warning(
         "GitHub kayıt işlemi tamamlanamadı. Bu oturumdaki veriler yalnızca geçici yerel dosyaya yazılabilir. "
