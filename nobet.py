@@ -623,6 +623,7 @@ def solve_duty_schedule(
                 sv[low.bit_length() - 1] |= 1 << t
                 mm ^= low
         assign = [None] * S
+        max_quota = quota[:]
         used_places = [dict() for _ in range(nt)]
         nodes = [0]
         slot_noise = [rng.random() for _ in range(S)]
@@ -633,14 +634,6 @@ def solve_duty_schedule(
                 raise _Limit()
             if unfilled == 0:
                 return True
-            for t in active_t:
-                if q[t] > 0:
-                    v = valid[t]
-                    if q[t] == 1:
-                        if v == 0:
-                            return False
-                    elif popcount(v) < q[t] or mask_indep(v) < q[t]:
-                        return False
             # Gün bazlı Hall kontrolü: bir günün boş görev sayısı kadar farklı öğretmen kalmalı.
             for d, dm in daymask.items():
                 need = popcount(unfilled & dm)
@@ -675,11 +668,12 @@ def solve_duty_schedule(
                     cost += PEN2
                 if not slot_repeat_ok[s] and used_places[t].get(slot_place[s]):
                     cost += PEN1
+                assigned_so_far = max_quota[t] - q[t]
                 slack = popcount(valid[t]) - q[t]
-                cands.append((cost, slack, rng.random(), t))
+                cands.append((assigned_so_far, cost, slack, rng.random(), t))
             cands.sort()
             sb = 1 << s
-            for _, _, _, t in cands:
+            for _, _, _, _, t in cands:
                 tb = 1 << t
                 v2, sv2, q2 = valid[:], sv[:], q[:]
                 mm = sv[s]
@@ -813,7 +807,16 @@ def solve_duty_schedule(
     ex1, ex2 = set(init1), set(init2)
     if found is None:
         everyone = set(active_t)
-        found, _ = attempt(everyone, everyone, started + time_limit * 0.85)
+        found, _ = attempt(everyone, everyone, started + time_limit * 0.25)
+        if found is None:
+            # Kotaları önceden sabitlemek bazı haftalarda bütün olası çizelgeleri
+            # dışarıda bırakabiliyor. Son aşamada kişi başı üst sınırla doğrudan ata.
+            max_per_teacher = 3
+            for t in range(nt):
+                quota[t] = min(maxd_relaxed.get(t, 0), max_per_teacher)
+            active_t[:] = [t for t in eligible_t if quota[t] > 0]
+            dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.7))
+            found, _ = attempt(set(active_t), set(active_t), dynamic_deadline)
         if found is not None:
             # Gereksiz esnetmeleri azalt: yalnızca ihlal edenleri muaf tutup yeniden dene.
             v1, v2, total = violators(found)
