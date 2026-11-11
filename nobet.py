@@ -527,32 +527,47 @@ def solve_duty_schedule(
     active_t = []
 
     def make_plan(noise):
-        """Kim kaç nöbet tutacak. noise>0 ise çift nöbet sırası biraz karıştırılır (takılırsa yeniden planlamak için)."""
+        """Pay görev sayılarını ayrı ayrı planla; ana sınıfı öğretmenleri kendi havuzundadır."""
         for t in range(nt):
             quota[t] = 0
-        first_order = sorted(eligible_t, key=lambda t: (total_hist[t], rng.random()))
-        for t in first_order[:S]:
-            quota[t] = 1
-        remaining = S - sum(quota)
-        level = 2
-        while remaining > 0:
-            pool = [t for t in eligible_t if quota[t] == level - 1 and maxd_relaxed[t] >= level]
-            if not pool:
-                return False
-            pool.sort(key=lambda t: (
-                1 if (level == 2 and prevdouble[t] and t not in kindergarten_only) else 0,
-                0 if maxd_strict[t] >= level else 1,
-                double_history.get(teacher_names[t], 0) + (rng.random() * noise if noise else 0),
-                0 if wants_double.get(teacher_names[t]) else 1,
-                total_hist[t],
-                rng.random(),
-            ))
-            for t in pool:
-                if remaining == 0:
-                    break
-                quota[t] += 1
-                remaining -= 1
-            level += 1
+
+        groups = [
+            ([t for t in eligible_t if t in kindergarten_only], sum(slot_repeat_ok)),
+            ([t for t in eligible_t if t not in kindergarten_only], S - sum(slot_repeat_ok)),
+        ]
+
+        for group, task_count in groups:
+            if not group:
+                if task_count:
+                    return False
+                continue
+            first_order = sorted(group, key=lambda t: (total_hist[t], rng.random()))
+            for t in first_order[:min(task_count, len(group))]:
+                quota[t] = 1
+            remaining = task_count - sum(quota[t] for t in group)
+            level = 2
+            while remaining > 0:
+                pool = [
+                    t for t in group
+                    if quota[t] == level - 1 and maxd_relaxed[t] >= level
+                ]
+                if not pool:
+                    return False
+                pool.sort(key=lambda t: (
+                    1 if (level == 2 and t not in kindergarten_only and prevdouble[t]) else 0,
+                    0 if maxd_strict[t] >= level else 1,
+                    double_history.get(teacher_names[t], 0) + (rng.random() * noise if noise else 0),
+                    0 if wants_double.get(teacher_names[t]) else 1,
+                    total_hist[t],
+                    rng.random(),
+                ))
+                for t in pool:
+                    if remaining == 0:
+                        break
+                    quota[t] += 1
+                    remaining -= 1
+                level += 1
+
         active_t[:] = [t for t in eligible_t if quota[t] > 0]
         return True
 
@@ -581,7 +596,7 @@ def solve_duty_schedule(
             p = slot_place[s]
             total += base_cost(t, s)
             if p in prev_norm[t] and fixed_norm[t] != p:
-                if enforce_s2:
+                if enforce_s2 or avoid_previous_place:
                     return None
                 total += PEN2
             if not slot_repeat_ok[s]:
@@ -612,6 +627,7 @@ def solve_duty_schedule(
         pass
 
     avoid_consecutive_double = True
+    avoid_previous_place = True
 
     def search(ex1, ex2, node_limit):
         valid = [0] * nt
@@ -677,6 +693,11 @@ def solve_duty_schedule(
                     and assigned_so_far >= 1
                 ):
                     continue
+                repeats_previous_place = (
+                    slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]
+                )
+                if avoid_previous_place and repeats_previous_place:
+                    continue
                 cost = base_cost(t, s)
                 if slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
                     cost += PEN2
@@ -685,13 +706,14 @@ def solve_duty_schedule(
                 previous_double_penalty = int(
                     prevdouble[t] and t not in kindergarten_only
                 )
+                previous_place_penalty = int(repeats_previous_place)
                 slack = popcount(valid[t]) - q[t]
-                cands.append((assigned_so_far, previous_double_penalty, cost, slack, rng.random(), t))
+                cands.append((previous_place_penalty, previous_double_penalty, assigned_so_far, cost, slack, rng.random(), t))
             if not cands:
                 return False
             cands.sort()
             sb = 1 << s
-            for _, _, _, _, _, t in cands:
+            for _, _, _, _, _, _, t in cands:
                 tb = 1 << t
                 v2, sv2, q2 = valid[:], sv[:], q[:]
                 mm = sv[s]
@@ -820,37 +842,91 @@ def solve_duty_schedule(
         found, was_proven = attempt(init1, init2, min(plan_deadline, _time.time() + max(0.8, time_limit * 0.1)))
         if found is None and was_proven:
             proven += 1
-            if proven >= 3:
+            if proven >= 50:
                 break
     ex1, ex2 = set(init1), set(init2)
     if found is None:
         everyone = set(active_t)
-        found, _ = attempt(everyone, everyone, started + time_limit * 0.25)
+        found, _ = attempt(everyone, everyone, started + time_limit * 0.2)
         if found is None:
-            # Kotaları önceden sabitlemek bazı haftalarda bütün olası çizelgeleri
-            # dışarıda bırakabiliyor. Son aşamada kişi başı üst sınırla doğrudan ata.
-            max_per_teacher = 3
-            for t in range(nt):
-                quota[t] = min(maxd_relaxed.get(t, 0), max_per_teacher)
-            active_t[:] = [t for t in eligible_t if quota[t] > 0]
-            dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.7))
-            found, _ = attempt(set(active_t), set(active_t), dynamic_deadline)
+            # If strict place rotation blocks the balanced plan, keep the group
+            # quotas and retry with previous places allowed before changing workloads.
+            avoid_previous_place = False
+            balanced_deadline = min(started + time_limit * 0.8, _time.time() + max(20.0, time_limit * 0.5))
+            quota_attempts = 0
+            while found is None and quota_attempts < 50 and _time.time() < balanced_deadline:
+                if not make_plan(min(0.4 * (plan_try + quota_attempts + 1), 3.0)):
+                    break
+                quota_attempts += 1
+                found, _ = attempt(
+                    everyone, everyone,
+                    min(balanced_deadline, _time.time() + max(0.8, time_limit * 0.03)),
+                )
             if found is None:
+                # If no balanced plan works without repeated prior doubles, allow
+                # that rotation as a reported last resort.
                 avoid_consecutive_double = False
-                relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.25))
-                found, _ = attempt(set(active_t), set(active_t), relaxed_deadline)
+                quota_attempts = 0
+                while found is None and quota_attempts < 50 and _time.time() < balanced_deadline:
+                    if not make_plan(min(0.4 * (plan_try + quota_attempts + 1), 3.0)):
+                        break
+                    quota_attempts += 1
+                    found, _ = attempt(
+                        everyone, everyone,
+                        min(balanced_deadline, _time.time() + max(0.8, time_limit * 0.03)),
+                    )
+            if found is None:
+                # Final fallback uses group-aware upper limits rather than forcing
+                # the entire quota onto a few teachers.
+                for t in range(nt):
+                    limit = 3 if t in kindergarten_only else 2
+                    quota[t] = min(maxd_relaxed.get(t, 0), limit)
+                active_t[:] = [t for t in eligible_t if quota[t] > 0]
+                dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
+                found, _ = attempt(set(active_t), set(active_t), dynamic_deadline)
+                if found is None:
+                    avoid_consecutive_double = False
+                    relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
+                    found, _ = attempt(set(active_t), set(active_t), relaxed_deadline)
+                if found is None:
+                    for t in range(nt):
+                        quota[t] = min(maxd_relaxed.get(t, 0), 3)
+                    active_t[:] = [t for t in eligible_t if quota[t] > 0]
+                    relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
+                    found, _ = attempt(set(active_t), set(active_t), relaxed_deadline)
         if found is not None:
-            # Gereksiz esnetmeleri azalt: yalnızca ihlal edenleri muaf tutup yeniden dene.
+            # Önceki yer tekrarlarını tek tek kaldırmayı dene. Hepsini aynı anda
+            # yasaklamak, tek bir zorunlu tekrar yüzünden diğerlerini de kilitleyebilir.
             v1, v2, total = violators(found)
             for _ in range(8):
-                if _time.time() > started + time_limit:
-                    break
-                cand1, cand2 = v1 | init1, v2 | init2
-                trial, _p = attempt(cand1, cand2, min(started + time_limit, _time.time() + time_limit * 0.1))
+                improved = False
+                for teacher in sorted(v2, key=lambda t: str(teacher_names[t]).casefold()):
+                    if _time.time() > started + time_limit:
+                        break
+                    cand1 = v1 | init1
+                    cand2 = (v2 | init2) - {teacher}
+                    trial, _p = attempt(
+                        cand1, cand2,
+                        min(started + time_limit, _time.time() + max(0.8, time_limit * 0.01)),
+                    )
+                    if trial is None:
+                        continue
+                    tv1, tv2, ttotal = violators(trial)
+                    if len(tv2) < len(v2) or (len(tv2) == len(v2) and ttotal < total):
+                        found, v1, v2, total = trial, tv1, tv2, ttotal
+                        improved = True
+                        break
+                if improved:
+                    continue
+                # Önceki yer tekrarları sabitken aynı hafta yer tekrarlarını azalt.
+                trial, _p = attempt(
+                    init1, v2 | init2,
+                    min(started + time_limit, _time.time() + max(0.8, time_limit * 0.01)),
+                )
                 if trial is None:
                     break
                 tv1, tv2, ttotal = violators(trial)
-                if ttotal < total:
+                if len(tv2) <= len(v2) and ttotal < total:
                     found, v1, v2, total = trial, tv1, tv2, ttotal
                 else:
                     break
