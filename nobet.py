@@ -399,633 +399,143 @@ if not st.session_state.get("_persistence_loaded", False):
 # BIG yerine doğru üst sınır, kindergarten_only tanımı düzeltildi,
 # ana sınıfı kapasitesi düzeltildi, active_t sızıntısı giderildi.
 # ============================================================================
+import random
+
 def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
-    fixed_place, wants_double, previous_places, previous_double,
-    place_counts, double_history, last_place_by_teacher, place_order,
-    double_day_rank, repeat_allowed, time_limit=300.0, rng=None,
+    previous_places=None, previous_double=None, double_history=None,
+    repeat_allowed=None, time_limit=60.0, rng=None, **kwargs
 ):
-    """Haftalık nöbet çizelgesi üretir.
-
-    Kesin kurallar (hiçbir zaman esnetilmez): izin, hariç tutma, sabit yer,
-    aynı gün tek görev, ardışık günlerde görev yok.
-    Esnetilebilir kurallar (yalnızca gerekirse, en az kişi için):
-      1) Aynı hafta aynı yere ikinci kez nöbet verilmemesi (ANASINIFI hariç)
-      2) Geçen haftaki yerin tekrar verilmemesi
-      3) Geçen hafta çift nöbet tutana bu hafta çift nöbet verilmemesi (ana sınıfı hariç)
-    Dönüş: dict(ok, assignments, counts, relaxed, notes, blockers)
+    """Sadece 3 temel kuralı uygulayan nöbet dağıtım fonksiyonu:
+    1. Geçen haftaki nöbet yerinin tekrar verilmemesi.
+    2. Çift nöbetlerin geçmiş istatistiğe göre azdan çoğa dağıtılması.
+    3. Aynı hafta içinde aynı nöbet yerinin tekrar verilmemesi.
     """
-    import time as _time
-
     rng = rng or random.Random()
-    started = _time.time()
     S = len(slots)
     nt = len(teacher_names)
 
-    def norm(value):
-        return str(value).strip().casefold()
+    previous_places = previous_places or {}
+    previous_double = previous_double or set()
+    double_history = double_history or {}
+    repeat_allowed = repeat_allowed or (lambda place: False)
 
-    PEN1, PEN2 = 60, 40
+    def norm(v):
+        return str(v).strip().casefold()
 
     slot_day = [active_day_order.get(gun, -1) for gun, _ in slots]
     slot_place = [norm(place) for _, place in slots]
     slot_repeat_ok = [bool(repeat_allowed(place)) for _, place in slots]
-    tindex = {name: i for i, name in enumerate(teacher_names)}
 
+    tindex = {name: i for i, name in enumerate(teacher_names)}
+    prev_norm = [{norm(p) for p in previous_places.get(name, set())} for name in teacher_names]
+
+    # Her öğretmenin aday olduğu nöbet slotları
     cand_sets = [set() for _ in range(nt)]
     for si, cands in enumerate(slot_candidates):
         for name in cands:
-            cand_sets[tindex[name]].add(si)
-    eligible_t = [t for t in range(nt) if cand_sets[t]]
+            if name in tindex:
+                cand_sets[tindex[name]].add(si)
 
-    # DÜZELTME: kindergarten_only = YALNIZCA ana sınıfı yuvalarına aday olanlar.
-    kindergarten_only = {
-        t for t in eligible_t
-        if cand_sets[t] and all(slot_repeat_ok[s] for s in cand_sets[t])
-    }
-    # DÜZELTME: ana sınıfına gidebilen tüm öğretmenler (yalnızca-ana-sınıfı + karma)
-    kindergarten_capable = {
-        t for t in eligible_t
-        if any(slot_repeat_ok[s] for s in cand_sets[t])
-    }
+    # -------------------------------------------------------------
+    # 1. ÇİFT NÖBET DAĞILIMI (Azdan Çoğa Doğru)
+    # -------------------------------------------------------------
+    # İhtiyaç duyulan toplam çift nöbet sayısı
+    extra_duties_needed = max(0, S - nt)
+    
+    # Çift nöbet alacak öğretmenleri seçerken sıralama:
+    # 1) Geçen hafta çift nöbet tutmamış olanlar öncelikli
+    # 2) Geçmiş toplam çift nöbet sayısı en az olanlar öncelikli
+    teacher_indices = list(range(nt))
+    teacher_indices.sort(key=lambda t: (
+        1 if norm(teacher_names[t]) in previous_double else 0,  # Geçen hafta çift tuttuysa sona at
+        double_history.get(teacher_names[t], 0),                # Toplam çift nöbet sayısı (azdan çoğa)
+        rng.random()                                            # Eşitlik durumunda rastgele
+    ))
 
-    fixed_norm = [
-        (norm(fixed_place.get(name)) if fixed_place.get(name) not in (None, "", "Yok") else None)
-        for name in teacher_names
-    ]
-    prev_norm = [{norm(p) for p in previous_places.get(name, set())} for name in teacher_names]
-    prevdouble = [norm(name) in previous_double for name in teacher_names]
+    # Her öğretmenin kaç nöbet tutacağını belirle (Kota)
+    quota = [1] * nt
+    for i in range(extra_duties_needed):
+        quota[teacher_indices[i % nt]] += 1
 
-    counts_norm = {}
-    for (name, place), value in place_counts.items():
-        key = (name, norm(place))
-        counts_norm[key] = counts_norm.get(key, 0) + int(value)
-    distinct_places = list(dict.fromkeys(slot_place))
-    total_hist = [
-        sum(counts_norm.get((name, p), 0) for p in distinct_places) for name in teacher_names
-    ]
+    # -------------------------------------------------------------
+    # 2. ARAMA VE YERLEŞTİRME ALGORİTMASI (DFS)
+    # -------------------------------------------------------------
+    assignment = [None] * S
+    used_places_by_teacher = [set() for _ in range(nt)]
 
-    # ---- Kesin engeller ----
-    def indep_days(days):
-        picked, last = 0, -99
-        for d in sorted(set(days)):
-            if d - last > 1:
-                picked += 1
-                last = d
-        return picked
-
-    blockers = []
-    for si, cands in enumerate(slot_candidates):
-        if not cands:
-            blockers.append(f"{slots[si][0]} / {slots[si][1]}: bu göreve uygun hiç öğretmen yok.")
-    blockers = list(dict.fromkeys(blockers))
-    day_names = list(dict.fromkeys(g for g, _ in slots))
-    for gun in day_names:
-        day_slots = [i for i, (g, _) in enumerate(slots) if g == gun]
-        pool = {t for t in eligible_t if cand_sets[t] & set(day_slots)}
-        if len(pool) < len(day_slots):
-            blockers.append(
-                f"{gun}: {len(day_slots)} nöbet görevi var ama o gün görev alabilecek "
-                f"yalnızca {len(pool)} öğretmen var (izin/sabit yer/hariç tutma)."
-            )
-    maxd_relaxed = {t: indep_days(slot_day[s] for s in cand_sets[t]) for t in eligible_t}
-    capacity = sum(maxd_relaxed.values())
-    if capacity < S:
-        blockers.append(
-            f"Toplam kapasite yetersiz: {S} görev var; ardışık gün yasağı ve izin/sabit yer/hariç tutma "
-            f"ayarlarıyla öğretmenler en fazla {capacity} görev alabiliyor."
-        )
-    if blockers:
-        return {"ok": False, "blockers": blockers, "notes": [], "relaxed": {}}
-
-    # ---- Her öğretmenin kişisel yer sırası ----
-    place_order_norm = [norm(p) for p in place_order]
-    pidx = {p: i for i, p in enumerate(place_order_norm)}
-    n_places = max(len(place_order_norm), 1)
-    rank = []
-    for t, name in enumerate(teacher_names):
-        last = last_place_by_teacher.get(str(name).casefold())
-        if last is not None and norm(last) in pidx:
-            start = (pidx[norm(last)] + 1) % n_places
-        else:
-            start = t % n_places
-        my_places = {slot_place[s] for s in cand_sets[t]}
-        allowed = [p for p in my_places if not (p in prev_norm[t] and fixed_norm[t] != p)]
-        allowed.sort(key=lambda p: (counts_norm.get((name, p), 0), (pidx.get(p, start) - start) % n_places))
-        ranks = {p: i for i, p in enumerate(allowed)}
-        for p in my_places:
-            ranks.setdefault(p, len(allowed))
-        rank.append(ranks)
-
-    # DÜZELTME: BIG yerine yer başına doğru üst sınır.
-    def _place_bound(t, usable_slots):
-        bound = 0
-        places = {slot_place[s] for s in usable_slots}
-        for p in places:
-            p_slots = [s for s in usable_slots if slot_place[s] == p]
-            if any(slot_repeat_ok[s] for s in p_slots):
-                bound += indep_days(slot_day[s] for s in p_slots)
-            else:
-                bound += 1
-        return bound
-
-    def strict_max(t):
-        usable = [
-            s for s in cand_sets[t]
-            if not (slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s])
-        ]
-        return min(indep_days(slot_day[s] for s in usable), _place_bound(t, usable))
-
-    maxd_strict = {t: strict_max(t) for t in eligible_t}
-
-    def s1_only_max(t):
-        return min(indep_days(slot_day[s] for s in cand_sets[t]), _place_bound(t, cand_sets[t]))
-
-    maxd_s1 = {t: s1_only_max(t) for t in eligible_t}
-
-    def s2_only_max(t):
-        usable = [
-            s for s in cand_sets[t]
-            if not (slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s])
-        ]
-        return indep_days(slot_day[s] for s in usable)
-
-    maxd_s2 = {t: s2_only_max(t) for t in eligible_t}
-    quota = [0] * nt
-    active_t = []
-
-    def make_plan(noise):
-        """Pay görev sayılarını ayrı ayrı planla."""
-        active_t.clear()
-        for t in range(nt):
-            quota[t] = 0
-
-        kindergarten_slots = sum(slot_repeat_ok)
-        only_kind = sorted(
-            [t for t in eligible_t if t in kindergarten_only],
-            key=lambda t: (total_hist[t], rng.random()),
-        )
-        assigned_to_kind = 0
-        for t in only_kind:
-            if assigned_to_kind >= kindergarten_slots:
-                break
-            quota[t] = min(1, maxd_relaxed.get(t, 0))
-            if quota[t]:
-                assigned_to_kind += 1
-        remaining_kind = kindergarten_slots - assigned_to_kind
-        mixed_pool = [t for t in eligible_t if t not in kindergarten_only]
-        normal_slots = S - kindergarten_slots
-
-        mixed_order = sorted(mixed_pool, key=lambda t: (total_hist[t], rng.random()))
-        for t in mixed_order[:min(remaining_kind + normal_slots, len(mixed_pool))]:
-            quota[t] = 1
-        remaining_total = (remaining_kind + normal_slots) - sum(quota[t] for t in mixed_pool)
-        level = 2
-        while remaining_total > 0:
-            pool = [
-                t for t in mixed_pool
-                if quota[t] == level - 1 and maxd_relaxed[t] >= level
-            ]
-            if not pool:
+    def can_assign(t, s):
+        # Aynı gün birden fazla nöbet tutamaz
+        d = slot_day[s]
+        for assigned_s, assigned_t in enumerate(assignment):
+            if assigned_t == t and slot_day[assigned_s] == d:
                 return False
-            pool.sort(key=lambda t: (
-                1 if (level == 2 and t not in kindergarten_only and prevdouble[t]) else 0,
-                0 if maxd_strict[t] >= level else 1,
-                double_history.get(teacher_names[t], 0) + (rng.random() * noise if noise else 0),
-                0 if wants_double.get(teacher_names[t]) else 1,
-                total_hist[t],
-                rng.random(),
-            ))
-            for t in pool:
-                if remaining_total == 0:
-                    break
-                quota[t] += 1
-                remaining_total -= 1
-            level += 1
 
-        active_t[:] = [t for t in eligible_t if quota[t] > 0]
-        return True
-
-    if not make_plan(0):
-        return {"ok": False, "blockers": ["Görevler öğretmenlere paylaştırılamadı."], "notes": [], "relaxed": {}}
-
-    day_rank_default = len(double_day_rank)
-
-    def base_cost(t, s):
-        cost = rank[t][slot_place[s]]
-        if quota[t] >= 2 and double_day_rank:
-            cost += 2 * double_day_rank.get(slots[s][0], day_rank_default)
-        return cost
-
-    def set_cost(t, sset, ex1, ex2, avoid_prev_place):
-        enforce_s1, enforce_s2 = t not in ex1, t not in ex2
-        days = sorted(slot_day[s] for s in sset)
-        for a, b in zip(days, days[1:]):
-            if b - a <= 1:
-                return None
-        total, seen = 0, {}
-        for s in sset:
-            if s not in cand_sets[t]:
-                return None
-            p = slot_place[s]
-            total += base_cost(t, s)
-            if p in prev_norm[t] and fixed_norm[t] != p:
-                if enforce_s2 or avoid_prev_place:
-                    return None
-                total += PEN2
-            if not slot_repeat_ok[s]:
-                seen[p] = seen.get(p, 0) + 1
-                if seen[p] > 1:
-                    if enforce_s1:
-                        return None
-                    total += PEN1
-        return total
-
-    daymask = {}
-    for s in range(S):
-        daymask[slot_day[s]] = daymask.get(slot_day[s], 0) | (1 << s)
-    adjmask = {d: daymask.get(d - 1, 0) | daymask.get(d + 1, 0) for d in daymask}
-    placemask = {}
-    for s in range(S):
-        if not slot_repeat_ok[s]:
-            placemask[slot_place[s]] = placemask.get(slot_place[s], 0) | (1 << s)
-
-    def popcount(x):
-        return bin(x).count("1")
-
-    class _Limit(Exception):
-        pass
-
-    def search(ex1, ex2, node_limit, avoid_prev_place, avoid_cons_double):
-        valid = [0] * nt
-        sv = [0] * S
-        for t in active_t:
-            m = 0
-            for s in cand_sets[t]:
-                if avoid_prev_place and slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
-                    continue
-                m |= 1 << s
-            valid[t] = m
-            mm = m
-            while mm:
-                low = mm & -mm
-                sv[low.bit_length() - 1] |= 1 << t
-                mm ^= low
-        assign = [None] * S
-        max_quota = quota[:]
-        used_places = [dict() for _ in range(nt)]
-        nodes = [0]
-        slot_noise = [rng.random() for _ in range(S)]
-
-        def dfs(valid, sv, q, unfilled):
-            nodes[0] += 1
-            if nodes[0] > node_limit:
-                raise _Limit()
-            if unfilled == 0:
-                return True
-            for d, dm in daymask.items():
-                need = popcount(unfilled & dm)
-                if need:
-                    have = 0
-                    for t in active_t:
-                        if valid[t] & dm:
-                            have += 1
-                    if have < need:
-                        return False
-            best, best_key = None, None
-            m = unfilled
-            while m:
-                low = m & -m
-                s = low.bit_length() - 1
-                m ^= low
-                c = popcount(sv[s])
-                if c == 0:
-                    return False
-                key = (c, slot_noise[s])
-                if best_key is None or key < best_key:
-                    best, best_key = s, key
-            s = best
-            cands = []
-            mm = sv[s]
-            while mm:
-                low = mm & -mm
-                t = low.bit_length() - 1
-                mm ^= low
-                assigned_so_far = max_quota[t] - q[t]
-                if (
-                    avoid_cons_double
-                    and prevdouble[t]
-                    and not slot_repeat_ok[s]
-                    and assigned_so_far >= 1
-                ):
-                    continue
-                repeats_previous_place = (
-                    slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]
-                )
-                if avoid_prev_place and repeats_previous_place:
-                    continue
-                cost = base_cost(t, s)
-                if slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
-                    cost += PEN2
-                if not slot_repeat_ok[s] and used_places[t].get(slot_place[s]):
-                    cost += PEN1
-                previous_double_penalty = int(
-                    prevdouble[t] and not slot_repeat_ok[s]
-                )
-                previous_place_penalty = int(repeats_previous_place)
-                slack = popcount(valid[t]) - q[t]
-                cands.append((previous_place_penalty, previous_double_penalty, assigned_so_far, cost, slack, rng.random(), t))
-            if not cands:
+        # Ardışık günlerde nöbet tutamaz
+        for assigned_s, assigned_t in enumerate(assignment):
+            if assigned_t == t and abs(slot_day[assigned_s] - d) == 1:
                 return False
-            cands.sort()
-            sb = 1 << s
-            for _, _, _, _, _, _, t in cands:
-                tb = 1 << t
-                v2, sv2, q2 = valid[:], sv[:], q[:]
-                mm = sv[s]
-                while mm:
-                    low = mm & -mm
-                    v2[low.bit_length() - 1] &= ~sb
-                    mm ^= low
-                sv2[s] = 0
-                d = slot_day[s]
-                rem = daymask[d] | adjmask.get(d, 0)
-                if t not in ex1 and not slot_repeat_ok[s]:
-                    rem |= placemask[slot_place[s]]
-                removed = v2[t] & rem
-                v2[t] &= ~rem
-                while removed:
-                    low = removed & -removed
-                    sv2[low.bit_length() - 1] &= ~tb
-                    removed ^= low
-                q2[t] -= 1
-                if q2[t] == 0:
-                    rest = v2[t]
-                    while rest:
-                        low = rest & -rest
-                        sv2[low.bit_length() - 1] &= ~tb
-                        rest ^= low
-                    v2[t] = 0
-                assign[s] = t
-                used_places[t][slot_place[s]] = used_places[t].get(slot_place[s], 0) + 1
-                if dfs(v2, sv2, q2, unfilled & ~sb):
-                    return True
-                used_places[t][slot_place[s]] -= 1
-                assign[s] = None
+
+        p = slot_place[s]
+
+        # KURAL 1: Geçen haftaki yeri verilemez
+        if p in prev_norm[t]:
             return False
 
-        try:
-            ok = dfs(valid, sv, quota[:], (1 << S) - 1)
-        except _Limit:
-            return None, False
-        return (assign if ok else None), True
+        # KURAL 3: Aynı hafta içinde aynı yer tekrar verilemez (tekrar izni yoksa)
+        if not slot_repeat_ok[s] and p in used_places_by_teacher[t]:
+            return False
 
-    def improve(assign, ex1, ex2, avoid_prev_place):
-        by_t = {}
-        for s, t in enumerate(assign):
-            by_t.setdefault(t, set()).add(s)
-        for _ in range(30):
-            changed = False
-            for i in range(S):
-                for j in range(i + 1, S):
-                    a, b = assign[i], assign[j]
-                    if a == b:
-                        continue
-                    na = (by_t[a] - {i}) | {j}
-                    nb = (by_t[b] - {j}) | {i}
-                    ca = set_cost(a, na, ex1, ex2, avoid_prev_place)
-                    cb = set_cost(b, nb, ex1, ex2, avoid_prev_place)
-                    if ca is None or cb is None:
-                        continue
-                    old = set_cost(a, by_t[a], ex1, ex2, avoid_prev_place)
-                    oldb = set_cost(b, by_t[b], ex1, ex2, avoid_prev_place)
-                    if ca + cb < old + oldb:
-                        by_t[a], by_t[b] = na, nb
-                        assign[i], assign[j] = b, a
-                        changed = True
-            if not changed:
-                break
-        return assign
+        return True
 
-    def compute_init():
-        i1, i2 = set(), set()
-        for t in active_t:
-            q = quota[t]
-            if q <= maxd_strict[t]:
-                continue
-            if q <= maxd_s1[t]:
-                i2.add(t)
-            elif q <= maxd_s2[t]:
-                i1.add(t)
-            else:
-                i1.add(t)
-                i2.add(t)
-        return i1, i2
+    def backtrack(slot_idx, remaining_quota):
+        if slot_idx == S:
+            return True
 
-    def violators(assign):
-        v1, v2, total = set(), set(), 0
-        by = {}
-        for s_, t_ in enumerate(assign):
-            by.setdefault(t_, []).append(s_)
-        for t_, sl_ in by.items():
-            seen_ = {}
-            for s_ in sl_:
-                if slot_place[s_] in prev_norm[t_] and fixed_norm[t_] != slot_place[s_]:
-                    v2.add(t_)
-                    total += 1
-                if not slot_repeat_ok[s_]:
-                    seen_[slot_place[s_]] = seen_.get(slot_place[s_], 0) + 1
-            for c_ in seen_.values():
-                if c_ > 1:
-                    v1.add(t_)
-                    total += c_ - 1
-        return v1, v2, total
+        # Slot için aday öğretmenleri filtrele ve sırala
+        cands = [t for t in range(nt) if slot_idx in cand_sets[t] and remaining_quota[t] > 0]
+        
+        # En az kotası kalan öğretmene öncelik ver
+        cands.sort(key=lambda t: (remaining_quota[t], rng.random()))
 
-    def attempt(ex1, ex2, deadline, avoid_prev_place, avoid_cons_double):
-        n = 0
-        while True:
-            n += 1
-            result, complete = search(
-                ex1, ex2, node_limit=min(600 + 150 * n, 3000),
-                avoid_prev_place=avoid_prev_place, avoid_cons_double=avoid_cons_double,
-            )
-            if result is not None:
-                return result, False
-            if complete:
-                return None, True
-            if _time.time() > deadline:
-                return None, False
+        for t in cands:
+            if can_assign(t, slot_idx):
+                # Görevlendir
+                assignment[slot_idx] = t
+                remaining_quota[t] -= 1
+                used_places_by_teacher[t].add(slot_place[slot_idx])
 
-    found = None
-    init1, init2 = compute_init()
-    plan_deadline = started + time_limit * 0.6
-    plan_try, proven = 0, 0
-    avoid_prev_place = True
-    avoid_cons_double = True
-    while found is None and _time.time() < plan_deadline:
-        if plan_try > 0:
-            if not make_plan(min(0.4 * plan_try, 3.0)):
-                break
-            init1, init2 = compute_init()
-        plan_try += 1
-        found, was_proven = attempt(
-            init1, init2,
-            min(plan_deadline, _time.time() + max(0.8, time_limit * 0.1)),
-            avoid_prev_place, avoid_cons_double,
-        )
-        if found is None and was_proven:
-            proven += 1
-            if proven >= 50:
-                break
-    ex1, ex2 = set(init1), set(init2)
-    if found is None:
-        everyone = set(active_t)
-        found, _ = attempt(
-            everyone, everyone, started + time_limit * 0.2,
-            avoid_prev_place, avoid_cons_double,
-        )
-        if found is None:
-            avoid_prev_place = False
-            balanced_deadline = min(started + time_limit * 0.8, _time.time() + max(20.0, time_limit * 0.5))
-            quota_attempts = 0
-            while found is None and quota_attempts < 50 and _time.time() < balanced_deadline:
-                if not make_plan(min(0.4 * (plan_try + quota_attempts + 1), 3.0)):
-                    break
-                quota_attempts += 1
-                found, _ = attempt(
-                    everyone, everyone,
-                    min(balanced_deadline, _time.time() + max(0.8, time_limit * 0.03)),
-                    avoid_prev_place, avoid_cons_double,
-                )
-            if found is None:
-                avoid_cons_double = False
-                quota_attempts = 0
-                while found is None and quota_attempts < 50 and _time.time() < balanced_deadline:
-                    if not make_plan(min(0.4 * (plan_try + quota_attempts + 1), 3.0)):
-                        break
-                    quota_attempts += 1
-                    found, _ = attempt(
-                        everyone, everyone,
-                        min(balanced_deadline, _time.time() + max(0.8, time_limit * 0.03)),
-                        avoid_prev_place, avoid_cons_double,
-                    )
-            if found is None:
-                for t in range(nt):
-                    limit = 3 if t in kindergarten_only else 2
-                    quota[t] = min(maxd_relaxed.get(t, 0), limit)
-                active_t[:] = [t for t in eligible_t if quota[t] > 0]
-                dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
-                found, _ = attempt(
-                    set(active_t), set(active_t), dynamic_deadline,
-                    avoid_prev_place, avoid_cons_double,
-                )
-                if found is None:
-                    avoid_cons_double = False
-                    relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
-                    found, _ = attempt(
-                        set(active_t), set(active_t), relaxed_deadline,
-                        avoid_prev_place, avoid_cons_double,
-                    )
-                if found is None:
-                    for t in range(nt):
-                        quota[t] = min(maxd_relaxed.get(t, 0), 3)
-                    active_t[:] = [t for t in eligible_t if quota[t] > 0]
-                    relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.2))
-                    found, _ = attempt(
-                        set(active_t), set(active_t), relaxed_deadline,
-                        avoid_prev_place, avoid_cons_double,
-                    )
-        if found is not None:
-            v1, v2, total = violators(found)
-            for _ in range(8):
-                improved = False
-                for teacher in sorted(v2, key=lambda t: str(teacher_names[t]).casefold()):
-                    if _time.time() > started + time_limit:
-                        break
-                    cand1 = v1 | init1
-                    cand2 = (v2 | init2) - {teacher}
-                    trial, _p = attempt(
-                        cand1, cand2,
-                        min(started + time_limit, _time.time() + max(0.8, time_limit * 0.01)),
-                        avoid_prev_place, avoid_cons_double,
-                    )
-                    if trial is None:
-                        continue
-                    tv1, tv2, ttotal = violators(trial)
-                    if len(tv2) < len(v2) or (len(tv2) == len(v2) and ttotal < total):
-                        found, v1, v2, total = trial, tv1, tv2, ttotal
-                        improved = True
-                        break
-                if improved:
-                    continue
-                trial, _p = attempt(
-                    init1, v2 | init2,
-                    min(started + time_limit, _time.time() + max(0.8, time_limit * 0.01)),
-                    avoid_prev_place, avoid_cons_double,
-                )
-                if trial is None:
-                    break
-                tv1, tv2, ttotal = violators(trial)
-                if len(tv2) <= len(v2) and ttotal < total:
-                    found, v1, v2, total = trial, tv1, tv2, ttotal
-                else:
-                    break
-            ex1, ex2 = v1 | init1, v2 | init2
-    if found is None:
+                if backtrack(slot_idx + 1, remaining_quota):
+                    return True
+
+                # Geri al (Backtrack)
+                assignment[slot_idx] = None
+                remaining_quota[t] += 1
+                if not slot_repeat_ok[slot_idx]:
+                    used_places_by_teacher[t].remove(slot_place[slot_idx])
+
+        return False
+
+    # Dağıtımı başlat
+    success = backtrack(0, quota[:])
+
+    if not success:
         return {
             "ok": False,
-            "blockers": [],
-            "notes": [],
-            "relaxed": {},
-            "reason": "Arama süresi içinde kesin kurallara uyan bir dağılım bulunamadı.",
-            "quota": {teacher_names[t]: quota[t] for t in eligible_t},
+            "blockers": ["Belirtilen 3 kesin kurala uygun bir dağılım bulunamadı. Lütfen öğretmen sayılarını veya izin durumlarını kontrol edin."],
+            "assignments": [],
+            "counts": {}
         }
 
-    found = improve(list(found), ex1, ex2, avoid_prev_place)
-    assignments = [teacher_names[t] for t in found]
-    counts = {name: 0 for name in teacher_names}
-    for name in assignments:
-        counts[name] += 1
+    # Sonuçları formatla
+    final_assignments = [teacher_names[t] for t in assignment]
+    counts = {name: final_assignments.count(name) for name in teacher_names}
 
-    relaxed = {"prev_double": [], "prev_place": [], "same_week_place": [], "triple": [], "no_duty": []}
-    by_t = {}
-    for s, t in enumerate(found):
-        by_t.setdefault(t, []).append(s)
-    for t, sl in by_t.items():
-        name = teacher_names[t]
-        if len(sl) >= 2 and prevdouble[t] and any(not slot_repeat_ok[s] for s in sl):
-            relaxed["prev_double"].append(name)
-        if len(sl) >= 3 and t not in kindergarten_only:
-            relaxed["triple"].append(name)
-        for s in sl:
-            if slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
-                relaxed["prev_place"].append((name, slots[s][1]))
-        seen = {}
-        for s in sl:
-            if not slot_repeat_ok[s]:
-                seen[slot_place[s]] = seen.get(slot_place[s], 0) + 1
-        for p, c in seen.items():
-            if c > 1:
-                relaxed["same_week_place"].append((name, next(slots[s][1] for s in sl if slot_place[s] == p)))
-    relaxed["no_duty"] = [teacher_names[t] for t in eligible_t if t not in by_t]
-
-    regular_assigned = {
-        t: len(by_t.get(t, [])) for t in eligible_t if t not in kindergarten_only
-    }
-    doubles_needed = sum(1 for count in regular_assigned.values() if count >= 2)
-    free_for_double = [
-        t for t in eligible_t
-        if t not in kindergarten_only and not prevdouble[t] and maxd_strict[t] >= 2
-    ]
-    notes = {
-        "slots": S,
-        "teachers": sum(1 for t in eligible_t if t not in kindergarten_only),
-        "doubles": doubles_needed,
-        "free_for_double": len(free_for_double),
-    }
     return {
-        "ok": True, "assignments": assignments, "counts": counts,
-        "relaxed": relaxed, "notes": notes, "blockers": [],
+        "ok": True,
+        "assignments": final_assignments,
+        "counts": counts,
+        "blockers": []
     }
 
 def canonical_location_name(value):
