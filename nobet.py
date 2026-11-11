@@ -401,133 +401,189 @@ if not st.session_state.get("_persistence_loaded", False):
 # ============================================================================
 import random
 
+import random
+
 def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
-    previous_places=None, previous_double=None, double_history=None,
-    repeat_allowed=None, time_limit=60.0, rng=None, **kwargs
+    fixed_place=None, previous_places=None, previous_double=None,
+    double_history=None, repeat_allowed=None, time_limit=60.0, rng=None, **kwargs
 ):
-    """Sadece 3 temel kuralı uygulayan nöbet dağıtım fonksiyonu:
-    1. Geçen haftaki nöbet yerinin tekrar verilmemesi.
-    2. Çift nöbetlerin geçmiş istatistiğe göre azdan çoğa dağıtılması.
-    3. Aynı hafta içinde aynı nöbet yerinin tekrar verilmemesi.
+    """
+    İstenen Mantık:
+    1. Sabit yeri olan öğretmenleri ve görevlerini öncelikli olarak dağıt.
+    2. Geçen hafta tutulmayan yer kuralını uygula.
+    3. Çift nöbetleri, geçen hafta çift tutmayanlara ve çift nöbet geçmişi azdan çoğa
+       doğru olacak şekilde dağıt (Aynı hafta aynı yer ve geçen haftaki yer engeli ile).
+    4. Kurallar esnetilirse kimin için, hangi kuralın, neden esnetildiğini raporla.
     """
     rng = rng or random.Random()
     S = len(slots)
     nt = len(teacher_names)
 
+    fixed_place = fixed_place or {}
     previous_places = previous_places or {}
     previous_double = previous_double or set()
     double_history = double_history or {}
     repeat_allowed = repeat_allowed or (lambda place: False)
 
     def norm(v):
-        return str(v).strip().casefold()
+        return str(v).strip().casefold() if v else ""
 
     slot_day = [active_day_order.get(gun, -1) for gun, _ in slots]
     slot_place = [norm(place) for _, place in slots]
     slot_repeat_ok = [bool(repeat_allowed(place)) for _, place in slots]
 
     tindex = {name: i for i, name in enumerate(teacher_names)}
+    fixed_norm = {name: norm(p) for name, p in fixed_place.items() if p and p not in ("Yok", "")}
     prev_norm = [{norm(p) for p in previous_places.get(name, set())} for name in teacher_names]
+    prev_double_norm = {norm(name) for name in previous_double}
 
-    # Her öğretmenin aday olduğu nöbet slotları
+    # Aday matrisi
     cand_sets = [set() for _ in range(nt)]
     for si, cands in enumerate(slot_candidates):
         for name in cands:
             if name in tindex:
                 cand_sets[tindex[name]].add(si)
 
-    # -------------------------------------------------------------
-    # 1. ÇİFT NÖBET DAĞILIMI (Azdan Çoğa Doğru)
-    # -------------------------------------------------------------
-    # İhtiyaç duyulan toplam çift nöbet sayısı
-    extra_duties_needed = max(0, S - nt)
-    
-    # Çift nöbet alacak öğretmenleri seçerken sıralama:
-    # 1) Geçen hafta çift nöbet tutmamış olanlar öncelikli
-    # 2) Geçmiş toplam çift nöbet sayısı en az olanlar öncelikli
-    teacher_indices = list(range(nt))
-    teacher_indices.sort(key=lambda t: (
-        1 if norm(teacher_names[t]) in previous_double else 0,  # Geçen hafta çift tuttuysa sona at
-        double_history.get(teacher_names[t], 0),                # Toplam çift nöbet sayısı (azdan çoğa)
-        rng.random()                                            # Eşitlik durumunda rastgele
-    ))
-
-    # Her öğretmenin kaç nöbet tutacağını belirle (Kota)
-    quota = [1] * nt
-    for i in range(extra_duties_needed):
-        quota[teacher_indices[i % nt]] += 1
+    # Raporlama için esnetme kayıtları
+    relaxed_log = []
 
     # -------------------------------------------------------------
-    # 2. ARAMA VE YERLEŞTİRME ALGORİTMASI (DFS)
+    # 1. ADIM: SABİT YERLERİ ÖNCELİKLİ YERLEŞTİR
     # -------------------------------------------------------------
     assignment = [None] * S
+    assigned_slots_by_teacher = [set() for _ in range(nt)]
     used_places_by_teacher = [set() for _ in range(nt)]
 
-    def can_assign(t, s):
-        # Aynı gün birden fazla nöbet tutamaz
+    fixed_teachers = [t for t, name in enumerate(teacher_names) if name in fixed_norm]
+    
+    for t in fixed_teachers:
+        name = teacher_names[t]
+        target_place = fixed_norm[name]
+        # Sabit yeri olan öğretmenin uygun olduğu slotlar
+        possible_slots = [
+            s for s in cand_sets[t] 
+            if slot_place[s] == target_place and assignment[s] is None
+        ]
+        if possible_slots:
+            chosen_slot = possible_slots[0]
+            assignment[chosen_slot] = t
+            assigned_slots_by_teacher[t].add(chosen_slot)
+            used_places_by_teacher[t].add(slot_place[chosen_slot])
+
+    # -------------------------------------------------------------
+    # 2. ADIM: KONTROL VE ÇİFT NÖBET KOTASI BELİRLEME
+    # -------------------------------------------------------------
+    extra_needed = max(0, S - sum(len(s) for s in assigned_slots_by_teacher))
+    
+    # Çift nöbet alacak öğretmenleri önceliklendir (Azdan çoğa ve geçen hafta çift tutmayanlar)
+    candidates_for_double = list(range(nt))
+    candidates_for_double.sort(key=lambda t: (
+        1 if norm(teacher_names[t]) in prev_double_norm else 0, # 1. Geçen hafta çift tutmayanlar öncelikli
+        double_history.get(teacher_names[t], 0),                # 2. İstatistiğe göre azdan çoğa
+        rng.random()
+    ))
+
+    target_quota = [len(assigned_slots_by_teacher[t]) for t in range(nt)]
+    
+    # Eksik nöbet sayısı kadar öğretmenin kotasını artır
+    for t in candidates_for_double:
+        if S == sum(target_quota):
+            break
+        target_quota[t] += 1
+
+    # -------------------------------------------------------------
+    # 3. ADIM: KALAN YERLERİ VE ÖĞRETMENLERİ YERLEŞTİR (BACKTRACKING)
+    # -------------------------------------------------------------
+    def can_assign(t, s, enforce_prev_place=True, enforce_same_week=True):
         d = slot_day[s]
-        for assigned_s, assigned_t in enumerate(assignment):
-            if assigned_t == t and slot_day[assigned_s] == d:
-                return False
-
-        # Ardışık günlerde nöbet tutamaz
-        for assigned_s, assigned_t in enumerate(assignment):
-            if assigned_t == t and abs(slot_day[assigned_s] - d) == 1:
-                return False
-
         p = slot_place[s]
 
-        # KURAL 1: Geçen haftaki yeri verilemez
-        if p in prev_norm[t]:
-            return False
+        # Aynı gün veya ardışık gün kontrolü
+        for assigned_s in assigned_slots_by_teacher[t]:
+            if slot_day[assigned_s] == d or abs(slot_day[assigned_s] - d) == 1:
+                return False
 
-        # KURAL 3: Aynı hafta içinde aynı yer tekrar verilemez (tekrar izni yoksa)
-        if not slot_repeat_ok[s] and p in used_places_by_teacher[t]:
-            return False
+        # Sabit yer istisnası dışındaki öğretmenler için geçen haftaki yer engeli
+        if enforce_prev_place and teacher_names[t] not in fixed_norm:
+            if p in prev_norm[t]:
+                return False
+
+        # Aynı hafta içinde aynı yer engeli (tekrar izni olmayan yerler için)
+        if enforce_same_week and not slot_repeat_ok[s]:
+            if p in used_places_by_teacher[t]:
+                return False
 
         return True
 
-    def backtrack(slot_idx, remaining_quota):
-        if slot_idx == S:
+    def solve(unassigned_slots, quota, enforce_prev_place=True, enforce_same_week=True):
+        if not unassigned_slots:
             return True
 
-        # Slot için aday öğretmenleri filtrele ve sırala
-        cands = [t for t in range(nt) if slot_idx in cand_sets[t] and remaining_quota[t] > 0]
+        s = unassigned_slots[0]
+        cands = [t for t in range(nt) if s in cand_sets[t] and quota[t] > 0]
         
-        # En az kotası kalan öğretmene öncelik ver
-        cands.sort(key=lambda t: (remaining_quota[t], rng.random()))
+        # Kotası en çok kalan ve çift nöbet geçmişi az olan öğretmene öncelik ver
+        cands.sort(key=lambda t: (-quota[t], double_history.get(teacher_names[t], 0), rng.random()))
 
         for t in cands:
-            if can_assign(t, slot_idx):
-                # Görevlendir
-                assignment[slot_idx] = t
-                remaining_quota[t] -= 1
-                used_places_by_teacher[t].add(slot_place[slot_idx])
+            if can_assign(t, s, enforce_prev_place, enforce_same_week):
+                assignment[s] = t
+                assigned_slots_by_teacher[t].add(s)
+                used_places_by_teacher[t].add(slot_place[s])
+                quota[t] -= 1
 
-                if backtrack(slot_idx + 1, remaining_quota):
+                if solve(unassigned_slots[1:], quota, enforce_prev_place, enforce_same_week):
                     return True
 
-                # Geri al (Backtrack)
-                assignment[slot_idx] = None
-                remaining_quota[t] += 1
-                if not slot_repeat_ok[slot_idx]:
-                    used_places_by_teacher[t].remove(slot_place[slot_idx])
+                # Geri Al (Backtrack)
+                assignment[s] = None
+                assigned_slots_by_teacher[t].remove(s)
+                used_places_by_teacher[t].remove(slot_place[s])
+                quota[t] += 1
 
         return False
 
-    # Dağıtımı başlat
-    success = backtrack(0, quota[:])
+    unfilled_slots = [s for s in range(S) if assignment[s] is None]
+    current_quota = [max(0, target_quota[t] - len(assigned_slots_by_teacher[t])) for t in range(nt)]
+
+    # 1. Deneme: Tüm kurallar sıkı şekilde uygulanır
+    success = solve(unfilled_slots, current_quota[:], enforce_prev_place=True, enforce_same_week=True)
+
+    # 2. Deneme: Kapasite yetmezse "Geçen haftaki yer" kuralı zorunlu esnetilir
+    if not success:
+        relaxed_log.append("Öğretmen ve yer kapasitesi yetersiz kaldığı için bazı öğretmenler için 'Geçen haftaki nöbet yeri verilmez' kuralı esnetildi.")
+        success = solve(unfilled_slots, current_quota[:], enforce_prev_place=False, enforce_same_week=True)
+
+    # 3. Deneme: Yine yetmezse "Aynı hafta aynı yer" kuralı da zorunlu esnetilir
+    if not success:
+        relaxed_log.append("Kısıtlamalar sebebiyle 'Aynı hafta aynı yerde tekrar nöbet tutulmaz' kuralı esnetildi.")
+        success = solve(unfilled_slots, current_quota[:], enforce_prev_place=False, enforce_same_week=False)
 
     if not success:
         return {
             "ok": False,
-            "blockers": ["Belirtilen 3 kesin kurala uygun bir dağılım bulunamadı. Lütfen öğretmen sayılarını veya izin durumlarını kontrol edin."],
+            "blockers": ["İzinler ve kısıtlamalar nedeniyle hiçbir şekilde uygun dağılım yapılamadı."],
             "assignments": [],
             "counts": {}
         }
 
-    # Sonuçları formatla
+    # -------------------------------------------------------------
+    # 4. ADIM: ESNETME RAPORUNU OLUŞTURMA
+    # -------------------------------------------------------------
+    detailed_notes = []
+    for s, t in enumerate(assignment):
+        name = teacher_names[t]
+        p = slot_place[s]
+        
+        # Geçen haftaki yer esnetildi mi?
+        if name not in fixed_norm and p in prev_norm[t]:
+            detailed_notes.append(f"ESNETME: {name} öğretmenine geçen hafta tuttuğu ({slots[s][1]}) yeri tekrar verildi (Başka uygun öğretmen kalmadığı için).")
+        
+        # Geçen hafta çift tutana tekrar çift nöbet verildi mi?
+        if norm(name) in prev_double_norm and len(assigned_slots_by_teacher[t]) > 1:
+            detailed_notes.append(f"ESNETME: {name} geçen hafta çift nöbet tutmasına rağmen bu hafta tekrar çift nöbet yazıldı (Çift nöbet tutabilecek öğretmen sayısı yetersiz olduğu için).")
+
     final_assignments = [teacher_names[t] for t in assignment]
     counts = {name: final_assignments.count(name) for name in teacher_names}
 
@@ -535,6 +591,8 @@ def solve_duty_schedule(
         "ok": True,
         "assignments": final_assignments,
         "counts": counts,
+        "relaxed": detailed_notes,
+        "notes": relaxed_log,
         "blockers": []
     }
 
