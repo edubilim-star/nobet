@@ -389,9 +389,10 @@ def solve_duty_schedule(
     Kesin kurallar (hiçbir zaman esnetilmez): izin, hariç tutma, sabit yer,
     aynı gün tek görev, ardışık günlerde görev yok.
     Esnetilebilir kurallar (yalnızca gerekirse, en az kişi için):
-      1) Geçen hafta çift nöbet tutana bu hafta çift nöbet verilmemesi
-      2) Geçen haftaki yerin tekrar verilmemesi
-      3) Aynı hafta aynı yere ikinci kez nöbet verilmemesi (ANASINIFI hariç)
+      1) Geçen haftaki günün tekrar verilmemesi (başka gün seçeneği yoksa)
+      2) Geçen hafta çift nöbet tutana bu hafta çift nöbet verilmemesi (ana sınıfı hariç)
+      3) Geçen haftaki yerin tekrar verilmemesi
+      4) Aynı hafta aynı yere ikinci kez nöbet verilmemesi (ANASINIFI hariç)
     Dönüş: dict(ok, assignments, counts, relaxed, notes, blockers)
     """
     import time as _time
@@ -417,6 +418,10 @@ def solve_duty_schedule(
         for name in cands:
             cand_sets[tindex[name]].add(si)
     eligible_t = [t for t in range(nt) if cand_sets[t]]
+    kindergarten_only = {
+        t for t in eligible_t
+        if all(slot_repeat_ok[s] for s in cand_sets[t])
+    }
 
     fixed_norm = [
         (norm(fixed_place.get(name)) if fixed_place.get(name) not in (None, "", "Yok") else None)
@@ -535,7 +540,7 @@ def solve_duty_schedule(
             if not pool:
                 return False
             pool.sort(key=lambda t: (
-                1 if (level == 2 and prevdouble[t]) else 0,
+                1 if (level == 2 and prevdouble[t] and t not in kindergarten_only) else 0,
                 0 if maxd_strict[t] >= level else 1,
                 double_history.get(teacher_names[t], 0) + (rng.random() * noise if noise else 0),
                 0 if wants_double.get(teacher_names[t]) else 1,
@@ -606,6 +611,7 @@ def solve_duty_schedule(
     class _Limit(Exception):
         pass
 
+    avoid_consecutive_double = True
 
     def search(ex1, ex2, node_limit):
         valid = [0] * nt
@@ -663,17 +669,29 @@ def solve_duty_schedule(
                 low = mm & -mm
                 t = low.bit_length() - 1
                 mm ^= low
+                assigned_so_far = max_quota[t] - q[t]
+                if (
+                    avoid_consecutive_double
+                    and prevdouble[t]
+                    and t not in kindergarten_only
+                    and assigned_so_far >= 1
+                ):
+                    continue
                 cost = base_cost(t, s)
                 if slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
                     cost += PEN2
                 if not slot_repeat_ok[s] and used_places[t].get(slot_place[s]):
                     cost += PEN1
-                assigned_so_far = max_quota[t] - q[t]
+                previous_double_penalty = int(
+                    prevdouble[t] and t not in kindergarten_only
+                )
                 slack = popcount(valid[t]) - q[t]
-                cands.append((assigned_so_far, cost, slack, rng.random(), t))
+                cands.append((assigned_so_far, previous_double_penalty, cost, slack, rng.random(), t))
+            if not cands:
+                return False
             cands.sort()
             sb = 1 << s
-            for _, _, _, _, t in cands:
+            for _, _, _, _, _, t in cands:
                 tb = 1 << t
                 v2, sv2, q2 = valid[:], sv[:], q[:]
                 mm = sv[s]
@@ -817,6 +835,10 @@ def solve_duty_schedule(
             active_t[:] = [t for t in eligible_t if quota[t] > 0]
             dynamic_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.7))
             found, _ = attempt(set(active_t), set(active_t), dynamic_deadline)
+            if found is None:
+                avoid_consecutive_double = False
+                relaxed_deadline = min(started + time_limit, _time.time() + max(15.0, time_limit * 0.25))
+                found, _ = attempt(set(active_t), set(active_t), relaxed_deadline)
         if found is not None:
             # Gereksiz esnetmeleri azalt: yalnızca ihlal edenleri muaf tutup yeniden dene.
             v1, v2, total = violators(found)
@@ -856,9 +878,9 @@ def solve_duty_schedule(
         by_t.setdefault(t, []).append(s)
     for t, sl in by_t.items():
         name = teacher_names[t]
-        if len(sl) >= 2 and prevdouble[t]:
+        if len(sl) >= 2 and prevdouble[t] and t not in kindergarten_only:
             relaxed["prev_double"].append(name)
-        if len(sl) >= 3:
+        if len(sl) >= 3 and t not in kindergarten_only:
             relaxed["triple"].append(name)
         for s in sl:
             if slot_place[s] in prev_norm[t] and fixed_norm[t] != slot_place[s]:
@@ -872,11 +894,17 @@ def solve_duty_schedule(
                 relaxed["same_week_place"].append((name, next(slots[s][1] for s in sl if slot_place[s] == p)))
     relaxed["no_duty"] = [teacher_names[t] for t in eligible_t if t not in by_t]
 
-    doubles_needed = sum(1 for t in eligible_t if quota[t] >= 2)
-    free_for_double = [t for t in eligible_t if not prevdouble[t] and maxd_strict[t] >= 2]
+    regular_assigned = {
+        t: len(by_t.get(t, [])) for t in eligible_t if t not in kindergarten_only
+    }
+    doubles_needed = sum(1 for count in regular_assigned.values() if count >= 2)
+    free_for_double = [
+        t for t in eligible_t
+        if t not in kindergarten_only and not prevdouble[t] and maxd_strict[t] >= 2
+    ]
     notes = {
         "slots": S,
-        "teachers": len(eligible_t),
+        "teachers": sum(1 for t in eligible_t if t not in kindergarten_only),
         "doubles": doubles_needed,
         "free_for_double": len(free_for_double),
     }
@@ -2009,6 +2037,27 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 previous_rows = pd.DataFrame()
         else:
             previous_rows = pd.DataFrame()
+        previous_weekdays = {}
+        if not previous_rows.empty and {"Öğretmen", "Gün"}.issubset(previous_rows.columns):
+            for _, row in previous_rows.iterrows():
+                previous_weekdays.setdefault(str(row["Öğretmen"]).casefold(), set()).add(
+                    str(row["Gün"]).strip().casefold()
+                )
+        original_candidates = [list(candidates) for candidates in slot_candidates]
+        for teacher_name in teacher_names:
+            prior_days = previous_weekdays.get(teacher_name.casefold(), set())
+            if not prior_days:
+                continue
+            allowed_slots = [
+                si for si, (day, _) in enumerate(slots)
+                if day.casefold() not in prior_days and teacher_name in original_candidates[si]
+            ]
+            # A teacher with only one possible weekday (for example the Monday entrance post)
+            # keeps that assignment; all other teachers rotate away from last week's weekdays.
+            if allowed_slots:
+                for si, (day, _) in enumerate(slots):
+                    if day.casefold() in prior_days and teacher_name in slot_candidates[si]:
+                        slot_candidates[si].remove(teacher_name)
         previous_places = {}
         if not previous_rows.empty:
             for _, row in previous_rows.iterrows():
@@ -2089,6 +2138,11 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         assignments = solver_result["assignments"]
         counts = solver_result["counts"]
         relaxed_rules = solver_result["relaxed"]
+        relaxed_rules["previous_day"] = [
+            (name, slots[si][0])
+            for si, name in enumerate(assignments)
+            if slots[si][0].casefold() in previous_weekdays.get(name.casefold(), set())
+        ]
         plan_notes = solver_result["notes"]
 
         deputy_assignments, _deputy_adjacent_fallback = distribute_deputies(
@@ -2139,10 +2193,9 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
         if relaxed_rules["prev_double"]:
             if plan_notes["doubles"] > plan_notes["free_for_double"]:
                 why = (
-                    f"bu hafta {plan_notes['slots']} görev ve {plan_notes['teachers']} öğretmen var; "
-                    f"{plan_notes['doubles']} kişinin çift nöbet tutması gerekiyor ama geçen hafta çift nöbet "
-                    f"tutmamış uygun öğretmen yalnızca {plan_notes['free_for_double']}. "
-                    "Çift nöbet sayısı en az olanlar seçildi"
+                    f"ana sınıfı dışındaki öğretmenlerden bu hafta {plan_notes['doubles']} kişinin çift nöbet "
+                    f"alması gerekiyor; geçen hafta çift nöbet almamış ve kurallara uygun öğretmen sayısı "
+                    f"{plan_notes['free_for_double']}. Çift nöbet sayısı en az olanlar seçildi"
                 )
             else:
                 why = "izin, sabit yer ve ardışık gün kurallarıyla birlikte başka çözüm bulunamadı"
@@ -2150,6 +2203,12 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                 "**İki hafta üst üste çift nöbet verildi:** "
                 + ", ".join(sorted(relaxed_rules["prev_double"], key=str.casefold))
                 + f". Neden: {why}."
+            )
+        if relaxed_rules.get("previous_day"):
+            relax_lines.append(
+                "**Geçen hafta nöbet tuttuğu gün tekrar verildi:** "
+                + ", ".join(f"{name} ({day})" for name, day in relaxed_rules["previous_day"])
+                + ". Neden: bu öğretmenin geçen haftaki günleri dışında uygun nöbet yeri kalmadı."
             )
         if relaxed_rules["prev_place"]:
             relax_lines.append(
