@@ -382,7 +382,7 @@ def solve_duty_schedule(
     slots, active_day_order, teacher_names, slot_candidates, *,
     fixed_place, wants_double, previous_places, previous_double,
     place_counts, double_history, last_place_by_teacher, place_order,
-    double_day_rank, repeat_allowed, time_limit=9.0, rng=None,
+    double_day_rank, repeat_allowed, time_limit=30.0, rng=None,
 ):
     """Haftalık nöbet çizelgesi üretir.
 
@@ -836,7 +836,7 @@ def solve_duty_schedule(
             "blockers": [],
             "notes": [],
             "relaxed": {},
-            "reason": "Tüm esnetilebilir kurallar gevşetilse bile uygun dağılım bulunamadı.",
+            "reason": "Arama süresi içinde kesin kurallara uyan bir dağılım bulunamadı. Bu, ayarların kesin olarak imkânsız olduğunu göstermez.",
             "quota": {teacher_names[t]: quota[t] for t in eligible_t},
         }
 
@@ -2075,9 +2075,12 @@ if main_menu == "📅 Nöbet Listesi Oluştur":
                       "kontenjanı azaltın veya öğretmen ekleyin."
                 )
             else:
+                reason = solver_result.get("reason", "")
                 st.error(
                     "Kesin kurallar (aynı gün tek görev, ardışık gün yok, izin, sabit yer, hariç tutma) "
-                    "ile çizelge bulunamadı. Özellikle aynı güne denk gelen izinleri ve hariç tutmaları kontrol edin."
+                    "ile çizelge oluşturulamadı. "
+                    + (reason + " " if reason else "")
+                    + "Özellikle aynı güne denk gelen izinleri ve hariç tutmaları kontrol edin."
                 )
             st.stop()
         assignments = solver_result["assignments"]
